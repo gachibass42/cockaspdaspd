@@ -7,7 +7,7 @@ class UserProfile
     public int $id;
     public string $name;
     public string $phone;
-    public string $description;
+    public string $userDescription;
     public bool $isGuide;
 
     /**
@@ -22,7 +22,7 @@ class UserProfile
         $this->id = $id;
         $this->name = $name;
         $this->phone = $phone;
-        $this->description = $description;
+        $this->userDescription = $description;
         $this->isGuide = $isGuide;
     }
 
@@ -77,17 +77,17 @@ class UserProfile
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getUserDescription(): string
     {
-        return $this->description;
+        return $this->userDescription;
     }
 
     /**
-     * @param string $description
+     * @param string $userDescription
      */
-    public function setDescription(string $description): void
+    public function setUserDescription(string $userDescription): void
     {
-        $this->description = $description;
+        $this->userDescription = $userDescription;
     }
 
     /**
