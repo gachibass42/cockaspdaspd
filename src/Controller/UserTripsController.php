@@ -14,16 +14,16 @@ class UserTripsController extends AbstractController
     {
     }
 
-    #[Route('/user/trips', name: 'user_trips')]
+    #[Route('api/user/trips', name: 'user_trips')]
     public function userTrips(): Response
     {
-        $user = new User();
+        $user = new User(); //TODO: get user by token
         //dump($this->userTripsService->getUserTripsList($user));
-        $data = $this->userTripsService->getUserTripsList($user);
-        dump ($data);
+        //$data = $this->userTripsService->getUserTripsList($user);
+        //dump ($data);
         //print $data->getItems();
 
-        $response = ['test'=>'test_value'];
+        //$response = ['test'=>'test_value'];
         return $this->json($this->userTripsService->getUserTripsList($user));
     }
 }

@@ -17,7 +17,7 @@ class UserTripsService
 
     public function getUserTripsList(User $user): UserTripsListResponse
     {
-        $trips = $this->tripRepository->findAll();
+        $trips = $this->tripRepository->findAll(); //TODO: get trips by id
         $items = array_map(
             fn (Trip $trip) => new UserTripsListItem(
                 $trip->getId(), $trip->getName()/*, $trip->getDescription(), $trip->getStartDate(), $trip->getFinishDate()*/

@@ -19,6 +19,9 @@ class AppFixtures extends Fixture
         $users[0]->setIsGuide(true);
         $users[0]->setPassword('123');
         $users[0]->setRoles(['ROLE_USER']);
+        $users[0]->setName('Валентина');
+        $users[0]->setDescription('Сложно потерять, легко забыть и невозможно найти');
+        $users[0]->setPhone('+79242424242');
 
         array_push($users, new User());
         $users[1]->setUsername('mgus');
@@ -45,7 +48,7 @@ class AppFixtures extends Fixture
 
         $users[0]->addTrip($trips[0]);
         $users[1]->addTrip($trips[1]);
-        $users[1]->addTrip($trips[2]);
+        $users[0]->addTrip($trips[2]);
 
         foreach ($users as $user){
             $manager->persist($user);
