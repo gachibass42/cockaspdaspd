@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Model\UserProfile;
+use App\Model\UserProfileResponse;
 use App\Repository\UserRepository;
 use App\Entity\User;
 
@@ -14,18 +15,20 @@ class UserProfileService
 
     }
 
-    public function getUserProfile(User $user):UserProfile
+    public function getUserProfile(User $user):UserProfileResponse
     {
 
         //$profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);//TODO: get user by id
         $profile = $this->userRepository->findOneBy(['name'=>'Валентина']);
-
-        return new UserProfile(
+        $items = [];
+        array_push($items,new UserProfile(
             $profile->getId(),
             $profile->getName(),
             $profile->getPhone(),
             $profile->getDescription(),
             $profile->getIsGuide()
-        );
+        ));
+
+        return new UserProfileResponse($items);
     }
 }
