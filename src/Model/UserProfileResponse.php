@@ -8,12 +8,12 @@ class UserProfileResponse
      * @var UserProfile[]
      */
 
-    public array $items;
+    public ?array $items;
 
     /**
      * @param UserProfile[] $items
      */
-    public function __construct(array $items)
+    public function __construct(?array $items)
     {
         $this->items = $items;
     }
