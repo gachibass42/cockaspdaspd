@@ -21,8 +21,10 @@ class UserProfileService
 
     public function getUserProfile(User $user):UserProfileResponse
     {
-        //$profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);//TODO: get user by id
-        $profile = $this->userRepository->findOneBy(['name'=>'Валентина']);
+        //$profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);
+        $users = $this->userRepository->findAll();
+        $profile = array_pop($users);//TODO: get user by id
+
         $items[] = new UserProfile(
             $profile->getId(),
             $profile->getName(),
@@ -35,7 +37,8 @@ class UserProfileService
 
     public function updateUserProfile(string $data)//:UserProfileResponse
     {
-        $profile = $this->userRepository->findOneBy(['name'=>'Валентина']); //TODO: get user by id
+
+
         $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
         $response = new UserProfileResponse(null);
         $serializer->deserialize(
@@ -48,7 +51,8 @@ class UserProfileService
         if (isset($response) && $response != null){
             $userItem = array_pop($response->items);
         }
-        if (isset($userItem)){
+        $profile = $this->userRepository->findOneBy(['id'=>$userItem['id']]); //TODO: get user by token
+        if (isset($userItem) && $profile != null){
             $profile->setName($userItem['name']);
             $profile->setIsGuide($userItem['isGuide']);
             $profile->setDescription($userItem['userDescription']);
