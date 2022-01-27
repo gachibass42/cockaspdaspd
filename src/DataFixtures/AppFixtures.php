@@ -22,6 +22,8 @@ class AppFixtures extends Fixture
         $users[0]->setName('Валентина');
         $users[0]->setDescription('Сложно потерять, легко забыть и невозможно найти');
         $users[0]->setPhone('+79242424242');
+        $users[0]->setApiToken('test_user_token');
+        $users[0]->setAvatar('test_img.jpeg');
 
         array_push($users, new User());
         $users[1]->setUsername('mgus');
