@@ -24,7 +24,10 @@ class UserProfileService
     {
         //$profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);
         $users = $this->userRepository->findAll();
-        $profile = array_pop($users);//TODO: get user by id
+        do {
+            $profile = array_pop($users);//TODO: get user by id
+        } while ($profile->getName() == null);
+
 
         $items[] = new UserProfile(
             $profile->getId(),
