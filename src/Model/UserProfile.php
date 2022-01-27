@@ -9,6 +9,7 @@ class UserProfile
     public string $phone;
     public string $userDescription;
     public bool $isGuide;
+    public string $avatarURL;
 
     /**
      * @param int $id
@@ -16,14 +17,16 @@ class UserProfile
      * @param string $phone
      * @param string $description
      * @param bool $isGuide
+     * @param string $avatar
      */
-    public function __construct(int $id, string $name, string $phone, string $description, bool $isGuide)
+    public function __construct(int $id, string $name, string $phone, string $description, bool $isGuide, string $avatar)
     {
         $this->id = $id;
         $this->name = $name;
         $this->phone = $phone;
         $this->userDescription = $description;
         $this->isGuide = $isGuide;
+        $this->avatarURL = $avatar;
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Model\UserProfile;
 use App\Model\UserProfileResponse;
 use App\Repository\UserRepository;
 use App\Entity\User;
+use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -14,7 +15,7 @@ use Symfony\Component\Serializer\Serializer;
 class UserProfileService
 {
 
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(private UserRepository $userRepository, private UrlHelper $urlHelper)
     {
 
     }
@@ -30,15 +31,14 @@ class UserProfileService
             $profile->getName(),
             $profile->getPhone(),
             $profile->getDescription(),
-            $profile->getIsGuide()
+            $profile->getIsGuide(),
+            $this->urlHelper->getAbsoluteUrl('/api/image/'.$profile->getAvatar())  //TODO: move images directory path to global
         );
         return new UserProfileResponse($items);
     }
 
-    public function updateUserProfile(string $data)//:UserProfileResponse
+    public function updateUserProfile(string $data, string $token = null)//:UserProfileResponse
     {
-
-
         $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
         $response = new UserProfileResponse(null);
         $serializer->deserialize(
@@ -48,18 +48,25 @@ class UserProfileService
             [AbstractNormalizer::OBJECT_TO_POPULATE=>$response]
         );
 
-        if (isset($response) && $response != null){
+        if (count($response->items) > 0){
             $userItem = array_pop($response->items);
         }
-        $profile = $this->userRepository->findOneBy(['id'=>$userItem['id']]); //TODO: get user by token
+
+        $profile = $this->userRepository->findOneBy(['apiToken'=>$token]); //TODO: get user by token, check auth
         if (isset($userItem) && $profile != null){
             $profile->setName($userItem['name']);
             $profile->setIsGuide($userItem['isGuide']);
             $profile->setDescription($userItem['userDescription']);
             $profile->setPhone($userItem['phone']);
+            $this->userRepository->updateUser($profile);
+        } else {
+            print 'User trouble';
         }
 
-        $this->userRepository->updateUser($profile);
-        //return $this->getUserProfile($user);
     }
+
+    public function updateUserAvatar(string $data, string $token = null){
+
+    }
+
 }

@@ -28,7 +28,7 @@ class UserProfileController extends AbstractController
     }
 
     #[Route('api/user/profile/update', name: 'user_profile_update')]
-    public function userProfileUpdate(Request $request, FileManagerService $fileManagerService):Response
+    public function userProfileUpdate(Request $request):Response
     {
         /*$user = new User();
         if ($request->files->count()>0){
@@ -41,6 +41,19 @@ class UserProfileController extends AbstractController
             $fileManagerService->avatarUpload($image);
         }
         */
-        return $this->json($this->userProfileService->updateUserProfile($request->getContent()));
+         //TODO: refactor auth and getting token
+
+        return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
+    }
+
+    #[Route('api/user/profile/update/avatar', name: 'user_profile_update_avatar')]
+    public function userProfileUpdateAvatar(Request $request, FileManagerService $fileManagerService):Response{
+        return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
+    }
+
+    private function getAuthToken(Request $request):string
+    {
+        $auth = explode(" ",$request->headers->get('Authorization'));
+        return $auth[1];
     }
 }
