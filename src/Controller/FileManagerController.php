@@ -14,7 +14,7 @@ class FileManagerController extends AbstractController
     public function getImage($img): Response
     {
         $filename = $this->getParameter('kernel.project_dir').'/uploads/images/'.$img;
-        print ($filename);
+        //print ($filename);
         if (file_exists($filename)){
             return new BinaryFileResponse($filename);
         } else {
