@@ -42,7 +42,6 @@ class UserProfileController extends AbstractController
         }
         */
          //TODO: refactor auth and getting token
-
         return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
     }
 
@@ -53,7 +52,7 @@ class UserProfileController extends AbstractController
 
     private function getAuthToken(Request $request):string
     {
-        $auth = explode(" ",$request->headers->get('Authorization'));
+        $auth = explode(" ",$request->headers->get('auth'));
         return $auth[1];
     }
 }

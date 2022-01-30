@@ -45,4 +45,12 @@ class FileManagerService
         return $fileName;
     }
 
+    public function saveImage(string $data): ?string
+    {
+        $filename = uniqid().'.jpeg'; //TODO: check extension
+        if (file_put_contents($this->avatarImagesDir.$filename,$data)){
+            return $filename;
+        }
+        return null;
+    }
 }
