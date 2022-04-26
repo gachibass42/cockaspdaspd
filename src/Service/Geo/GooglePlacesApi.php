@@ -14,21 +14,23 @@ class GooglePlacesApi
     private HttpClientInterface $client;
     private string $apiKey;
 
-    public function __construct()
+    public function __construct(string $googlePlacesApiKey)
     {
         $this->client = HttpClient::create([
             'base_uri' => 'https://maps.googleapis.com/',
         ]);
-        $this->apiKey = 'AIzaSyDVWmwtlhY4WLkK8NY13N_NQWtzGHePLVA'; // todo to config
+        $this->apiKey = $googlePlacesApiKey;
     }
 
     public function getPlacesBySearchText(string $text): ?array
     {
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/findplacefromtext/json', [
-            'fields' => 'formatted_address,geometry,name,place_id',
-            'input' => $text,
-            'inputtype' => 'textquery',
-            'key' => $this->apiKey,
+            'query' => [
+                'fields' => 'formatted_address,geometry,name,place_id',
+                'input' => $text,
+                'inputtype' => 'textquery',
+                'key' => $this->apiKey,
+            ],
         ]);
         if ($response->getStatusCode() === Response::HTTP_OK) {
             return json_decode($response->getContent(), true);
