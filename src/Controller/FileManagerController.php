@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\FileManagerService;
+use App\Helpers\FileManager\FileManagerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;

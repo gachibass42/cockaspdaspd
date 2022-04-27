@@ -1,27 +1,29 @@
 <?php
 
-namespace App\Model;
+namespace App\Modules\UserProfile\Model;
+
+use App\Model\Image;
 
 class UserProfile
 {
-    public int $id;
+    public string $id;
     public string $name;
-    public string $phone;
-    public string $userDescription;
+    public ?string $phone;
+    public ?string $userDescription;
     public bool $isGuide;
-    public string $avatarURL;
+    public ?string $avatarURL;
     //public Image $avatar;
 
     /**
-     * @param int $id
+     * @param string $id
      * @param string $name
-     * @param string $phone
-     * @param string $description
+     * @param string|null $phone
+     * @param string|null $description
      * @param bool $isGuide
-     * @param string $avatarURL
-     * @param Image $avatar
+     * @param string|null $avatarURL
+     * @param Image|null $avatar
      */
-    public function __construct(int $id, string $name, string $phone, string $description, bool $isGuide, string $avatarURL, Image $avatar = null)
+    public function __construct(string $id, string $name, ?string $phone, ?string $description, bool $isGuide, ?string $avatarURL, Image $avatar = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -33,17 +35,17 @@ class UserProfile
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      */
-    public function setId(int $id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -65,33 +67,33 @@ class UserProfile
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
     /**
-     * @param string $phone
+     * @param string|null $phone
      */
-    public function setPhone(string $phone): void
+    public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUserDescription(): string
+    public function getUserDescription(): ?string
     {
         return $this->userDescription;
     }
 
     /**
-     * @param string $userDescription
+     * @param string|null $userDescription
      */
-    public function setUserDescription(string $userDescription): void
+    public function setUserDescription(?string $userDescription): void
     {
         $this->userDescription = $userDescription;
     }

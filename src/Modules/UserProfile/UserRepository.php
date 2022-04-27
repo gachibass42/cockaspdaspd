@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Modules\UserProfile;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -40,12 +40,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @param User $user
      * @return User
      */
-    public function updateUser (User $user):User
+    public function updateUser (User $user): void
     {
        $this->_em->persist($user);
        $this->_em->flush();
 
-       return $user;
     }
 
     //public function update

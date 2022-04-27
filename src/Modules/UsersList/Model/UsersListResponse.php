@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Model;
+namespace App\Modules\UsersList\Model;
 
-class UserProfileResponse
+class UsersListResponse
 {
     /**
-     * @var UserProfile[]
+     * @var UsersListItem[]
      */
 
     public ?array $items;
 
     /**
-     * @param UserProfile[] $items
+     * @param UsersListItem[] $items
      */
     public function __construct(?array $items)
     {
@@ -19,7 +19,7 @@ class UserProfileResponse
     }
 
     /**
-     * @return UserProfile[]
+     * @return UsersListItem[]
      */
     public function getItems(): array
     {
@@ -27,12 +27,10 @@ class UserProfileResponse
     }
 
     /**
-     * @param UserProfile[] $items
+     * @param UsersListItem[] $items
      */
     public function setItems(array $items): void
     {
         $this->items = $items;
     }
-
-
 }

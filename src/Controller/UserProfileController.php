@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\FileManagerService;
-use App\Service\UserProfileService;
+use App\Helpers\FileManager\FileManagerService;
+use App\Modules\UserProfile\UserProfileService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +18,11 @@ class UserProfileController extends AbstractController
     }
 
     #[Route('api/user/profile', name: 'user_profile')]
-    public function userProfile(): Response
+    public function userProfile(Request $request): Response
     {
         $user = new User();
+        $user->setId($request->query->getInt('id'));
+        $user->setApiToken($this->getAuthToken($request)); //TODO: use another way to pass the token
         /*return $this->render('user_profile/index.html.twig', [
             'controller_name' => 'UserProfileController',
         ]);*/
@@ -50,9 +52,12 @@ class UserProfileController extends AbstractController
         return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
     }
 
-    private function getAuthToken(Request $request):string
+    private function getAuthToken(Request $request): ?string
     {
-        $auth = explode(" ",$request->headers->get('auth'));
-        return $auth[1];
+        if ($request->headers->get('auth') != null) {
+            $auth = explode(" ",$request->headers->get('auth'));
+            return $auth[1];
+        }
+        return null;
     }
 }

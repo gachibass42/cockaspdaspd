@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Helpers\FileManager;
 
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -45,9 +45,11 @@ class FileManagerService
         return $fileName;
     }
 
-    public function saveImage(string $data): ?string
+    public function saveImage(string $data, string $filename = null): ?string
     {
-        $filename = uniqid().'.jpeg'; //TODO: check extension
+        if ($filename == null) {
+            $filename = uniqid().'.jpg'; //TODO: check extension
+        }
         if (file_put_contents($this->avatarImagesDir.$filename,$data)){
             return $filename;
         }

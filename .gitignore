@@ -5,8 +5,10 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/var/
-/vendor/
+/var/*
+/vendor/*
 ###< symfony/framework-bundle ###
 /docker-compose.override.yml
 /.idea
+/uploads/*
+/public/images/*

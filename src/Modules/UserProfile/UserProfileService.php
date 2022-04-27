@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Service;
+namespace App\Modules\UserProfile;
 
-use App\Model\UserProfile;
-use App\Model\UserProfileResponse;
-use App\Repository\UserRepository;
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\File\File;
+use App\Helpers\FileManager\FileManagerService;
+use App\Modules\UserProfile\Model\UserProfile;
+use App\Modules\UserProfile\Model\UserProfileResponse;
 use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+
+//use Symfony\Component\HttpFoundation\File\File;
 
 class UserProfileService
 {
@@ -23,15 +24,20 @@ class UserProfileService
 
     public function getUserProfile(User $user):UserProfileResponse
     {
-        //$profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);
-        $users = $this->userRepository->findAll();
-        do {
-            $profile = array_pop($users);//TODO: get user by id
-        } while ($profile->getName() == null);
+        if ($user->getId() != null) {
+            $profile = $this->userRepository->findOneBy(['id'=>$user->getId()]);
+        } else {
+            $profile = $this->userRepository->findOneBy(['apiToken'=>$user->getApiToken()]);
+        }
 
+
+        //$users = $this->userRepository->findAll();
+        /*do {
+            $profile = array_pop($users);//TODO: get user by id
+        } while ($profile->getName() == null);*/
 
         $items[] = new UserProfile(
-            $profile->getId(),
+            (string)$profile->getId(),
             $profile->getName(),
             $profile->getPhone(),
             $profile->getDescription(),
@@ -63,8 +69,8 @@ class UserProfileService
             $profile->setIsGuide($userItem['isGuide']);
             $profile->setDescription($userItem['userDescription']);
             $profile->setPhone($userItem['phone']);
-            if ($userItem['avatar']['content'] != null){
-                $filename = $this->fm->saveImage(base64_decode($userItem['avatar']['content']));
+            if (isset($userItem['avatar']) && $userItem['avatar'] != null){
+                $filename = $this->fm->saveImage(base64_decode($userItem['avatar']), $userItem['avatarFileName']);
                 if ($filename != null){
                     $profile->setAvatar($filename);
                 }
@@ -73,8 +79,8 @@ class UserProfileService
         } else {
             print 'User trouble';
         }
-
-        return $this->getUserProfile(new User());
+        $profile = $this->userRepository->findOneBy(['apiToken'=>$token]);
+        return $this->getUserProfile($profile);
     }
 
     public function updateUserAvatar(string $data, string $token = null){
