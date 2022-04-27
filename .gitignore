@@ -9,6 +9,7 @@
 /vendor/*
 ###< symfony/framework-bundle ###
 /docker-compose.override.yml
-/.idea
-/uploads/*
-/public/images/*
+/.idea*
+/uploads*
+/public/images*
+*DS_Store*
