@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LocationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -11,10 +13,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 //#[ORM\Index(name: "ix_location_search_tags", fields: ["searchTags"])]
 class Location
 {
+    //#[ORM\Id]
+    //#[ORM\GeneratedValue]
+    /*#[ORM\Column(type: 'integer')]
+    private ?int $id = null;*/
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 64)]
+    private string $objID;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['location_details'])]
@@ -50,14 +55,19 @@ class Location
     private ?string $searchTags = null;
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Location')]
+    #[ORM\JoinColumn(name: "city_location",referencedColumnName: "obj_id")]
     private ?Location $cityLocation = null;
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Location')]
+    #[ORM\JoinColumn(name: "country_location",referencedColumnName: "obj_id")]
     private ?Location $countryLocation = null;
 
-    public function getId(): ?int
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $type = null;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->locations = new ArrayCollection();
     }
 
     public function getExternalPlaceId(): ?string
@@ -214,4 +224,29 @@ class Location
 
         $this->searchTags = implode(' ', $tags);
     }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getObjID(): ?string
+    {
+        return $this->objID;
+    }
+
+    public function setObjID(string $objID): self
+    {
+        $this->objID = $objID;
+
+        return $this;
+    }
+
 }

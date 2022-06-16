@@ -29,10 +29,12 @@ class LocationRepository extends ServiceEntityRepository
             ->orWhere('l.address LIKE :value')
             ->orWhere('l.searchTags LIKE :value')
             ->setParameter('value', "%{$text}%")
-            ->orderBy('l.id', 'ASC')
+            ->orderBy('l.objID', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
+
+
 }
