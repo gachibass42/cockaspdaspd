@@ -16,8 +16,8 @@ class GooglePlacesApi
     private HttpClientInterface $client;
     private string $apiKey;
 
-    private array $googleTypes = ['city' => 'locality', 'country' => 'country'];
-    private array $localTypes = ['locality' => 'city', 'country' => 'country'];
+    private array $googleTypes = ['city' => 'locality', 'country' => 'country', 'airport' => 'airport'];
+    private array $localTypes = ['locality' => 'city', 'country' => 'country', 'airport' => 'airport'];
 
     public function __construct(string $googlePlacesApiKey)
     {
@@ -68,13 +68,14 @@ class GooglePlacesApi
     /**
      * @return LocationPredictionsItem[]|null
      */
-    public function getAutocompleteForText (string $text, string $sessionID): ?array {
+    public function getAutocompleteForText (string $text, string $type,string $sessionID): ?array {
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/autocomplete/json', [
             'query' => [
                 'input' => $text,
-                'type' => 'locality',
+                'type' => $this->googleTypes[$type],//'locality',
                 'sessiontoken' => $sessionID,
                 'key' => $this->apiKey,
+                'language' => 'ru'
             ],
         ]);
         if ($response->getStatusCode() !== Response::HTTP_OK) {
@@ -194,12 +195,12 @@ class GooglePlacesApi
     /**
      * @return Location|null
      */
-    public function getPlaceByGoogleID(string $googleID): ?Location{
+    public function getPlaceByGoogleID(string $googleID, string $language = 'ru'): ?Location{
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/details/json', [
             'query' => [
                 'place_id' => $googleID,
                 'key' => $this->apiKey,
-                'language' => 'ru'
+                'language' => $language
             ],
         ]);
         if ($response->getStatusCode() !== Response::HTTP_OK) {

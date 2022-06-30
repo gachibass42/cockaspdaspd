@@ -22,16 +22,19 @@ class LocationDetailsService
     ) {}
 
     /**
+     * @param string $externalID
      * @return Location|null
      */
     private function getLocationByExternalID (string $externalID): ?Location {
         $location = $this->googlePlacesApi->getPlaceByGoogleID($externalID);
+        $internationalLocation = $this->googlePlacesApi->getPlaceByGoogleID($externalID,'en');
         if (isset($location)){
             $lat = $location->getLat(); $lon = $location->getLon();
             $location->setTimeZone($this->googlePlacesApi->getTimeZone($lat,$lon));
-            /*
-            $location->setCityLocation($this->googlePlacesApi->getPlaceByCoordinates($lat,$lon,"city"));
-            $location->setCountryLocation($this->googlePlacesApi->getPlaceByCoordinates($lat,$lon,"country"));*/
+            if (isset($internationalLocation)) {
+                $location->setInternationalName($internationalLocation->getName());
+                $location->setInternationalAddress($internationalLocation->getAddress());
+            }
         }
 
         $cityLocation = $location->getCityLocation(); $countryLocation = null; $type = $location->getType();
@@ -50,8 +53,9 @@ class LocationDetailsService
     }
 
 
-
     /**
+     * @param string $externalID
+     * @param string $type
      * @return LocationDetailsResponse|null
      */
     public function getPlaceDetailsByExternalID (string $externalID, string $type = ""): ?LocationDetailsResponse {
@@ -71,6 +75,8 @@ class LocationDetailsService
                 $location->getCountryCode(),
                 $location->getExternalPlaceId(),
                 $location->getSearchTags(),
+                $location->getInternationalName(),
+                $location->getInternationalAddress(),
                 $location->getCityLocation(),
                 $location->getCountryLocation(),
                 (!empty($location->getType()) ? $location->getType() : $type)
@@ -97,6 +103,8 @@ class LocationDetailsService
                 $location->getCountryCode(),
                 $location->getExternalPlaceId(),
                 $location->getSearchTags(),
+                $location->getInternationalName(),
+                $location->getInternationalAddress(),
                 $location->getCityLocation(),
                 $location->getCountryLocation(),
                 $location->getType()
@@ -144,8 +152,8 @@ class LocationDetailsService
         $location->setAddress($locationItem->getAddress());
         $location->setCodeIATA($locationItem->getCodeIATA());
         $location->setExternalPlaceId($locationItem->getExternalPlaceId());
-        $location->setLat($locationItem->getLatitude());
-        $location->setLon($locationItem->getLongtitude());
+        $location->setLat($locationItem->getLat());
+        $location->setLon($locationItem->getLon());
         $location->setName($locationItem->getName());
         $location->setCityLocation($locationItem->getCityLocation());
         $location->setCountryLocation($locationItem->getCountryLocation());
@@ -179,6 +187,7 @@ class LocationDetailsService
             $location = array_pop($dbLocation);
         } else {
             $location = $this->getLocationByExternalID($location->getExternalPlaceId());
+            $location->setObjID("");
         }
         return $location;
     }

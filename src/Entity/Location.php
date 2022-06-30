@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -64,6 +63,12 @@ class Location
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $type = null;
+
+    #[ORM\Column(type: 'string', length: 512, nullable: true)]
+    private $internationalName;
+
+    #[ORM\Column(type: 'string', length: 2048, nullable: true)]
+    private $internationalAddress;
 
     public function __construct()
     {
@@ -245,6 +250,30 @@ class Location
     public function setObjID(string $objID): self
     {
         $this->objID = $objID;
+
+        return $this;
+    }
+
+    public function getInternationalName(): ?string
+    {
+        return $this->internationalName;
+    }
+
+    public function setInternationalName(?string $internationalName): self
+    {
+        $this->internationalName = $internationalName;
+
+        return $this;
+    }
+
+    public function getInternationalAddress(): ?string
+    {
+        return $this->internationalAddress;
+    }
+
+    public function setInternationalAddress(?string $internationalAddress): self
+    {
+        $this->internationalAddress = $internationalAddress;
 
         return $this;
     }

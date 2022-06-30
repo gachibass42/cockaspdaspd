@@ -9,14 +9,16 @@ class LocationDetailsItem
 {
     private string $objID;
     private ?string $name;
-    private ?float $latitude;
-    private ?float $longtitude;
+    private ?float $lat;
+    private ?float $lon;
     private ?string $address;
     private ?string $timeZone;
     private ?string $codeIATA;
     private ?string $countryCode;
     private ?string $externalPlaceId;
     private ?string $searchTags;
+    private ?string $internationalName;
+    private ?string $internationalAddress;
     private ?Location $cityLocation;
     private ?Location $countryLocation;
     private ?string $type;
@@ -36,18 +38,34 @@ class LocationDetailsItem
      * @param Location|null $countryLocation
      * @param string|null $type
      */
-    public function __construct(string $objID, ?string $name, ?float $latitude, ?float $longtitude, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?Location $cityLocation, ?Location $countryLocation, ?string $type)
+    public function __construct(string $objID,
+                                ?string $name,
+                                ?float $latitude,
+                                ?float $longtitude,
+                                ?string $address,
+                                ?string $timeZone,
+                                ?string $codeIATA,
+                                ?string $countryCode,
+                                ?string $externalPlaceId,
+                                ?string $searchTags,
+                                ?string $internationalName,
+                                ?string $internationalAddress,
+                                ?Location $cityLocation,
+                                ?Location $countryLocation,
+                                ?string $type)
     {
         $this->objID = $objID;
         $this->name = $name;
-        $this->latitude = $latitude;
-        $this->longtitude = $longtitude;
+        $this->lat = $latitude;
+        $this->lon = $longtitude;
         $this->address = $address;
         $this->timeZone = $timeZone;
         $this->codeIATA = $codeIATA;
         $this->countryCode = $countryCode;
         $this->externalPlaceId = $externalPlaceId;
         $this->searchTags = $searchTags;
+        $this->internationalName = $internationalName;
+        $this->internationalAddress = $internationalAddress;
         $this->cityLocation = $cityLocation;
         $this->countryLocation = $countryLocation;
         $this->type = $type;
@@ -88,33 +106,33 @@ class LocationDetailsItem
     /**
      * @return float|null
      */
-    public function getLatitude(): ?float
+    public function getLat(): ?float
     {
-        return $this->latitude;
+        return $this->lat;
     }
 
     /**
-     * @param float|null $latitude
+     * @param float|null $lat
      */
-    public function setLatitude(?float $latitude): void
+    public function setLat(?float $lat): void
     {
-        $this->latitude = $latitude;
+        $this->lat = $lat;
     }
 
     /**
      * @return float|null
      */
-    public function getLongtitude(): ?float
+    public function getLon(): ?float
     {
-        return $this->longtitude;
+        return $this->lon;
     }
 
     /**
-     * @param float|null $longtitude
+     * @param float|null $lon
      */
-    public function setLongtitude(?float $longtitude): void
+    public function setLon(?float $lon): void
     {
-        $this->longtitude = $longtitude;
+        $this->lon = $lon;
     }
 
     /**
@@ -259,6 +277,38 @@ class LocationDetailsItem
     public function setType(?string $type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getInternationalName(): ?string
+    {
+        return $this->internationalName;
+    }
+
+    /**
+     * @param string|null $internationalName
+     */
+    public function setInternationalName(?string $internationalName): void
+    {
+        $this->internationalName = $internationalName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getInternationalAddress(): ?string
+    {
+        return $this->internationalAddress;
+    }
+
+    /**
+     * @param string|null $internationalAddress
+     */
+    public function setInternationalAddress(?string $internationalAddress): void
+    {
+        $this->internationalAddress = $internationalAddress;
     }
 
 }

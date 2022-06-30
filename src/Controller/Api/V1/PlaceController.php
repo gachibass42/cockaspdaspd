@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\V1;
 
+use App\Helpers\TravelpayoutsIATAParser;
 use App\Modules\LocationAutocomplete\LocationAutocompleteService;
 use App\Modules\LocationDetails\LocationDetailsService;
 use App\Service\Geo\LocationManager;
@@ -21,12 +22,13 @@ class PlaceController extends AbstractController
     public function autocomplete(Request $request, NormalizerInterface $normalizer, LocationAutocompleteService $autocompleteService): JsonResponse
     {
         $text = $request->query->get('query');
+        $type = $request->query->get('type');
         $sessionID = $request->query->get('session');
         if (!$text) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'Text is required');
         }
 
-        $predictions = $autocompleteService->getLocationsSearchText($text, $sessionID);
+        $predictions = $autocompleteService->getLocationsSearchText($text, $type, $sessionID);
         $data = $normalizer->normalize($predictions, 'json', ['groups' => 'location_predictions']);
         return new JsonResponse(['items' => $data]);
     }
@@ -66,10 +68,23 @@ class PlaceController extends AbstractController
     }
 
     #[Route('place/add', name: 'api_v1_add_new_place')]
-    public function addNewPlace (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer,)
+    public function addNewPlace (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer)
     {
 
         //$this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
         $detailsService->addNewLocationFromExternal($request->getContent());
+    }
+
+    #[Route('/place/parseIATA', name: 'api_v1_parse_iata')]
+    public function parseIATA (Request $request, TravelpayoutsIATAParser $travelpayoutsIATAParser) : JsonResponse
+    {
+        if  ($request->query->get('airports') !== null) {
+            $travelpayoutsIATAParser->parse();
+        }
+        if  ($request->query->get('airlines') !== null) {
+            $travelpayoutsIATAParser->parseAirlines();
+        }
+
+        return $this->json('{"status":"OK"}');
     }
 }
