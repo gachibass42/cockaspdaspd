@@ -6,6 +6,7 @@ namespace App\Service\Geo;
 
 use App\Entity\Location;
 use App\Modules\LocationAutocomplete\Model\LocationPredictionsItem;
+use App\Repository\AirportIATARepository;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +17,26 @@ class GooglePlacesApi
     private HttpClientInterface $client;
     private string $apiKey;
 
-    private array $googleTypes = ['city' => 'locality', 'country' => 'country', 'airport' => 'airport'];
-    private array $localTypes = ['locality' => 'city', 'country' => 'country', 'airport' => 'airport'];
+    private array $googleTypes = ['city' => 'locality',
+        'country' => 'country',
+        'airport' => 'airport',
+        '' => '',
+        'hotel' => 'lodging',
+        'museum' => 'museum',
+        'railwayStation' => 'train_station',
+        'busStation' => 'bus_station',
+        'spot' => '',
+        'other' => ''];
+    private array $localTypes = ['locality' => 'city',
+        'country' => 'country',
+        'airport' => 'airport',
+        '' => '',
+        'lodging' => 'hotel',
+        'museum' => 'museum',
+        'train_station' => 'railwayStation',
+        'bus_station' => 'busStation'];
 
-    public function __construct(string $googlePlacesApiKey)
+    public function __construct(string $googlePlacesApiKey, private AirportIATARepository $airportIATARepository)
     {
         $this->client = HttpClient::create([
             'base_uri' => 'https://maps.googleapis.com/',
@@ -48,7 +65,6 @@ class GooglePlacesApi
         $data = json_decode($response->getContent(), true);
 
         $locations = [];
-        print("test");
 
         foreach ($data['candidates'] as $row) {
             $location = (new Location())
@@ -122,23 +138,24 @@ class GooglePlacesApi
     /**
      * @return Location|null
      */
-    public function getPoliticalLocationByName (string $name, float $latitude, float $longtitude, string $type): ?Location{
-        $radius = '1000';
+    public function getPoliticalLocationByName (string $name, float $latitude, float $longtitude, string $type, string $language = 'ru'): ?Location{
+        $radius = '50000';
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/textsearch/json', [
             'query' => [
                 'location' => $latitude.' '.$longtitude,
                 'type' => $type,
-                'language' => 'ru',
+                'language' => $language,
                 'query' => $name,
                 'radius' => $radius,
                 'key' => $this->apiKey
             ],
         ]);
-
+        //dump($response);
         if ($response->getStatusCode() !== Response::HTTP_OK) {
             return null;
         }
         $data = json_decode($response->getContent(), true);
+        //dump ($data);
         if (\count($data['results']) > 0) {
             return (new Location())
                 ->setExternalPlaceId($data['results'][0]['place_id'])
@@ -192,6 +209,21 @@ class GooglePlacesApi
         return null;
     }
 
+    private function getTranslationByGoogleID(string $googleID): ?array {
+        $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/details/json', [
+            'query' => [
+                'place_id' => $googleID,
+                'key' => $this->apiKey,
+                'language' => 'en'
+            ],
+        ]);
+        if ($response->getStatusCode() !== Response::HTTP_OK) {
+            return null;
+        }
+
+        return json_decode($response->getContent(), true);
+    }
+
     /**
      * @return Location|null
      */
@@ -207,14 +239,18 @@ class GooglePlacesApi
             return null;
         }
         $data = json_decode($response->getContent(), true);
+
         //dump($data);
         if (\count($data['result']) > 0) {
+            $translationData = $this->getTranslationByGoogleID($googleID);
             $location = (new Location())
                 ->setName($data['result']['name'])
                 ->setAddress($data['result']['formatted_address'])
                 ->setExternalPlaceId($data['result']['place_id'])
                 ->setLat($data['result']['geometry']['location']['lat'])
                 ->setLon($data['result']['geometry']['location']['lng'])
+                ->setInternationalName($translationData['result']['name'])
+                ->setInternationalAddress($translationData['result']['formatted_address'])
             ;
             $placeType = '';
             foreach ($data['result']['types'] as $type) {
@@ -223,9 +259,29 @@ class GooglePlacesApi
                     $placeType = $type;
                 }
             }
-            foreach ($data['result']['address_components'] as $address_component) {
+            $airportIATA = null;
+            if ($placeType == 'airport') { //handle airport IATA binding
+                $airportIATA = $this->airportIATARepository->findNearTheCoordinates(
+                    $data['result']['geometry']['location']['lat'],
+                    $data['result']['geometry']['location']['lng']
+                );
+                if (isset($airportIATA)) {
+                    $location->setCodeIATA($airportIATA->getAirportCode());
+                    $location->setCityLocation($this->getPoliticalLocationByName(
+                        $airportIATA->getCityInternationalName(),
+                        $airportIATA->getCityLatitude(),
+                        $airportIATA->getCityLongtitude(),
+                        'locality'
+                    ));
+                    $location->setCityLocationIATACode($airportIATA->getCityCode());
+                }
+                //dump ($airportIATA);
+                //dump ($location);
+            }
+            foreach ($translationData['result']['address_components'] as $address_component) {
+                //dump ($address_component);
                 foreach ($address_component['types'] as $component_type) {
-                    if ($component_type == 'locality' && $placeType != 'locality' && $placeType != 'country') {
+                    if ($component_type == 'locality' && $placeType != 'locality' && $placeType != 'country' && !isset($airportIATA)) {
                         $location->setCityLocation($this->getPoliticalLocationByName(
                             $address_component['long_name'],
                             $data['result']['geometry']['location']['lat'],

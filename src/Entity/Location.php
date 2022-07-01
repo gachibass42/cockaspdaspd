@@ -6,6 +6,7 @@ use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: LocationRepository::class)]
 //#[ORM\Index(name: "ix_location_external_place_id", fields: ["googlePlaceId"])]
@@ -191,6 +192,20 @@ class Location
     public function setCityLocation(?Location $cityLocation): Location
     {
         $this->cityLocation = $cityLocation;
+        return $this;
+    }
+
+    #[Ignore]
+    public function getCityLocationIATACode(): ?string
+    {
+        return $this->cityLocation->codeIATA;
+    }
+
+    public function setCityLocationIATACode(string $code): Location
+    {
+        if (isset($this->cityLocation)) {
+            $this->cityLocation->setCodeIATA($code);
+        }
         return $this;
     }
 

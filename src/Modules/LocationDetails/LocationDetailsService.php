@@ -27,14 +27,14 @@ class LocationDetailsService
      */
     private function getLocationByExternalID (string $externalID): ?Location {
         $location = $this->googlePlacesApi->getPlaceByGoogleID($externalID);
-        $internationalLocation = $this->googlePlacesApi->getPlaceByGoogleID($externalID,'en');
+        //$internationalName = $this->googlePlacesApi->getInternationalNameByGoogleID($externalID);//$this->googlePlacesApi->getPlaceByGoogleID($externalID,'en');
         if (isset($location)){
             $lat = $location->getLat(); $lon = $location->getLon();
             $location->setTimeZone($this->googlePlacesApi->getTimeZone($lat,$lon));
-            if (isset($internationalLocation)) {
-                $location->setInternationalName($internationalLocation->getName());
-                $location->setInternationalAddress($internationalLocation->getAddress());
-            }
+            /*if (isset($internationalLocation)) {
+                $location->setInternationalName($internationalName['name']);
+                $location->setInternationalAddress($internationalName['address']);
+            }*/
         }
 
         $cityLocation = $location->getCityLocation(); $countryLocation = null; $type = $location->getType();
@@ -45,7 +45,9 @@ class LocationDetailsService
                 $cityLocation = $this->getRegion($cityLocation,'city', $location->getExternalPlaceId());
             }
         }
-
+        if ($type == 'airport') {
+            $cityLocation->setCodeIATA($location->getCityLocationIATACode());
+        }
         $location->setCityLocation($cityLocation);
         $location->setCountryLocation($countryLocation);
 
