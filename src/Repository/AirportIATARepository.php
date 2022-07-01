@@ -67,18 +67,23 @@ class AirportIATARepository extends ServiceEntityRepository
 
     public function findNearTheCoordinates($latitude, $longitude): ?AirportIATA
     {
+        $result = null;
         $qb = $this->createQueryBuilder('a');
             //->andWhere('a.exampleField = :val')
-        return $qb->where($qb->expr()->andX(
-            $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.latitude',':lat')),'0.1'),
-            $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.longtitude',':lon')),'0.1')
-        ))
-            ->setParameter('lat', $latitude)
-            ->setParameter('lon', $longitude)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        for ($i = 1; $i < 4, !isset($result); $i++) {
+            $result = $qb->where($qb->expr()->andX(
+                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.latitude',':lat')),$i*0.1),
+                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.longtitude',':lon')),$i*0.1)
+            ))
+                ->setParameter('lat', $latitude)
+                ->setParameter('lon', $longitude)
+                ->getQuery()
+                ->getOneOrNullResult()
+            ;
+        }
 
+
+        return $result;
     }
 
 }
