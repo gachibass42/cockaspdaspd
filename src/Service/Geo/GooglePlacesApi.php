@@ -278,32 +278,49 @@ class GooglePlacesApi
                 //dump ($airportIATA);
                 //dump ($location);
             }
-            foreach ($translationData['result']['address_components'] as $address_component) {
-                //dump ($address_component);
-                foreach ($address_component['types'] as $component_type) {
-                    if ($component_type == 'locality' && $placeType != 'locality' && $placeType != 'country' && !isset($airportIATA)) {
-                        $location->setCityLocation($this->getPoliticalLocationByName(
-                            $address_component['long_name'],
-                            $data['result']['geometry']['location']['lat'],
-                            $data['result']['geometry']['location']['lng'],
-                            'locality'
-                        ));
-                    }
-                    if ($component_type == 'country') {
-                        $location->setCountryCode($address_component['short_name']);
-                        if ($placeType != 'country') {
-                            $location->setCountryLocation($this->getPoliticalLocationByName(
-                                $address_component['long_name'],
-                                $data['result']['geometry']['location']['lat'],
-                                $data['result']['geometry']['location']['lng'],
-                                'country'
-                            ));
-                        }
-                    }
-                }
+            $this->getPoliticalLocations($location,
+                $translationData['result']['address_components'],
+                $placeType,
+                $data['result']['geometry']['location']['lat'],
+                $data['result']['geometry']['location']['lng']);
+
+            if ($location->getCountryLocation() == null || $location->getCityLocation() == null) {
+                $this->getPoliticalLocations($location,
+                    $data['result']['address_components'],
+                    $placeType,
+                    $data['result']['geometry']['location']['lat'],
+                    $data['result']['geometry']['location']['lng']);
             }
         }
 
         return $location;
+    }
+
+    private function getPoliticalLocations(Location $location,array $addressComponents, $placeType, $latitude, $longitude): void
+    {
+        foreach ($addressComponents as $address_component) {
+            //dump ($address_component);
+            foreach ($address_component['types'] as $component_type) {
+                if ($component_type == 'locality' && $placeType != 'locality' && $placeType != 'country' && $location->getCityLocation() == null) {
+                    $location->setCityLocation($this->getPoliticalLocationByName(
+                        $address_component['long_name'],
+                        $latitude,
+                        $longitude,
+                        'locality'
+                    ));
+                }
+                if ($component_type == 'country' && $location->getCountryLocation() == null) {
+                    $location->setCountryCode($address_component['short_name']);
+                    if ($placeType != 'country') {
+                        $location->setCountryLocation($this->getPoliticalLocationByName(
+                            $address_component['long_name'],
+                            $latitude,
+                            $longitude,
+                            'country'
+                        ));
+                    }
+                }
+            }
+        }
     }
 }

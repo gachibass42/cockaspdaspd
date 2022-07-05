@@ -7,7 +7,6 @@ namespace App\Controller\Api\V1;
 use App\Helpers\TravelpayoutsIATAParser;
 use App\Modules\LocationAutocomplete\LocationAutocompleteService;
 use App\Modules\LocationDetails\LocationDetailsService;
-use App\Service\Geo\LocationManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,8 +47,46 @@ class PlaceController extends AbstractController
         return new JsonResponse(['items' => $data]);
     }*/
 
-    #[Route('/place/get', name: 'api_v1_place_get')]
+    #[Route('/place/text', name: 'api_v1_place_get')]
     public function getPlace(Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
+    {
+        $objID = $request->query->get('id');
+        $externalID = $request->query->get('externalID');
+
+        if (isset($objID)){
+            $location = $detailsService->getPlaceDetails($objID);
+        } elseif (isset($externalID)){
+            $location = $detailsService->getPlaceDetailsByExternalID($externalID);
+        } else {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
+        }
+
+        //$data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
+
+        return $this->json($location);//new JsonResponse(['items' => $data]);
+    }
+
+    #[Route('/place/address', name: 'api_v1_place_get')]
+    public function getPlaceByAddress (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
+    {
+        $objID = $request->query->get('id');
+        $externalID = $request->query->get('externalID');
+
+        if (isset($objID)){
+            $location = $detailsService->getPlaceDetails($objID);
+        } elseif (isset($externalID)){
+            $location = $detailsService->getPlaceDetailsByExternalID($externalID);
+        } else {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
+        }
+
+        //$data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
+
+        return $this->json($location);//new JsonResponse(['items' => $data]);
+    }
+
+    #[Route('/place/coordinates', name: 'api_v1_place_get')]
+    public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
         $objID = $request->query->get('id');
         $externalID = $request->query->get('externalID');
