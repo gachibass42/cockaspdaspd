@@ -15,7 +15,7 @@ class LocationAutocompleteService
     /**
      * @return LocationPredictionsItem[]
      */
-    public function getLocationsSearchText(string $text, string $type, string $sessionID): array
+    public function getLocationsSearchText(string $text, ?string $sessionID, ?string $type = ""): array
     {
         $mgLocations = $this->autocompleteRepository->searchByText($text);
 

@@ -21,13 +21,13 @@ class PlaceController extends AbstractController
     public function autocomplete(Request $request, NormalizerInterface $normalizer, LocationAutocompleteService $autocompleteService): JsonResponse
     {
         $text = $request->query->get('query');
-        $type = $request->query->get('type');
+        $type = $request->query->get('type') != null ? $request->query->get('type') : "";
         $sessionID = $request->query->get('session');
         if (!$text) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'Text is required');
         }
 
-        $predictions = $autocompleteService->getLocationsSearchText($text, $type, $sessionID);
+        $predictions = $autocompleteService->getLocationsSearchText($text, $sessionID, $type);
         $data = $normalizer->normalize($predictions, 'json', ['groups' => 'location_predictions']);
         return new JsonResponse(['items' => $data]);
     }
