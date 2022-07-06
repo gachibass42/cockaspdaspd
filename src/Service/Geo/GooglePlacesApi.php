@@ -146,7 +146,7 @@ class GooglePlacesApi
                 'type' => $type,
                 'language' => $language,
                 'query' => $name,
-                'radius' => $radius,
+                //'radius' => $radius,
                 'key' => $this->apiKey
             ],
         ]);
@@ -169,20 +169,52 @@ class GooglePlacesApi
      */
     public function getPlaceByCoordinates(float $latitude, float $longtitude, string $type): ?Location {
 
+        $queryItems = [
+            'latlng' => $latitude.','.$longtitude,
+            'result_type' => $this->googleTypes[$type],
+            'language' => 'ru',
+            'key' => $this->apiKey
+        ];
+
+        $location = $this->processGeocodeData($this->getGeocodeData($queryItems));
+
+        if (isset($location) && !empty($type)) {
+            $location->setType($type);
+        }
+
+        return $location;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPlaceByAddress(string $address): ?Location
+    {
+        $queryItems = [
+            'address' => $address,
+            'language' => 'ru',
+            'key' => $this->apiKey
+        ];
+        $location = $this->processGeocodeData($this->getGeocodeData($queryItems));
+        if (isset($location)) {
+            $location->setName($location->getAddress());
+            return $this->getPlaceByGoogleID($location->getExternalPlaceId());
+        }
+        return null;
+    }
+
+    private function getGeocodeData(array $queryItems): ?array {
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/geocode/json', [
-            'query' => [
-                'latlng' => $latitude.','.$longtitude,
-                'result_type' => $this->googleTypes[$type],
-                'language' => 'ru',
-                'key' => $this->apiKey
-            ],
+            'query' => $queryItems,
         ]);
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {
             return null;
         }
-        $data = json_decode($response->getContent(), true);
+        return json_decode($response->getContent(), true);
+    }
 
+    private function processGeocodeData (?array $data): ?Location {
         if (\count($data['results']) > 0) {
             $location = (new Location())
                 ->setName($data['results'][0]['address_components'][0]['long_name'])
@@ -190,7 +222,6 @@ class GooglePlacesApi
                 ->setExternalPlaceId($data['results'][0]['place_id'])
                 ->setLat($data['results'][0]['geometry']['location']['lat'])
                 ->setLon($data['results'][0]['geometry']['location']['lng'])
-                ->setType($type)
             ;
             foreach ($data['results'][0]['types'] as $type) {
                 if (!empty($this->localTypes[$type])) {
@@ -259,7 +290,7 @@ class GooglePlacesApi
                     $placeType = $type;
                 }
             }
-            $airportIATA = null;
+
             if ($placeType == 'airport') { //handle airport IATA binding
                 $airportIATA = $this->airportIATARepository->findNearTheCoordinates(
                     $data['result']['geometry']['location']['lat'],

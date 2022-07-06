@@ -29,14 +29,15 @@ class LocationDetailsService
         $location = $this->googlePlacesApi->getPlaceByGoogleID($externalID);
         //$internationalName = $this->googlePlacesApi->getInternationalNameByGoogleID($externalID);//$this->googlePlacesApi->getPlaceByGoogleID($externalID,'en');
         if (isset($location)){
-            $lat = $location->getLat(); $lon = $location->getLon();
-            $location->setTimeZone($this->googlePlacesApi->getTimeZone($lat,$lon));
-            /*if (isset($internationalLocation)) {
-                $location->setInternationalName($internationalName['name']);
-                $location->setInternationalAddress($internationalName['address']);
-            }*/
+            $location = $this->processExternalLocation($location);
         }
+        return $location;
+    }
 
+    private function processExternalLocation(Location $location): ?Location {
+
+        $lat = $location->getLat(); $lon = $location->getLon();
+        $location->setTimeZone($this->googlePlacesApi->getTimeZone($lat,$lon));
         $cityLocation = $location->getCityLocation(); $countryLocation = null; $type = $location->getType();
         //dump ($location, $type);
         if ($type != "country"){ //fill the countryLocation if new place is not country
@@ -54,18 +55,9 @@ class LocationDetailsService
         return $location;
     }
 
-
-    /**
-     * @param string $externalID
-     * @param string $type
-     * @return LocationDetailsResponse|null
-     */
-    public function getPlaceDetailsByExternalID (string $externalID, string $type = ""): ?LocationDetailsResponse {
-        $location = $this->getLocationByExternalID($externalID);
-
+    private function getLocationDetailsResponse(?Location $location, ?string $type = ""): LocationDetailsResponse {
         $items = [];
-
-        if (isset($location)){
+        if (isset($location)) {
             $items[0] = new LocationDetailsItem(
                 "",
                 $location->getName(),
@@ -88,31 +80,22 @@ class LocationDetailsService
     }
 
     /**
-     * @return LocationDetailsResponse|null
+     * @param string $externalID
+     * @param string|null $type
+     * @return LocationDetailsResponse
      */
-    public function getPlaceDetails (string $objID): ?LocationDetailsResponse {
+    public function getPlaceDetailsByExternalID (string $externalID, ?string $type = ""): LocationDetailsResponse {
+        $location = $this->getLocationByExternalID($externalID);
+        return $this->getLocationDetailsResponse($location, $type);
+
+    }
+
+    /**
+     * @return LocationDetailsResponse
+     */
+    public function getPlaceDetails (string $objID): LocationDetailsResponse {
         $location = $this->entityManager->find(Location::class,$objID);
-        $items = [];
-        if (isset($location)){
-            $items[0] = new LocationDetailsItem(
-                $location->getObjID(),
-                $location->getName(),
-                $location->getLat(),
-                $location->getLon(),
-                $location->getAddress(),
-                $location->getTimeZone(),
-                $location->getCodeIATA(),
-                $location->getCountryCode(),
-                $location->getExternalPlaceId(),
-                $location->getSearchTags(),
-                $location->getInternationalName(),
-                $location->getInternationalAddress(),
-                $location->getCityLocation(),
-                $location->getCountryLocation(),
-                $location->getType()
-            );
-        }
-        return new LocationDetailsResponse($items);
+        return $this->getLocationDetailsResponse($location);
     }
 
     public function addNewLocationFromExternal(string $data) {
@@ -174,6 +157,15 @@ class LocationDetailsService
             $this->entityManager->flush();
         }
 
+    }
+
+    public function getPlaceDetailsByAddress (string $address, ?string $type = "address"): LocationDetailsResponse
+    {
+        $location = $this->googlePlacesApi->getPlaceByAddress($address);
+        if (isset($location)) {
+            $location = $this->processExternalLocation($location);
+        }
+        return $this->getLocationDetailsResponse($location, $type);
     }
 
     private function getRegion (Location $location, string $type, $selfReference): ?Location {

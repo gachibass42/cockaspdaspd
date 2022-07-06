@@ -47,16 +47,17 @@ class PlaceController extends AbstractController
         return new JsonResponse(['items' => $data]);
     }*/
 
-    #[Route('/place/text', name: 'api_v1_place_get')]
+    #[Route('/place/id', name: 'api_v1_place_get_by_id')]
     public function getPlace(Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
         $objID = $request->query->get('id');
         $externalID = $request->query->get('externalID');
+        $type = $request->query->get('type');
 
         if (isset($objID)){
             $location = $detailsService->getPlaceDetails($objID);
         } elseif (isset($externalID)){
-            $location = $detailsService->getPlaceDetailsByExternalID($externalID);
+            $location = $detailsService->getPlaceDetailsByExternalID($externalID, $type);
         } else {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
         }
@@ -66,16 +67,13 @@ class PlaceController extends AbstractController
         return $this->json($location);//new JsonResponse(['items' => $data]);
     }
 
-    #[Route('/place/address', name: 'api_v1_place_get')]
+    #[Route('/place/address', name: 'api_v1_place_get_by_address')]
     public function getPlaceByAddress (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
-        $objID = $request->query->get('id');
-        $externalID = $request->query->get('externalID');
+        $address = $request->query->get('text');
 
-        if (isset($objID)){
-            $location = $detailsService->getPlaceDetails($objID);
-        } elseif (isset($externalID)){
-            $location = $detailsService->getPlaceDetailsByExternalID($externalID);
+        if (isset($address)) {
+            $location = $detailsService->getPlaceDetailsByAddress($address);
         } else {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
         }
@@ -85,7 +83,7 @@ class PlaceController extends AbstractController
         return $this->json($location);//new JsonResponse(['items' => $data]);
     }
 
-    #[Route('/place/coordinates', name: 'api_v1_place_get')]
+    #[Route('/place/coordinates', name: 'api_v1_place_get_by_coordinates')]
     public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
         $objID = $request->query->get('id');
