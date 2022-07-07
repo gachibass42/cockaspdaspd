@@ -47,17 +47,22 @@ class PlaceController extends AbstractController
         return new JsonResponse(['items' => $data]);
     }*/
 
-    #[Route('/place/id', name: 'api_v1_place_get_by_id')]
+    #[Route('/place/details', name: 'api_v1_place_get_by_id')]
     public function getPlace(Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
         $objID = $request->query->get('id');
         $externalID = $request->query->get('externalID');
         $type = $request->query->get('type');
+        $latitude = $request->query->get('lat');
+        $longitude = $request->query->get('lon');
+        $name = $request->query->get('name');
 
         if (isset($objID)){
             $location = $detailsService->getPlaceDetails($objID);
         } elseif (isset($externalID)){
             $location = $detailsService->getPlaceDetailsByExternalID($externalID, $type);
+        } elseif (isset($latitude) && isset($longitude) && isset($name)){
+            $location = $detailsService->prepareLocationWithCoordinates((float)$latitude,(float)$longitude,$name, $type);
         } else {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
         }
@@ -86,18 +91,16 @@ class PlaceController extends AbstractController
     #[Route('/place/coordinates', name: 'api_v1_place_get_by_coordinates')]
     public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
-        $objID = $request->query->get('id');
-        $externalID = $request->query->get('externalID');
+        $latitude = $request->query->get('lat');
+        $longitude = $request->query->get('lon');
+        $name = $request->query->get('name');
+        $type = $request->query->get('type');
 
-        if (isset($objID)){
-            $location = $detailsService->getPlaceDetails($objID);
-        } elseif (isset($externalID)){
-            $location = $detailsService->getPlaceDetailsByExternalID($externalID);
+        if (isset($latitude) && isset($longitude) && isset($name)){
+            $location = $detailsService->prepareLocationWithCoordinates((float)$latitude,(float)$longitude,$name, $type);
         } else {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'More parameters is required');
         }
-
-        //$data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
 
         return $this->json($location);//new JsonResponse(['items' => $data]);
     }

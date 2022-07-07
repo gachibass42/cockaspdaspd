@@ -27,14 +27,13 @@ class LocationDetailsService
      */
     private function getLocationByExternalID (string $externalID): ?Location {
         $location = $this->googlePlacesApi->getPlaceByGoogleID($externalID);
-        //$internationalName = $this->googlePlacesApi->getInternationalNameByGoogleID($externalID);//$this->googlePlacesApi->getPlaceByGoogleID($externalID,'en');
         if (isset($location)){
             $location = $this->processExternalLocation($location);
         }
         return $location;
     }
 
-    private function processExternalLocation(Location $location): ?Location {
+    private function processExternalLocation(Location $location): ?Location { //fulfill cityLocation and countryLocation for the new external Location
 
         $lat = $location->getLat(); $lon = $location->getLon();
         $location->setTimeZone($this->googlePlacesApi->getTimeZone($lat,$lon));
@@ -55,6 +54,8 @@ class LocationDetailsService
         return $location;
     }
 
+
+    //prepare Location for response
     private function getLocationDetailsResponse(?Location $location, ?string $type = ""): LocationDetailsResponse {
         $items = [];
         if (isset($location)) {
@@ -79,14 +80,33 @@ class LocationDetailsService
         return new LocationDetailsResponse($items);
     }
 
+    //get Location by coordinates and set front name and type
+    public function prepareLocationWithCoordinates (float $latitude, float $longitude, string $name, ?string $type): LocationDetailsResponse {
+        $location = $this->googlePlacesApi->getPlacesArrayByCoordinates($latitude,$longitude);
+        $result = null;
+        if (isset($location['premise'])) {
+            $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['premise']->getExternalPlaceID()));
+        } elseif (isset($location['streetAddress'])) {
+            $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['streetAddress']->getExternalPlaceID()));
+        } elseif (isset($location['plusCode'])) {
+            $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['plusCode']->getExternalPlaceID()));
+        }
+        if (isset($result)) {
+            $result->setName($name);
+            $result->setType($type);
+            $result->setExternalPlaceId("");
+        }
+        return $this->getLocationDetailsResponse($result);
+    }
+
     /**
      * @param string $externalID
      * @param string|null $type
      * @return LocationDetailsResponse
      */
     public function getPlaceDetailsByExternalID (string $externalID, ?string $type = ""): LocationDetailsResponse {
-        $location = $this->getLocationByExternalID($externalID);
-        return $this->getLocationDetailsResponse($location, $type);
+        $location = $this->getLocationByExternalID ($externalID);
+        return $this->getLocationDetailsResponse ($location, $type);
 
     }
 
@@ -169,7 +189,6 @@ class LocationDetailsService
     }
 
     private function getRegion (Location $location, string $type, $selfReference): ?Location {
-        //$location = $this->googlePlacesApi->getPlaceByCoordinates($lat,$lon,$type);
         //dump ($location);
         if ($location->getExternalPlaceId() == $selfReference) {
             return null;

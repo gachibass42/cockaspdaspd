@@ -35,7 +35,7 @@ class AirportIATA
     private $latitude;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    private $longtitude;
+    private $longitude;
 
     #[ORM\Column(type: 'string', length: 1024, nullable: true)]
     private $cityInternationalName;
@@ -44,7 +44,7 @@ class AirportIATA
     private $cityLatitude;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    private $cityLongtitude;
+    private $cityLongitude;
 
     #[ORM\OneToOne(targetEntity: Location::class)]
     #[ORM\JoinColumn(name: "location",referencedColumnName: "obj_id",nullable: true)]
@@ -149,14 +149,14 @@ class AirportIATA
         return $this;
     }
 
-    public function getLongtitude(): ?float
+    public function getLongitude(): ?float
     {
-        return $this->longtitude;
+        return $this->longitude;
     }
 
-    public function setLongtitude(?float $longtitude): self
+    public function setLongitude(?float $longitude): self
     {
-        $this->longtitude = $longtitude;
+        $this->longitude = $longitude;
 
         return $this;
     }
@@ -185,14 +185,14 @@ class AirportIATA
         return $this;
     }
 
-    public function getCityLongtitude(): ?float
+    public function getCityLongitude(): ?float
     {
-        return $this->cityLongtitude;
+        return $this->cityLongitude;
     }
 
-    public function setCityLongtitude(?float $cityLongtitude): self
+    public function setCityLongitude(?float $cityLongitude): self
     {
-        $this->cityLongtitude = $cityLongtitude;
+        $this->cityLongitude = $cityLongitude;
 
         return $this;
     }

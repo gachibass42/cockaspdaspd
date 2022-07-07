@@ -18,80 +18,39 @@ class GooglePlacesApi
     private string $apiKey;
 
     private array $googleTypes = ['city' => 'locality',
-        'country' => 'country',
-        'airport' => 'airport',
-        '' => '',
-        'hotel' => 'lodging',
-        'museum' => 'museum',
-        'railwayStation' => 'train_station',
-        'busStation' => 'bus_station',
-        'spot' => '',
-        'other' => 'cemetery',
-        'address' => '',
-        'camping' => 'campground',
-        'restaurant' => 'restaurant',
-        'bar' => 'bar',
-        'nightClub' => 'night_club',
-        'amusementPark' => 'amusement_park',
-        'aquarium' => 'aquarium',
-        'artGallery' => 'art_gallery',
-        'bowling' => 'bowling_alley',
-        'cinema' => 'movie_theater',
-        'theatre' => '',
-        'zoo' => 'zoo',
-        'park' => 'park',
-        'spa' => 'spa',
-        'stadium' => 'stadium',
-        'playground' => '',
-        'attraction' => 'tourist_attraction',
-        'casino' => 'casino',
-        'church' => 'church',
-        'gym' => 'gym',
-        'store' => 'store',
-        'drugstore' => 'drugstore',
-        'rent' => 'car_rental',
-        'parking' => 'parking',
-        'service' => 'lawyer',
-        'bank' => 'atm',
-        'gasStation' => 'gas_station',
-        'publicStation' => 'subway_station'];
+        'country' => 'country', 'airport' => 'airport', '' => '', 'hotel' => 'lodging', 'museum' => 'museum',
+        'railwayStation' => 'train_station', 'busStation' => 'bus_station', 'spot' => '', 'other' => '', 'address' => '',
+        'camping' => 'campground', 'restaurant' => 'restaurant', 'bar' => 'bar', 'nightClub' => 'night_club',
+        'amusementPark' => 'amusement_park', 'aquarium' => 'aquarium', 'artGallery' => 'art_gallery',
+        'bowling' => 'bowling_alley', 'cinema' => 'movie_theater', 'theatre' => '', 'zoo' => 'zoo', 'park' => 'park',
+        'spa' => 'spa', 'stadium' => 'stadium', 'playground' => '', 'attraction' => 'tourist_attraction', 'casino' => 'casino',
+        'church' => 'church', 'gym' => 'gym', 'store' => 'store', 'drugstore' => 'drugstore', 'rent' => 'car_rental',
+        'parking' => 'parking', 'service' => '', 'bank' => 'atm', 'gasStation' => 'gas_station',
+        'publicStation' => 'subway_station', 'port' => 'transit_station', 'plusCode' => 'plus_code', 'streetAddress' => 'street_address'];
     private array $localTypes = ['locality' => 'city',
-        'country' => 'country',
-        'airport' => 'airport',
-        '' => '',
-        'lodging' => 'hotel',
-        'museum' => 'museum',
-        'train_station' => 'railwayStation',
-        'bus_station' => 'busStation',
-        'cemetery' => 'other',
-        'campground' => 'camping',
-        'rv_park' => 'camping',
-        'restaurant' => 'restaurant',
-        'cafe' => 'restaurant',
-        'meal_delivery' => 'restaurant',
-        'meal_takeaway' => 'restaurant',
-        'bakery' => 'restaurant',
-        'bar' => 'bar',
-        'night_club' => 'nightClub',
-        'amusement_park' => 'amusementPark',
-        'aquarium' => 'aquarium',
-        'art_gallery' => 'artGallery',
-        'bowling_alley' => 'bowling',
-        'movie_theater' => 'cinema',
-        'zoo' => 'zoo',
-        'park' => 'park',
-        'spa' => 'spa',
-        'beauty_salon' => 'spa',
-        'hair_care' => 'spa',
-        'stadium' => 'stadium',
-        'tourist_attraction' => 'attraction',
-        'casino' => 'casino',
-        'church' => 'church',
-        'mosque' => 'church',
-        'city_hall' => 'church',
-        'synagogue' => 'church',
-        'hindu_temple' => 'church',
-    ];
+        'country' => 'country', 'airport' => 'airport', '' => '', 'lodging' => 'hotel', 'museum' => 'museum',
+        'train_station' => 'railwayStation', 'bus_station' => 'busStation', 'cemetery' => 'other', 'campground' => 'camping',
+        'rv_park' => 'camping', 'restaurant' => 'restaurant', 'cafe' => 'restaurant', 'meal_delivery' => 'restaurant',
+        'meal_takeaway' => 'restaurant', 'bakery' => 'restaurant', 'bar' => 'bar', 'night_club' => 'nightClub',
+        'amusement_park' => 'amusementPark', 'aquarium' => 'aquarium', 'art_gallery' => 'artGallery',
+        'bowling_alley' => 'bowling', 'movie_theater' => 'cinema', 'zoo' => 'zoo', 'park' => 'park', 'spa' => 'spa',
+        'beauty_salon' => 'spa', 'hair_care' => 'spa', 'stadium' => 'stadium', 'tourist_attraction' => 'attraction',
+        'casino' => 'casino', 'church' => 'church', 'mosque' => 'church', 'city_hall' => 'church', 'synagogue' => 'church',
+        'hindu_temple' => 'church', 'liquor_store' => 'store', 'pet_store' => 'store', 'book_store' => 'store',
+        'clothing_store' => 'store', 'convenience_store' => 'store', 'department_store' => 'store', 'electronics_store' => 'store',
+        'shopping_mall' => 'store', 'store' => 'store', 'furniture_store' => 'store', 'supermarket' => 'store',
+        'hardware_store' => 'store', 'home_goods_store' => 'store', 'jewelry_store' => 'store', 'bicycle_store' => 'store',
+        'car_dealer' => 'store', 'shoe_store' => 'store', 'car_rental' => 'rent', 'real_estate_agency' => 'rent',
+        'lawyer' => 'service',  'painter' => 'service', 'car_repair' => 'service', 'plumber' => 'service',
+        'physiotherapist' => 'service', 'movie_rental' => 'service', 'veterinary_care' => 'service', 'car_wash' => 'service',
+        'laundry' => 'service', 'dentist' => 'service', 'florist' => 'service', 'doctor' => 'service', 'electrician' => 'service',
+        'travel_agency' => 'service', 'insurance_agency' => 'service', 'accounting' => 'service', 'moving_company' => 'service',
+        'post_office' => 'service', 'locksmith' => 'service', 'library' => 'service','funeral_home' => 'service',
+        'hospital' => 'service', 'atm' => 'bank', 'bank' => 'bank', 'gas_station' => 'gasStation',
+        'subway_station' => 'publicStation', 'taxi_stand' => 'publicStation', 'primary_school' => 'other',
+        'police' => 'other', 'courthouse' => 'other', 'university' => 'other',   'school' => 'other', 'embassy' => 'other',
+        'storage' => 'other', 'roofing_contractor' => 'other', 'secondary_school' => 'other', 'fire_station' => 'other',
+        'plus_code' => 'plusCode', 'premise' => 'premise', 'street_address' => 'streetAddress'];
 
     public function __construct(string $googlePlacesApiKey, private AirportIATARepository $airportIATARepository)
     {
@@ -224,22 +183,15 @@ class GooglePlacesApi
     /**
      * @return Location|null
      */
-    public function getPlaceByCoordinates(float $latitude, float $longtitude, string $type): ?Location {
+    public function getPlacesArrayByCoordinates(float $latitude, float $longitude, ?string $type = null): array {
 
         $queryItems = [
-            'latlng' => $latitude.','.$longtitude,
-            'result_type' => $this->googleTypes[$type],
+            'latlng' => $latitude.','.$longitude,
+            'result_type' => isset($type) ? $this->googleTypes[$type] : "plus_code|premise|street_address",
             'language' => 'ru',
             'key' => $this->apiKey
         ];
-
-        $location = $this->processGeocodeData($this->getGeocodeData($queryItems));
-
-        if (isset($location) && !empty($type)) {
-            $location->setType($type);
-        }
-
-        return $location;
+        return $this->processGeocodeData($this->getGeocodeData($queryItems));
     }
 
     /**
@@ -253,48 +205,50 @@ class GooglePlacesApi
             'key' => $this->apiKey
         ];
         $location = $this->processGeocodeData($this->getGeocodeData($queryItems));
-        if (isset($location)) {
-            $location->setName($location->getAddress());
-            return $this->getPlaceByGoogleID($location->getExternalPlaceId());
+        if (isset($location[0])) {
+            $location[0]->setName($location[0]->getAddress());
+            return $this->getPlaceByGoogleID($location[0]->getExternalPlaceId());
         }
         return null;
     }
 
-    private function getGeocodeData(array $queryItems): ?array {
+    private function getGeocodeData(array $queryItems): array {
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/geocode/json', [
             'query' => $queryItems,
         ]);
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {
-            return null;
+            return [];
         }
         return json_decode($response->getContent(), true);
     }
 
-    private function processGeocodeData (?array $data): ?Location {
-        if (\count($data['results']) > 0) {
+    private function processGeocodeData (?array $data): array {
+        $results = [];
+        foreach ($data['results'] as $result) {
             $location = (new Location())
-                ->setName($data['results'][0]['address_components'][0]['long_name'])
-                ->setAddress($data['results'][0]['formatted_address'])
-                ->setExternalPlaceId($data['results'][0]['place_id'])
-                ->setLat($data['results'][0]['geometry']['location']['lat'])
-                ->setLon($data['results'][0]['geometry']['location']['lng'])
+                ->setName($result['address_components'][0]['long_name'])
+                ->setAddress($result['formatted_address'])
+                ->setExternalPlaceId($result['place_id'])
+                ->setLat($result['geometry']['location']['lat'])
+                ->setLon($result['geometry']['location']['lng'])
             ;
-            foreach ($data['results'][0]['types'] as $type) {
+            foreach ($result['types'] as $type) {
                 if (!empty($this->localTypes[$type])) {
                     $location->setType($this->localTypes[$type]);
                 }
             }
-            foreach ($data['results'][0]['address_components'] as $address_component) {
+            foreach ($result['address_components'] as $address_component) {
                 foreach ($address_component['types'] as $component_type) {
                     if ($component_type == 'country') {
                         $location->setCountryCode($address_component['short_name']);
                     }
                 }
             }
-            return $location;
+            $results[$location->getType()] = $location;
         }
-        return null;
+        //dump();
+        return $results;
     }
 
     private function getTranslationByGoogleID(string $googleID): ?array {
@@ -358,7 +312,7 @@ class GooglePlacesApi
                     $location->setCityLocation($this->getPoliticalLocationByName(
                         $airportIATA->getCityInternationalName(),
                         $airportIATA->getCityLatitude(),
-                        $airportIATA->getCityLongtitude(),
+                        $airportIATA->getCityLongitude(),
                         'locality'
                     ));
                     $location->setCityLocationIATACode($airportIATA->getCityCode());

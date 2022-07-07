@@ -71,6 +71,10 @@ class Location
     #[ORM\Column(type: 'string', length: 2048, nullable: true)]
     private $internationalAddress;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "owner_id",referencedColumnName: "id")]
+    private $owner;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
@@ -201,6 +205,7 @@ class Location
         return $this->cityLocation->codeIATA;
     }
 
+    #[Ignore]
     public function setCityLocationIATACode(string $code): Location
     {
         if (isset($this->cityLocation)) {
@@ -289,6 +294,18 @@ class Location
     public function setInternationalAddress(?string $internationalAddress): self
     {
         $this->internationalAddress = $internationalAddress;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

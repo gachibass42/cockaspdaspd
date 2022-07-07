@@ -232,14 +232,14 @@ class TravelpayoutsIATAParser
                 ->setAirportCode($airport->code)
                 ->setInternationalName($airport->nameTranslations['en'])
                 ->setLatitude($airport->coordinates['lat'])
-                ->setLongtitude($airport->coordinates['lon'])
+                ->setLongitude($airport->coordinates['lon'])
                 ->setCityCode($airport->cityCode)
                 ->setType($airport->iataType);
             if (isset($airport->cityCode) && $airport->cityCode != ""){
                 $airportIATA->setCityName($citiesIndexed[$airport->cityCode]->name)
                     ->setCityInternationalName($citiesIndexed[$airport->cityCode]->nameTranslations['en'])
                     ->setCityLatitude($citiesIndexed[$airport->cityCode]->coordinates['lat'])
-                    ->setCityLongtitude($citiesIndexed[$airport->cityCode]->coordinates['lon']);
+                    ->setCityLongitude($citiesIndexed[$airport->cityCode]->coordinates['lon']);
             }
             //$airportsIATA[] = $airportIATA;
             $this->entityManager->persist($airportIATA);

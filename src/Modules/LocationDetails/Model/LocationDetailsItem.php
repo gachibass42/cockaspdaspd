@@ -27,7 +27,7 @@ class LocationDetailsItem
      * @param string $objID
      * @param string|null $name
      * @param float|null $latitude
-     * @param float|null $longtitude
+     * @param float|null $longitude
      * @param string|null $address
      * @param string|null $timeZone
      * @param string|null $codeIATA
@@ -38,18 +38,18 @@ class LocationDetailsItem
      * @param Location|null $countryLocation
      * @param string|null $type
      */
-    public function __construct(string $objID,
-                                ?string $name,
-                                ?float $latitude,
-                                ?float $longtitude,
-                                ?string $address,
-                                ?string $timeZone,
-                                ?string $codeIATA,
-                                ?string $countryCode,
-                                ?string $externalPlaceId,
-                                ?string $searchTags,
-                                ?string $internationalName,
-                                ?string $internationalAddress,
+    public function __construct(string    $objID,
+                                ?string   $name,
+                                ?float    $latitude,
+                                ?float    $longitude,
+                                ?string   $address,
+                                ?string   $timeZone,
+                                ?string   $codeIATA,
+                                ?string   $countryCode,
+                                ?string   $externalPlaceId,
+                                ?string   $searchTags,
+                                ?string   $internationalName,
+                                ?string   $internationalAddress,
                                 ?Location $cityLocation,
                                 ?Location $countryLocation,
                                 ?string $type)
@@ -57,7 +57,7 @@ class LocationDetailsItem
         $this->objID = $objID;
         $this->name = $name;
         $this->lat = $latitude;
-        $this->lon = $longtitude;
+        $this->lon = $longitude;
         $this->address = $address;
         $this->timeZone = $timeZone;
         $this->codeIATA = $codeIATA;
