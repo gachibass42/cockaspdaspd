@@ -74,7 +74,7 @@ class LocationDetailsService
                 $location->getInternationalAddress(),
                 $location->getCityLocation(),
                 $location->getCountryLocation(),
-                (!empty($location->getType()) ? $location->getType() : $type)
+                (!empty($type) ? $type : $location->getType())
             );
         }
         return new LocationDetailsResponse($items);
