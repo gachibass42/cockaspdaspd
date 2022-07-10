@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Entity\Airline;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
@@ -266,9 +267,13 @@ class TravelpayoutsIATAParser
         //dump ($requestData[0]->nameTranslations['en']);
 
         foreach ($airlines as $airline) {
-            $airlineIATA = new \App\Entity\Airline();
-            $airlineIATA->setName($airline->name)
-                ->setCode($airline->code)
+            $airlineIATA = new Airline();
+            if (isset($airline->name) && strlen($airline->name) > 0){
+                $airlineIATA->setName($airline->name);
+            } else {
+                $airlineIATA->setName($airline->nameTranslations['en']);
+            }
+            $airlineIATA->setCode($airline->code)
                 ->setInternationalName($airline->nameTranslations['en']);
             $this->entityManager->persist($airlineIATA);
         }

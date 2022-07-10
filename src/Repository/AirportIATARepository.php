@@ -73,7 +73,7 @@ class AirportIATARepository extends ServiceEntityRepository
         for ($i = 1; $i < 40, !isset($result); $i = $i + 2) {
             $result = $qb->where($qb->expr()->andX(
                 $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.latitude',':lat')),$i*0.01),
-                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.longtitude',':lon')),$i*0.01)
+                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.longitude',':lon')),$i*0.01)
             ))
                 ->setParameter('lat', $latitude)
                 ->setParameter('lon', $longitude)

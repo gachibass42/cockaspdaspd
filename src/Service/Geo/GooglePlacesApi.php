@@ -7,6 +7,7 @@ namespace App\Service\Geo;
 use App\Entity\Location;
 use App\Modules\LocationAutocomplete\Model\LocationPredictionsItem;
 use App\Repository\AirportIATARepository;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -154,11 +155,11 @@ class GooglePlacesApi
     /**
      * @return Location|null
      */
-    public function getPoliticalLocationByName (string $name, float $latitude, float $longtitude, string $type, string $language = 'ru'): ?Location{
+    private function getPoliticalLocationByName (string $name, float $latitude, float $longitude, string $type, string $language = 'ru'): ?Location{
         $radius = '50000';
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/textsearch/json', [
             'query' => [
-                'location' => $latitude.' '.$longtitude,
+                'location' => $latitude.' '.$longitude,
                 'type' => $type,
                 'language' => $language,
                 'query' => $name,
@@ -176,6 +177,13 @@ class GooglePlacesApi
             return (new Location())
                 ->setExternalPlaceId($data['results'][0]['place_id'])
                 ->setType($this->localTypes[$type]);
+        } else {
+            $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,$this->localTypes[$type]);
+            if (count($locations) > 0) {
+                $location = array_pop($locations);
+                $location->setType($this->localTypes[$type]);
+                return $location;
+            }
         }
         return null;
     }
@@ -204,10 +212,11 @@ class GooglePlacesApi
             'language' => 'ru',
             'key' => $this->apiKey
         ];
-        $location = $this->processGeocodeData($this->getGeocodeData($queryItems));
-        if (isset($location[0])) {
-            $location[0]->setName($location[0]->getAddress());
-            return $this->getPlaceByGoogleID($location[0]->getExternalPlaceId());
+        $locations = $this->processGeocodeData($this->getGeocodeData($queryItems));
+        if (count($locations) > 0) {
+            $location = array_pop($locations);
+            $location->setName($location->getAddress());
+            return $this->getPlaceByGoogleID($location->getExternalPlaceId());
         }
         return null;
     }
@@ -277,6 +286,7 @@ class GooglePlacesApi
                 'language' => $language
             ],
         ]);
+        //dump ($response);
         if ($response->getStatusCode() !== Response::HTTP_OK) {
             return null;
         }
@@ -361,6 +371,18 @@ class GooglePlacesApi
                             'country'
                         ));
                     }
+                }
+            }
+            if ($placeType != 'locality' && $placeType != 'country' && $location->getCityLocation() == null) {
+                $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'city');
+                if (count($locations) > 0) {
+                    $location->setCityLocation(array_pop($locations));
+                }
+            }
+            if ($placeType != 'country'&& $location->getCountryLocation() == null) {
+                $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'country');
+                if (count($locations) > 0) {
+                    $location->setCountryLocation(array_pop($locations));
                 }
             }
         }

@@ -46,11 +46,20 @@ class LocationDetailsService
             }
         }
         if ($type == 'airport') {
-            $cityLocation->setCodeIATA($location->getCityLocationIATACode());
+            $cityIATAcode = $location->getCityLocationIATACode();
+            if (isset($cityIATAcode)) {
+                $cityLocation->setCodeIATA($cityIATAcode);
+            }
+
+        }
+        if ($cityLocation != null && $cityLocation->getCountryCode() == null && $countryLocation != null) {
+            $cityLocation->setCountryCode($countryLocation->getCountryCode());
         }
         $location->setCityLocation($cityLocation);
         $location->setCountryLocation($countryLocation);
-
+        if ($location->getCountryCode() == null && $location-> getCountryLocation() != null) {
+            $location->setCountryCode($countryLocation->getCountryCode());
+        }
         return $location;
     }
 
