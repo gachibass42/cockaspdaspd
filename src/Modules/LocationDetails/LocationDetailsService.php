@@ -103,6 +103,8 @@ class LocationDetailsService
         if (isset($result)) {
             $result->setName($name);
             $result->setType($type);
+            $result->setLat($latitude);
+            $result->setLon($longitude);
             $result->setExternalPlaceId("");
         }
         return $this->getLocationDetailsResponse($result);
