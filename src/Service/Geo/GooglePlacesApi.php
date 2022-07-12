@@ -350,6 +350,36 @@ class GooglePlacesApi
 
     private function getPoliticalLocations(Location $location,array $addressComponents, $placeType, $latitude, $longitude): void
     {
+        $this->processAddress($location,$addressComponents, $placeType, $latitude, $longitude);
+        if ($placeType != 'locality' && $placeType != 'country' && $location->getCityLocation() == null) {
+            //$locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'city');
+            $queryItems = [
+                'latlng' => $latitude.','.$longitude,
+                'result_type' => isset($type) ? $this->googleTypes[$type] : "plus_code",
+                'language' => 'ru',
+                'key' => $this->apiKey
+            ];
+
+            $geo = $this->getGeocodeData($queryItems);
+            //dump($geo);
+            if (count($geo['results']) > 0) {
+                $plus = array_pop($geo['results']);
+                $this->processAddress($location,$plus['address_components'], $placeType, $latitude, $longitude);
+            }
+
+            /*if (count($locations) > 0) {
+                $location->setCityLocation(array_pop($locations));
+            }*/
+        }
+        if ($placeType != 'country'&& $location->getCountryLocation() == null) {
+            $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'country');
+            if (count($locations) > 0) {
+                $location->setCountryLocation(array_pop($locations));
+            }
+        }
+    }
+
+    private function processAddress (Location $location,array $addressComponents, $placeType, $latitude, $longitude) {
         foreach ($addressComponents as $address_component) {
             //dump ($address_component);
             foreach ($address_component['types'] as $component_type) {
@@ -371,18 +401,6 @@ class GooglePlacesApi
                             'country'
                         ));
                     }
-                }
-            }
-            if ($placeType != 'locality' && $placeType != 'country' && $location->getCityLocation() == null) {
-                $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'city');
-                if (count($locations) > 0) {
-                    $location->setCityLocation(array_pop($locations));
-                }
-            }
-            if ($placeType != 'country'&& $location->getCountryLocation() == null) {
-                $locations = $this->getPlacesArrayByCoordinates($latitude,$longitude,'country');
-                if (count($locations) > 0) {
-                    $location->setCountryLocation(array_pop($locations));
                 }
             }
         }
