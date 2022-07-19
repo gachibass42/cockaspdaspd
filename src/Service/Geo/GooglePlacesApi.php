@@ -133,8 +133,7 @@ class GooglePlacesApi
                 $row['structured_formatting']['main_text'],
                 $row['place_id'],
                 $row['description'],
-                $rowType,
-                $row['place_id']
+                (empty($rowType) ? "other" : $rowType)
             ));
 
             $locations[$row['place_id']] = $location;
