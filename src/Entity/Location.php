@@ -66,14 +66,23 @@ class Location
     private ?string $type = null;
 
     #[ORM\Column(type: 'string', length: 512, nullable: true)]
-    private $internationalName;
+    private ?string $internationalName;
 
     #[ORM\Column(type: 'string', length: 2048, nullable: true)]
-    private $internationalAddress;
+    private ?string $internationalAddress;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: "owner_id",referencedColumnName: "id")]
-    private $owner;
+    private ?User $owner;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $syncDate;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $phoneNumber;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $website;
 
     public function __construct()
     {
@@ -264,7 +273,7 @@ class Location
 
     public function getObjID(): ?string
     {
-        return $this->objID;
+        return $this->objID ?? "";
     }
 
     public function setObjID(string $objID): self
@@ -306,6 +315,42 @@ class Location
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getSyncDate(): ?\DateTimeInterface
+    {
+        return $this->syncDate;
+    }
+
+    public function setSyncDate(?\DateTimeInterface $syncDate): self
+    {
+        $this->syncDate = $syncDate;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): self
+    {
+        $this->website = $website;
 
         return $this;
     }

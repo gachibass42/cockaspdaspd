@@ -3,45 +3,66 @@
 namespace App\Entity;
 
 use App\Repository\TripRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TripRepository::class)]
 class Trip
 {
-    #[ORM\Id]
+    /*#[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private $id;*/
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 64)]
+    private string $objID;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $name;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner;
+
+    #[ORM\Column(type: 'date')]
+    private ?\DateTimeInterface $startDate;
+
+    #[ORM\Column(type: 'date')]
+    private ?\DateTimeInterface $endDate;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $locked;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $duration;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private $description;
+    private ?string $tripDescription;
+
+    #[ORM\Column(type: 'string', length: 1024, nullable: true)]
+    private ?string $tags;
+
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    private array $milestonesIDs = [];
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $visibility;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $startDate;
+    private ?\DateTimeInterface $syncDate;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private $finishDate;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $mainImage;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'trips')]
-    private $tripId;
-
-    #[ORM\OneToMany(mappedBy: 'trip', targetEntity: Milestone::class, orphanRemoval: true)]
-    private $milestones;
-
-    public function __construct()
+    public function getObjId(): ?string
     {
-        $this->tripId = new ArrayCollection();
-        $this->milestones = new ArrayCollection();
+        return $this->objID;
     }
 
-    public function getId(): ?int
+    public function setObjId(?string $objID): self
     {
-        return $this->id;
+        $this->objID = $objID;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -49,21 +70,21 @@ class Trip
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getOwner(): ?User
     {
-        return $this->description;
+        return $this->owner;
     }
 
-    public function setDescription(?string $description): self
+    public function setOwner(?User $owner): self
     {
-        $this->description = $description;
+        $this->owner = $owner;
 
         return $this;
     }
@@ -73,75 +94,117 @@ class Trip
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(\DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getFinishDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeInterface
     {
-        return $this->finishDate;
+        return $this->endDate;
     }
 
-    public function setFinishDate(?\DateTimeInterface $finishDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
-        $this->finishDate = $finishDate;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getTripId(): Collection
+    public function getLocked(): ?bool
     {
-        return $this->tripId;
+        return $this->locked;
     }
 
-    public function addTripId(User $tripId): self
+    public function setLocked(bool $locked): self
     {
-        if (!$this->tripId->contains($tripId)) {
-            $this->tripId[] = $tripId;
-        }
+        $this->locked = $locked;
 
         return $this;
     }
 
-    public function removeTripId(User $tripId): self
+    public function getDuration(): ?int
     {
-        $this->tripId->removeElement($tripId);
+        return $this->duration;
+    }
+
+    public function setDuration(?int $duration): self
+    {
+        $this->duration = $duration;
 
         return $this;
     }
 
-    /**
-     * @return Collection|Milestone[]
-     */
-    public function getMilestones(): Collection
+    public function getTripDescription(): ?string
     {
-        return $this->milestones;
+        return $this->tripDescription;
     }
 
-    public function addMilestone(Milestone $milestone): self
+    public function setTripDescription(?string $tripDescription): self
     {
-        if (!$this->milestones->contains($milestone)) {
-            $this->milestones[] = $milestone;
-            $milestone->setTrip($this);
-        }
+        $this->tripDescription = $tripDescription;
 
         return $this;
     }
 
-    public function removeMilestone(Milestone $milestone): self
+    public function getTags(): ?string
     {
-        if ($this->milestones->removeElement($milestone)) {
-            // set the owning side to null (unless already changed)
-            if ($milestone->getTrip() === $this) {
-                $milestone->setTrip(null);
-            }
-        }
+        return $this->tags;
+    }
+
+    public function setTags(?string $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getMilestonesIDs(): ?array
+    {
+        return $this->milestonesIDs;
+    }
+
+    public function setMilestonesIDs(?array $milestonesIDs): self
+    {
+        $this->milestonesIDs = $milestonesIDs;
+
+        return $this;
+    }
+
+    public function getVisibility(): ?bool
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(bool $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    public function getSyncDate(): ?\DateTimeInterface
+    {
+        return $this->syncDate;
+    }
+
+    public function setSyncDate(?\DateTimeInterface $syncDate): self
+    {
+        $this->syncDate = $syncDate;
+
+        return $this;
+    }
+
+    public function getMainImage(): ?string
+    {
+        return $this->mainImage;
+    }
+
+    public function setMainImage(?string $mainImage): self
+    {
+        $this->mainImage = $mainImage;
 
         return $this;
     }

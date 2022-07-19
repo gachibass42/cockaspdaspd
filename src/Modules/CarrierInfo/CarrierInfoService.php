@@ -33,4 +33,17 @@ class CarrierInfoService
 
        return $carriers;
     }
+
+    public function loadCarriers(array $carriers): void
+    {
+        //dump ($carriers);
+        foreach ($carriers as $carrier) {
+            //$carriersIndexed[$carriers['guid']] = $carrier['objID'];
+            $airline = $this->airlineRepository->findOneBy(['id'=>$carrier['object']['guid']]);
+            $airline->setObjID($carrier['object']['objID']);
+            $this->airlineRepository->updateAirline($airline);
+        }
+
+
+    }
 }

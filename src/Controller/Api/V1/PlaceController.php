@@ -105,13 +105,13 @@ class PlaceController extends AbstractController
         return $this->json($location);//new JsonResponse(['items' => $data]);
     }
 
-    #[Route('place/add', name: 'api_v1_add_new_place')]
+    /*#[Route('place/add', name: 'api_v1_add_new_place')]
     public function addNewPlace (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer)
     {
 
         //$this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
         $detailsService->addNewLocationFromExternal($request->getContent());
-    }
+    }*/
 
     #[Route('/place/parseIATA', name: 'api_v1_parse_iata')]
     public function parseIATA (Request $request, TravelpayoutsIATAParser $travelpayoutsIATAParser) : JsonResponse
@@ -125,4 +125,50 @@ class PlaceController extends AbstractController
 
         return $this->json('{"status":"OK"}');
     }
+
+    #[Route('/sync', name: 'api_sync')]
+    public function sync(Request $request): JsonResponse {
+        $test = new Test();
+        $test2 = new Test();
+        $foo = new Foo();
+        $wrapper = new Wrapper();
+        $testTrip = new TestTrip();
+
+        $test->name = "Великое имя";
+        $test2->name = "Вложенное тестовое имя";
+        $foo->fooName = "FUUUUUU";
+
+        $test->foo = $foo;
+        $test->ref = $test2;
+
+        $testTrip->type = "Trip";
+        $testTrip->object = $test;
+
+        $wrapper->items[] = $testTrip;
+
+        //dump (json_decode($request->getContent(), true));
+
+        return $this->json($wrapper);
+
+
+    }
+}
+
+class TestTrip {
+    public string $type;
+    public Test $object;
+}
+
+class Wrapper{
+    public array $items;
+}
+
+class Test{
+    public string $name;
+    public Foo $foo;
+    public Test $ref;
+}
+
+class Foo {
+    public string $fooName;
 }

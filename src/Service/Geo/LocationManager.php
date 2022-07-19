@@ -47,9 +47,9 @@ class LocationManager
 
         $locations = array_merge($mgLocations, array_values($googleLocations));
 
-        dump($mgLocations);
-        dump($googleLocations);
-        dump($locations);
+        //dump($mgLocations);
+        //dump($googleLocations);
+        //dump($locations);
         /*$existingLocations = $this->locationRepository->findBy(['externalPlaceId' => $externalIds]);
         $existingLocationsIndexed = [];
         foreach ($existingLocations as $existingLocation) {

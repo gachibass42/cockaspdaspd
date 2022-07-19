@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class LocationDetailsService
 {
+
     public function __construct(
         private GooglePlacesApi $googlePlacesApi,
         private LocationRepository $locationRepository,
@@ -65,26 +66,33 @@ class LocationDetailsService
 
 
     //prepare Location for response
+
+    private function mapLocationToResponseItem (?Location $location): ?LocationDetailsItem {
+        return isset($location) ? new LocationDetailsItem(
+            $location->getObjID(),
+            $location->getName(),
+            $location->getLat(),
+            $location->getLon(),
+            $location->getAddress(),
+            $location->getTimeZone(),
+            $location->getCodeIATA(),
+            $location->getCountryCode(),
+            $location->getExternalPlaceId(),
+            $location->getSearchTags(),
+            $location->getInternationalName(),
+            $location->getInternationalAddress(),
+            $this->mapLocationToResponseItem($location->getCityLocation()),
+            $this->mapLocationToResponseItem($location->getCountryLocation()),
+            (!empty($type) ? $type : $location->getType()),
+            $location->getPhoneNumber(),
+            $location->getWebsite()
+        ) : null;
+    }
+
     private function getLocationDetailsResponse(?Location $location, ?string $type = ""): LocationDetailsResponse {
         $items = [];
         if (isset($location)) {
-            $items[0] = new LocationDetailsItem(
-                "",
-                $location->getName(),
-                $location->getLat(),
-                $location->getLon(),
-                $location->getAddress(),
-                $location->getTimeZone(),
-                $location->getCodeIATA(),
-                $location->getCountryCode(),
-                $location->getExternalPlaceId(),
-                $location->getSearchTags(),
-                $location->getInternationalName(),
-                $location->getInternationalAddress(),
-                $location->getCityLocation(),
-                $location->getCountryLocation(),
-                (!empty($type) ? $type : $location->getType())
-            );
+            $items[0] = $this->mapLocationToResponseItem($location);
         }
         return new LocationDetailsResponse($items);
     }
@@ -95,11 +103,15 @@ class LocationDetailsService
         $result = null;
         if (isset($location['premise'])) {
             $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['premise']->getExternalPlaceID()));
+            $result->setType("address");
         } elseif (isset($location['streetAddress'])) {
             $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['streetAddress']->getExternalPlaceID()));
+            $result->setType("address");
         } elseif (isset($location['plusCode'])) {
             $result = $this->processExternalLocation($this->googlePlacesApi->getPlaceByGoogleID($location['plusCode']->getExternalPlaceID()));
+            $result->setType("address");
         }
+        //dump($result);
         if (isset($result)) {
             $result->setName($name);
             $result->setType($type);
@@ -129,7 +141,7 @@ class LocationDetailsService
         return $this->getLocationDetailsResponse($location);
     }
 
-    public function addNewLocationFromExternal(string $data) {
+    /*public function addNewLocationFromExternal(string $data) {
         $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
         $requestData = new LocationDetailsResponse(null);
         $serializer->deserialize(
@@ -182,13 +194,13 @@ class LocationDetailsService
         $location->setLat((float)$locationItem['latitude']);
         $location->setLon((float)$locationItem['longtitude']);
         $location->setName($locationItem['name']);*/
-
+/*
         if (!empty($location->getObjID())){
             $this->entityManager->persist($location);
             $this->entityManager->flush();
         }
 
-    }
+    }*/
 
     public function getPlaceDetailsByAddress (string $address, ?string $type = "address"): LocationDetailsResponse
     {

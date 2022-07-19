@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Location;
+use App\Modules\Syncer\Model\SyncObjectLocation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -36,5 +37,44 @@ class LocationRepository extends ServiceEntityRepository
         ;
     }
 
+    public function save (Location $location) {
+        $this->getEntityManager()->persist($location);
+        //$this->getEntityManager()->flush();
+    }
 
+    public function commit () {
+        $this->getEntityManager()->flush();
+    }
+
+    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+        $dbObjects = $this->createQueryBuilder('object')
+            ->where('object.syncDate > :value')
+            ->setParameter('value', $lastSyncDate)
+            ->orderBy('object.objID', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+        return (array_map(fn(Location $object) => new SyncObjectLocation(
+            $object->getObjID(),
+            $object->getSyncDate()->getTimestamp(),
+            "update",
+            $object->getName(),
+            $object->getLat(),
+            $object->getLon(),
+            $object->getAddress(),
+            $object->getTimeZone(),
+            $object->getCodeIATA(),
+            $object->getCountryCode(),
+            $object->getExternalPlaceId(),
+            $object->getSearchTags(),
+            $object->getInternationalName(),
+            $object->getInternationalAddress(),
+            $object->getCityLocation() ? $object->getCityLocation()->getObjID() : null,
+            $object->getCountryLocation() ? $object->getCountryLocation()->getObjID() : null,
+            $object->getType(),
+            $object->getOwner() ? (string)$object->getOwner()->getId() : null,
+            $object->getPhoneNumber(),
+            $object->getWebsite()
+        ),$dbObjects));
+    }
 }

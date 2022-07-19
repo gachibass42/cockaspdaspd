@@ -20,7 +20,7 @@ class GooglePlacesApi
 
     private array $googleTypes = ['city' => 'locality',
         'country' => 'country', 'airport' => 'airport', '' => '', 'hotel' => 'lodging', 'museum' => 'museum',
-        'railwayStation' => 'train_station', 'busStation' => 'bus_station', 'spot' => '', 'other' => '', 'address' => '',
+        'railwayStation' => 'train_station', 'busStation' => 'bus_station|transit_station', 'spot' => '', 'other' => '', 'address' => '',
         'camping' => 'campground', 'restaurant' => 'restaurant', 'bar' => 'bar', 'nightClub' => 'night_club',
         'amusementPark' => 'amusement_park', 'aquarium' => 'aquarium', 'artGallery' => 'art_gallery',
         'bowling' => 'bowling_alley', 'cinema' => 'movie_theater', 'theatre' => '', 'zoo' => 'zoo', 'park' => 'park',
@@ -52,6 +52,7 @@ class GooglePlacesApi
         'police' => 'other', 'courthouse' => 'other', 'university' => 'other',   'school' => 'other', 'embassy' => 'other',
         'storage' => 'other', 'roofing_contractor' => 'other', 'secondary_school' => 'other', 'fire_station' => 'other',
         'plus_code' => 'plusCode', 'premise' => 'premise', 'street_address' => 'streetAddress'];
+
 
     public function __construct(string $googlePlacesApiKey, private AirportIATARepository $airportIATARepository)
     {
@@ -105,12 +106,13 @@ class GooglePlacesApi
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/place/autocomplete/json', [
             'query' => [
                 'input' => $text,
-                'type' => $this->googleTypes[$type],//'locality',
+                'types' => $this->googleTypes[$type],//'locality',
                 'sessiontoken' => $sessionID,
                 'key' => $this->apiKey,
                 'language' => 'ru'
             ],
         ]);
+        //dump($response);
         if ($response->getStatusCode() !== Response::HTTP_OK) {
             return null;
         }
@@ -118,11 +120,21 @@ class GooglePlacesApi
 
         $locations = [];
         foreach ($data['predictions'] as $row) {
+            $rowType = null;
+            foreach ($row['types'] as $type) {
+                if (isset($this->localTypes[$type])) {
+                    //$rowType = $this->localTypes[$type];
+                    $rowType = in_array($this->localTypes[$type], ['plusCode', 'premise', 'streetAddress']) ? 'address' : $this->localTypes[$type];
+                    break;
+                }
+            }
             $location = (new LocationPredictionsItem(
                 "",
                 $row['structured_formatting']['main_text'],
                 $row['place_id'],
-                $row['description']
+                $row['description'],
+                $rowType,
+                $row['place_id']
             ));
 
             $locations[$row['place_id']] = $location;
@@ -134,10 +146,10 @@ class GooglePlacesApi
     /**
      * @return string|null
      */
-    public function getTimeZone(float $latitude, float $longtitude) : ?string {
+    public function getTimeZone(float $latitude, float $longitude) : ?string {
         $response = $this->client->request(Request::METHOD_GET, '/maps/api/timezone/json', [
             'query' => [
-                'location' => $latitude.' '.$longtitude,
+                'location' => $latitude.' '.$longitude,
                 'timestamp' => (string) time(),
                 'key' => $this->apiKey,
             ],
@@ -245,6 +257,7 @@ class GooglePlacesApi
             foreach ($result['types'] as $type) {
                 if (!empty($this->localTypes[$type])) {
                     $location->setType($this->localTypes[$type]);
+                    break;
                 }
             }
             foreach ($result['address_components'] as $address_component) {
@@ -303,11 +316,16 @@ class GooglePlacesApi
                 ->setLon($data['result']['geometry']['location']['lng'])
                 ->setInternationalName($translationData['result']['name'])
                 ->setInternationalAddress($translationData['result']['formatted_address'])
+                ->setPhoneNumber($data['result']['international_phone_number'] ?? null)
+                ->setWebsite($data['result']['website'] ?? null)
             ;
+            if ($location->getPhoneNumber() == null && isset($data['result']['formatted_phone_number'])){
+                $location->setPhoneNumber($data['result']['formatted_phone_number']);
+            }
             $placeType = '';
             foreach ($data['result']['types'] as $type) {
                 if (!empty($this->localTypes[$type])) {
-                    $location->setType($this->localTypes[$type]);
+                    $location->setType(in_array($this->localTypes[$type], ['plusCode', 'premise', 'streetAddress']) ? 'address' : $this->localTypes[$type]);
                     $placeType = $type;
                 }
             }
@@ -379,7 +397,8 @@ class GooglePlacesApi
         }
     }
 
-    private function processAddress (Location $location,array $addressComponents, $placeType, $latitude, $longitude) {
+    private function processAddress (Location $location,array $addressComponents, $placeType, $latitude, $longitude): void
+    {
         foreach ($addressComponents as $address_component) {
             //dump ($address_component);
             foreach ($address_component['types'] as $component_type) {

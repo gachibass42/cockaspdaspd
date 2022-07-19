@@ -28,7 +28,8 @@ class LocationAutocompleteRepository extends ServiceEntityRepository
                 $location->getObjID(),
                 $location->getName(),
                 $location->getExternalPlaceId(),
-                $location->getAddress()
+                $location->getAddress(),
+                $location->getType(),
             ),
             $this->createQueryBuilder('l')
                 ->where('l.name LIKE :value')

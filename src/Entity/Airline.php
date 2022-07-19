@@ -29,7 +29,7 @@ class Airline
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $description;
 
-    #[ORM\Column(type: 'string', length: 24, nullable: true)]
+    #[ORM\Column(type: 'string', length: 24, unique: true, nullable: true)]
     private ?string $objID;
 
     public function __construct()

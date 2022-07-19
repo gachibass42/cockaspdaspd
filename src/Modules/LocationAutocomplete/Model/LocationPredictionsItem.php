@@ -18,18 +18,23 @@ class LocationPredictionsItem
     #[Groups(['location_predictions'])]
     public string $address;
 
+    #[Groups(['location_predictions'])]
+    public ?string $type;
+
     /**
      * @param string $objID
      * @param string $name
      * @param string $externalID
      * @param string $address
+     * @param string|null $type
      */
-    public function __construct(string $objID, string $name, string $externalID, string $address)
+    public function __construct(string $objID, string $name, string $externalID, string $address, ?string $type)
     {
         $this->objID= $objID;
         $this->name = $name;
         $this->externalID = $externalID;
         $this->address = $address;
+        $this->type = $type;
     }
 
     /**

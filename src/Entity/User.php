@@ -42,11 +42,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $name;
 
-    #[ORM\ManyToMany(targetEntity: Trip::class, mappedBy: 'tripId')]
-    private $trips;
+    /*#[ORM\ManyToMany(targetEntity: Trip::class, mappedBy: 'tripId')]
+    private $trips;*/
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $avatar;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $lastSuccessfulSyncDate;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $lastSyncTryDate;
 
     public function __construct()
     {
@@ -202,10 +208,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
+/*    /**
      * @return Collection|Trip[]
      */
-    public function getTrips(): Collection
+ /*   public function getTrips(): Collection
     {
         return $this->trips;
     }
@@ -228,7 +234,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
+*/
     public function getAvatar(): ?string
     {
         return $this->avatar;
@@ -237,6 +243,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getLastSuccessfulSyncDate(): ?\DateTimeInterface
+    {
+        return $this->lastSuccessfulSyncDate;
+    }
+
+    public function setLastSuccessfulSyncDate(?\DateTimeInterface $lastSuccessfulSyncDate): self
+    {
+        $this->lastSuccessfulSyncDate = $lastSuccessfulSyncDate;
+
+        return $this;
+    }
+
+    public function getLastSyncTryDate(): ?\DateTimeInterface
+    {
+        return $this->lastSyncTryDate;
+    }
+
+    public function setLastSyncTryDate(?\DateTimeInterface $lastSyncTryDate): self
+    {
+        $this->lastSyncTryDate = $lastSyncTryDate;
 
         return $this;
     }

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\LocationDetails\Model;
+namespace App\Modules\Syncer\Model;
 
-use App\Entity\Location;
-
-class LocationDetailsItem
+class SyncObjectLocation
 {
     private string $objID;
+    private int $syncStatusDateTime;
+    private string $syncAction;
     private ?string $name;
     private ?float $lat;
     private ?float $lon;
@@ -18,14 +18,17 @@ class LocationDetailsItem
     private ?string $searchTags;
     private ?string $internationalName;
     private ?string $internationalAddress;
-    private ?LocationDetailsItem $cityLocation;
-    private ?LocationDetailsItem $countryLocation;
+    private ?string $cityLocationID;
+    private ?string $countryLocationID;
     private ?string $type;
+    private ?string $ownerID;
     private ?string $phoneNumber;
     private ?string $website;
 
     /**
      * @param string $objID
+     * @param int $syncStatusDateTime
+     * @param string $syncAction
      * @param string|null $name
      * @param float|null $lat
      * @param float|null $lon
@@ -37,19 +40,22 @@ class LocationDetailsItem
      * @param string|null $searchTags
      * @param string|null $internationalName
      * @param string|null $internationalAddress
-     * @param LocationDetailsItem|null $cityLocation
-     * @param LocationDetailsItem|null $countryLocation
+     * @param string|null $cityLocationID
+     * @param string|null $countryLocationID
      * @param string|null $type
+     * @param string|null $ownerID
      * @param string|null $phoneNumber
      * @param string|null $website
      */
-    public function __construct(string $objID, ?string $name, ?float $lat, ?float $lon, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?LocationDetailsItem $cityLocation, ?LocationDetailsItem $countryLocation, ?string $type, ?string $phoneNumber, ?string $website)
+    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $lat, ?float $lon, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website)
     {
         $this->objID = $objID;
-        $this->name = $name;
+        $this->syncStatusDateTime = $syncStatusDateTime;
+        $this->syncAction = $syncAction;
         $this->lat = $lat;
-        $this->lon = $lon;
+        $this->name = $name;
         $this->address = $address;
+        $this->lon = $lon;
         $this->timeZone = $timeZone;
         $this->codeIATA = $codeIATA;
         $this->countryCode = $countryCode;
@@ -57,45 +63,13 @@ class LocationDetailsItem
         $this->searchTags = $searchTags;
         $this->internationalName = $internationalName;
         $this->internationalAddress = $internationalAddress;
-        $this->cityLocation = $cityLocation;
-        $this->countryLocation = $countryLocation;
+        $this->cityLocationID = $cityLocationID;
+        $this->countryLocationID = $countryLocationID;
         $this->type = $type;
+        $this->ownerID = $ownerID;
         $this->phoneNumber = $phoneNumber;
         $this->website = $website;
     }
-
-    /**
-     * @return string|null
-     */
-    public function getPhoneNumber(): ?string
-    {
-        return $this->phoneNumber;
-    }
-
-    /**
-     * @param string|null $phoneNumber
-     */
-    public function setPhoneNumber(?string $phoneNumber): void
-    {
-        $this->phoneNumber = $phoneNumber;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getWebsite(): ?string
-    {
-        return $this->website;
-    }
-
-    /**
-     * @param string|null $website
-     */
-    public function setWebsite(?string $website): void
-    {
-        $this->website = $website;
-    }
-
 
     /**
      * @return string
@@ -111,6 +85,38 @@ class LocationDetailsItem
     public function setObjID(string $objID): void
     {
         $this->objID = $objID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSyncStatusDateTime(): int
+    {
+        return $this->syncStatusDateTime;
+    }
+
+    /**
+     * @param int $syncStatusDateTime
+     */
+    public function setSyncStatusDateTime(int $syncStatusDateTime): void
+    {
+        $this->syncStatusDateTime = $syncStatusDateTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSyncAction(): string
+    {
+        return $this->syncAction;
+    }
+
+    /**
+     * @param string $syncAction
+     */
+    public function setSyncAction(string $syncAction): void
+    {
+        $this->syncAction = $syncAction;
     }
 
     /**
@@ -258,54 +264,6 @@ class LocationDetailsItem
     }
 
     /**
-     * @return LocationDetailsItem|null
-     */
-    public function getCityLocation(): ?LocationDetailsItem
-    {
-        return $this->cityLocation;
-    }
-
-    /**
-     * @param LocationDetailsItem|null $cityLocation
-     */
-    public function setCityLocation(?LocationDetailsItem $cityLocation): void
-    {
-        $this->cityLocation = $cityLocation;
-    }
-
-    /**
-     * @return LocationDetailsItem|null
-     */
-    public function getCountryLocation(): ?LocationDetailsItem
-    {
-        return $this->countryLocation;
-    }
-
-    /**
-     * @param LocationDetailsItem|null $countryLocation
-     */
-    public function setCountryLocation(?LocationDetailsItem $countryLocation): void
-    {
-        $this->countryLocation = $countryLocation;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string|null $type
-     */
-    public function setType(?string $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
      * @return string|null
      */
     public function getInternationalName(): ?string
@@ -336,5 +294,102 @@ class LocationDetailsItem
     {
         $this->internationalAddress = $internationalAddress;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getCityLocationID(): ?string
+    {
+        return $this->cityLocationID;
+    }
+
+    /**
+     * @param string|null $cityLocationID
+     */
+    public function setCityLocationID(?string $cityLocationID): void
+    {
+        $this->cityLocationID = $cityLocationID;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountryLocationID(): ?string
+    {
+        return $this->countryLocationID;
+    }
+
+    /**
+     * @param string|null $countryLocationID
+     */
+    public function setCountryLocationID(?string $countryLocationID): void
+    {
+        $this->countryLocationID = $countryLocationID;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string|null $type
+     */
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOwnerID(): ?string
+    {
+        return $this->ownerID;
+    }
+
+    /**
+     * @param string|null $ownerID
+     */
+    public function setOwnerID(?string $ownerID): void
+    {
+        $this->ownerID = $ownerID;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    /**
+     * @param string|null $phoneNumber
+     */
+    public function setPhoneNumber(?string $phoneNumber): void
+    {
+        $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    /**
+     * @param string|null $website
+     */
+    public function setWebsite(?string $website): void
+    {
+        $this->website = $website;
+    }
+
 
 }

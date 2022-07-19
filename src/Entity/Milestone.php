@@ -6,31 +6,366 @@ use App\Repository\MilestoneRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MilestoneRepository::class)]
-#[ORM\InheritanceType("JOINED")]
-
 class Milestone
 {
-    #[ORM\Id]
+    /*#[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    protected $id;
+    private $id;*/
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 64)]
+    private string $objID;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    protected $name;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $date;
+
+    #[ORM\Column(type: 'string', length: 64)]
+    private ?string $type;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $milestoneDescription;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $milestoneOrder;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $userEdited;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $journeyNumber;
+
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $seat;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $vagon;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $classType;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $terminal;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $distance;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $aircraft;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $duration;
+
+    #[ORM\Column(type: 'string', length: 3000, nullable: true)]
+    private ?string $address;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $website;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $phoneNumber;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isStartPoint;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isEndPoint;
+
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $inTransit;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $rentType;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $name;
+
+    #[ORM\ManyToOne(targetEntity: Airline::class)]
+    #[ORM\JoinColumn(name: "carrier",referencedColumnName: "obj_id")]
+    private ?Airline $carrier;
+
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    private array $linkedMilestonesIDs = [];
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private array $mealTimetables = [];
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected $startDate;
+    private ?\DateTimeInterface $syncDate;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    protected $finishDate;
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $visibility;
 
-    #[ORM\ManyToOne(targetEntity: Trip::class, inversedBy: 'milestones')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    protected $trip;
+    private ?User $owner;
 
-    public function getId(): ?int
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    private array $tags = [];
+
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
+    private ?string $roomNumber;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private $locationID;
+
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    private $images = [];
+
+    public function __construct()
     {
-        return $this->id;
+
+    }
+
+    public function getObjId(): ?string
+    {
+        return $this->objID;
+    }
+
+    public function setObjId(string $objID): self
+    {
+        $this->objID = $objID;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getMilestoneDescription(): ?string
+    {
+        return $this->milestoneDescription;
+    }
+
+    public function setMilestoneDescription(?string $milestoneDescription): self
+    {
+        $this->milestoneDescription = $milestoneDescription;
+
+        return $this;
+    }
+
+    public function getMilestoneOrder(): ?int
+    {
+        return $this->milestoneOrder;
+    }
+
+    public function setMilestoneOrder(?int $milestoneOrder): self
+    {
+        $this->milestoneOrder = $milestoneOrder;
+
+        return $this;
+    }
+
+    public function getUserEdited(): ?bool
+    {
+        return $this->userEdited;
+    }
+
+    public function setUserEdited(bool $userEdited): self
+    {
+        $this->userEdited = $userEdited;
+
+        return $this;
+    }
+
+    public function getJourneyNumber(): ?string
+    {
+        return $this->journeyNumber;
+    }
+
+    public function setJourneyNumber(?string $journeyNumber): self
+    {
+        $this->journeyNumber = $journeyNumber;
+
+        return $this;
+    }
+
+    public function getSeat(): ?string
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(?string $seat): self
+    {
+        $this->seat = $seat;
+
+        return $this;
+    }
+
+    public function getVagon(): ?int
+    {
+        return $this->vagon;
+    }
+
+    public function setVagon(?int $vagon): self
+    {
+        $this->vagon = $vagon;
+
+        return $this;
+    }
+
+    public function getClassType(): ?string
+    {
+        return $this->classType;
+    }
+
+    public function setClassType(?string $classType): self
+    {
+        $this->classType = $classType;
+
+        return $this;
+    }
+
+    public function getTerminal(): ?string
+    {
+        return $this->terminal;
+    }
+
+    public function setTerminal(?string $terminal): self
+    {
+        $this->terminal = $terminal;
+
+        return $this;
+    }
+
+    public function getDistance(): ?float
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(?float $distance): self
+    {
+        $this->distance = $distance;
+
+        return $this;
+    }
+
+    public function getAircraft(): ?string
+    {
+        return $this->aircraft;
+    }
+
+    public function setAircraft(?string $aircraft): self
+    {
+        $this->aircraft = $aircraft;
+
+        return $this;
+    }
+
+    public function getDuration(): ?string
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?string $duration): self
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): self
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getIsStartPoint(): ?bool
+    {
+        return $this->isStartPoint;
+    }
+
+    public function setIsStartPoint(bool $isStartPoint): self
+    {
+        $this->isStartPoint = $isStartPoint;
+
+        return $this;
+    }
+
+    public function getIsEndPoint(): ?bool
+    {
+        return $this->isEndPoint;
+    }
+
+    public function setIsEndPoint(bool $isEndPoint): self
+    {
+        $this->isEndPoint = $isEndPoint;
+
+        return $this;
+    }
+
+    public function getInTransit(): ?bool
+    {
+        return $this->inTransit;
+    }
+
+    public function setInTransit(bool $inTransit): self
+    {
+        $this->inTransit = $inTransit;
+
+        return $this;
+    }
+
+    public function getRentType(): ?string
+    {
+        return $this->rentType;
+    }
+
+    public function setRentType(?string $rentType): self
+    {
+        $this->rentType = $rentType;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -38,45 +373,136 @@ class Milestone
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getCarrier(): ?Airline
     {
-        return $this->startDate;
+        return $this->carrier;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setCarrier(?Airline $carrier): self
     {
-        $this->startDate = $startDate;
+        $this->carrier = $carrier;
 
         return $this;
     }
 
-    public function getFinishDate(): ?\DateTimeInterface
+    public function getLinkedMilestonesIDs(): ?array
     {
-        return $this->finishDate;
+        return $this->linkedMilestonesIDs;
     }
 
-    public function setFinishDate(?\DateTimeInterface $finishDate): self
+    public function setLinkedMilestonesIDs(?array $linkedMilestonesIDs): self
     {
-        $this->finishDate = $finishDate;
+        $this->linkedMilestonesIDs = $linkedMilestonesIDs;
 
         return $this;
     }
 
-    public function getTrip(): ?Trip
+    public function getMealTimetables(): ?array
     {
-        return $this->trip;
+        return $this->mealTimetables;
     }
 
-    public function setTrip(?Trip $trip): self
+    public function setMealTimetables(?array $mealTimetables): self
     {
-        $this->trip = $trip;
+        $this->mealTimetables = $mealTimetables;
+
+        return $this;
+    }
+
+    public function getSyncDate(): ?\DateTimeInterface
+    {
+        return $this->syncDate;
+    }
+
+    public function setSyncDate(?\DateTimeInterface $syncDate): self
+    {
+        $this->syncDate = $syncDate;
+
+        return $this;
+    }
+
+    public function getVisibility(): ?bool
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(bool $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?array $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getRoomNumber(): ?string
+    {
+        return $this->roomNumber;
+    }
+
+    public function setRoomNumber(?string $roomNumber): self
+    {
+        $this->roomNumber = $roomNumber;
+
+        return $this;
+    }
+
+    public function getLocationID(): ?string
+    {
+        return $this->locationID;
+    }
+
+    public function setLocationID(?string $locationID): self
+    {
+        $this->locationID = $locationID;
+
+        return $this;
+    }
+
+    public function getImages(): ?array
+    {
+        return $this->images;
+    }
+
+    public function setImages(?array $images): self
+    {
+        $this->images = $images;
+
+        return $this;
+    }
+
+    public function appendImage(string $imageName): self
+    {
+        $this->images[] = $imageName;
 
         return $this;
     }

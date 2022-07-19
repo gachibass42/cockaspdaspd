@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helpers\FileManager\FileManagerService;
 use App\Modules\CarrierInfo\CarrierInfoService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,5 +22,12 @@ class CarrierInfoController extends AbstractController
         return $this->json($this->carrierInfoService->getCarriersList($request->query->get('type')));
     }
 
-
+    #[Route('api/carrier/sync', name: 'carriers_sync')]
+    public function loadCarriersList (Request $request): JsonResponse
+    {
+        $items = json_decode($request->getContent(), true);
+        //dump ($items);
+        $this->carrierInfoService->loadCarriers($items['items']);
+        return $this->json("{\"status\": \"OK\"}");
+    }
 }
