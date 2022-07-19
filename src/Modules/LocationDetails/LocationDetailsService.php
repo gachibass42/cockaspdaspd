@@ -83,7 +83,7 @@ class LocationDetailsService
             $location->getInternationalAddress(),
             $this->mapLocationToResponseItem($location->getCityLocation()),
             $this->mapLocationToResponseItem($location->getCountryLocation()),
-            (!empty($type) ? $type : $location->getType()),
+            $location->getType(),
             $location->getPhoneNumber(),
             $location->getWebsite()
         ) : null;
@@ -92,7 +92,13 @@ class LocationDetailsService
     private function getLocationDetailsResponse(?Location $location, ?string $type = ""): LocationDetailsResponse {
         $items = [];
         if (isset($location)) {
-            $items[0] = $this->mapLocationToResponseItem($location);
+            $responseItem = $this->mapLocationToResponseItem($location, $type);
+            if (!empty($type)) {
+                $responseItem->setType($type);
+            } elseif ($responseItem->getType() == null) {
+                $responseItem->setType("other");
+            }
+            $items[0] = $responseItem;
         }
         return new LocationDetailsResponse($items);
     }
