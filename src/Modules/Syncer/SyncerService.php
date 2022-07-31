@@ -361,7 +361,7 @@ class SyncerService
         $responseList->items[] = $syncer;
         $lastSuccessfulSyncDate = $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
         foreach ($repositories as $objectType => $repository) {
-            $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate);
+            $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate ?? \DateTime::createFromFormat('U', 1));
 
             foreach ($dbObjects as $dbObject) {
                 $objID = $dbObject->objID;
@@ -381,7 +381,7 @@ class SyncerService
     {
         $user = $this->userRepository->findOneBy(['apiToken' => $apiToken]);
         if (isset($user)) {
-            $user->setLastSuccessfulSyncDate(\DateTime::createFromFormat('U', (int)$syncTimestamp));
+            $user->setLastSuccessfulSyncDate(\DateTime::createFromFormat('U', isset($syncTimestamp) ? (int)$syncTimestamp : 1));
             $this->userRepository->updateUser($user);
         }
     }
@@ -390,7 +390,7 @@ class SyncerService
     {
         $user = $this->userRepository->findOneBy(['apiToken' => $apiToken]);
         if (isset($user)) {
-            $user->setLastSyncTryDate(\DateTime::createFromFormat('U', (int)$syncTimestamp));
+            $user->setLastSyncTryDate(isset($syncTimestamp) ? \DateTime::createFromFormat('U', (int)$syncTimestamp) : new \DateTime());
             $this->userRepository->updateUser($user);
         }
     }

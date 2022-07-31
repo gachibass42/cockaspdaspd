@@ -8,8 +8,8 @@ class SyncObjectComment
 
     public string $objID;
     public string $linkedObjID;
-    public string $type;
-    public string $userID;
+    public ?string $type;
+    public ?string $userID;
 
     public ?array $images;
 
@@ -21,14 +21,14 @@ class SyncObjectComment
      * @param int $syncStatusDateTime
      * @param string $objID
      * @param string $linkedObjID
-     * @param string $type
-     * @param string $userID
+     * @param string|null $type
+     * @param string|null $userID
      * @param array|null $images
      * @param array|null $tags
      * @param int $date
      * @param string|null $content
      */
-    public function __construct(int $syncStatusDateTime, string $objID, string $linkedObjID, string $type, string $userID, ?array $images, ?array $tags, int $date, ?string $content)
+    public function __construct(int $syncStatusDateTime, string $objID, string $linkedObjID, ?string $type, ?string $userID, ?array $images, ?array $tags, int $date, ?string $content)
     {
         $this->syncStatusDateTime = $syncStatusDateTime;
         $this->objID = $objID;
