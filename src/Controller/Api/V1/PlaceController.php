@@ -126,49 +126,4 @@ class PlaceController extends AbstractController
         return $this->json('{"status":"OK"}');
     }
 
-    #[Route('/sync', name: 'api_sync')]
-    public function sync(Request $request): JsonResponse {
-        $test = new Test();
-        $test2 = new Test();
-        $foo = new Foo();
-        $wrapper = new Wrapper();
-        $testTrip = new TestTrip();
-
-        $test->name = "Великое имя";
-        $test2->name = "Вложенное тестовое имя";
-        $foo->fooName = "FUUUUUU";
-
-        $test->foo = $foo;
-        $test->ref = $test2;
-
-        $testTrip->type = "Trip";
-        $testTrip->object = $test;
-
-        $wrapper->items[] = $testTrip;
-
-        //dump (json_decode($request->getContent(), true));
-
-        return $this->json($wrapper);
-
-
-    }
-}
-
-class TestTrip {
-    public string $type;
-    public Test $object;
-}
-
-class Wrapper{
-    public array $items;
-}
-
-class Test{
-    public string $name;
-    public Foo $foo;
-    public Test $ref;
-}
-
-class Foo {
-    public string $fooName;
 }

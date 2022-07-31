@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TripRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TripRepository::class)]
@@ -52,6 +54,17 @@ class Trip
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $mainImage;
+
+    #[ORM\OneToMany(mappedBy: 'trip', targetEntity: TripUserRole::class, orphanRemoval: true)]
+    private $usersRoles;
+
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    private $checkListsIDs = [];
+
+    public function __construct()
+    {
+        $this->usersRoles = new ArrayCollection();
+    }
 
     public function getObjId(): ?string
     {
@@ -163,7 +176,7 @@ class Trip
 
     public function getMilestonesIDs(): ?array
     {
-        return $this->milestonesIDs;
+        return $this->milestonesIDs ?? null;
     }
 
     public function setMilestonesIDs(?array $milestonesIDs): self
@@ -187,7 +200,7 @@ class Trip
 
     public function getSyncDate(): ?\DateTimeInterface
     {
-        return $this->syncDate;
+        return $this->syncDate ?? null;
     }
 
     public function setSyncDate(?\DateTimeInterface $syncDate): self
@@ -199,12 +212,59 @@ class Trip
 
     public function getMainImage(): ?string
     {
-        return $this->mainImage;
+        return $this->mainImage ?? null;
     }
 
     public function setMainImage(?string $mainImage): self
     {
         $this->mainImage = $mainImage;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TripUserRole>
+     */
+    public function getUsersRoles(): Collection
+    {
+        return $this->usersRoles;
+    }
+
+    /*public function syncGetUsersRoles(): ?array {
+        //dump($this->usersRoles->);
+
+    }*/
+
+    public function addUsersRole(TripUserRole $usersRole): self
+    {
+        if (!$this->usersRoles->contains($usersRole)) {
+            $this->usersRoles[] = $usersRole;
+            $usersRole->setTrip($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersRole(TripUserRole $usersRole): self
+    {
+        if ($this->usersRoles->removeElement($usersRole)) {
+            // set the owning side to null (unless already changed)
+            if ($usersRole->getTrip() === $this) {
+                $usersRole->setTrip(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCheckListsIDs(): ?array
+    {
+        return $this->checkListsIDs;
+    }
+
+    public function setCheckListsIDs(?array $checkListsIDs): self
+    {
+        $this->checkListsIDs = $checkListsIDs;
 
         return $this;
     }

@@ -17,28 +17,28 @@ class Comment
     private string $objID;
 
     #[ORM\Column(type: 'string', length: 32)]
-    private $linkedObjID;
+    private ?string $linkedObjID;
 
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
-    private $type;
+    private ?string $type;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private $owner;
+    private ?User $owner;
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
-    private $images = [];
+    private array $images = [];
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
-    private $tags = [];
+    private array $tags = [];
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $date;
+    private ?\DateTimeInterface $date;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private $content;
+    private ?string $content;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $syncDate;
+    private ?\DateTimeInterface $syncDate;
 
     public function getObjId(): ?string
     {

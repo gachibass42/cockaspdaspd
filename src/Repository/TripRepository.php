@@ -5,10 +5,7 @@ namespace App\Repository;
 use App\Entity\Trip;
 use App\Modules\Syncer\Model\SyncObjectTrip;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
-use phpDocumentor\Reflection\Types\Object_;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -26,8 +23,6 @@ class TripRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function add(Trip $entity, bool $flush = true): void
     {
@@ -38,8 +33,6 @@ class TripRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function remove(Trip $entity, bool $flush = true): void
     {
@@ -72,29 +65,25 @@ class TripRepository extends ServiceEntityRepository
             $object->getDuration(),
             $object->getTripDescription(),
             $object->getTags(),
-            null,//TODO: trip participants
-            [$object->getMainImage()],
+            $object->getUsersRoles()->getValues(),
+            $object->getMainImage(),
             $object->getMilestonesIDs(),
-            $object->getVisibility()
+            $object->getVisibility(),
+            $object->getCheckListsIDs()
         ), $dbObjects));
     }
 
     public function removeByID(string $objID) {
-        /*$this->createQueryBuilder('trip')
 
-        $qb = $this->createQueryBuilder('a');
+        $this->createQueryBuilder('trip')
+            ->delete(Trip::class,'trip')
+            ->where('trip.objID = :objID')
+            ->setParameter('objID',$objID)
+            ->getQuery()
+            ->execute();
+
         //->andWhere('a.exampleField = :val')
-        for ($i = 1; $i < 40, !isset($result); $i = $i + 2) {
-            $qb->where($qb->expr()->andX(
-                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.latitude',':lat')),$i*0.01),
-                $qb->expr()->lt($qb->expr()->abs($qb->expr()->diff('a.longitude',':lon')),$i*0.01)
-            ))
-                ->setParameter('lat', $latitude)
-                ->setParameter('lon', $longitude)
-                ->getQuery()
-                ->getOneOrNullResult()
-            ;
-        }*/
+
     }
 
     // /**

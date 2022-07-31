@@ -90,11 +90,25 @@ class MilestoneRepository extends ServiceEntityRepository
             $object->getRentType(),
             $object->getOwner()->getId(),
             $object->getVisibility(),
-            $object->getImages(),
+            count($object->getImages()) > 0 ? array_map(fn ($imageName) => [$imageName => null],$object->getImages()) : null,
             $object->getTags(),
             $object->getMealTimetables()),
         $dbObjects));
     }
+
+    public function removeByID(string $objID) {
+
+        $this->createQueryBuilder('milestone')
+            ->delete('App:Milestone','milestone')
+            ->where('milestone.objID = :objID')
+            ->setParameter('objID',$objID)
+            ->getQuery()
+            ->execute();
+
+        //->andWhere('a.exampleField = :val')
+
+    }
+
     // /**
     //  * @return Milestone[] Returns an array of Milestone objects
     //  */

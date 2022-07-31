@@ -4,36 +4,36 @@ namespace App\Modules\Syncer\Model;
 
 class SyncObjectLocation
 {
-    private string $objID;
-    private int $syncStatusDateTime;
-    private string $syncAction;
-    private ?string $name;
-    private ?float $lat;
-    private ?float $lon;
-    private ?string $address;
-    private ?string $timeZone;
-    private ?string $codeIATA;
-    private ?string $countryCode;
-    private ?string $externalPlaceId;
-    private ?string $searchTags;
-    private ?string $internationalName;
-    private ?string $internationalAddress;
-    private ?string $cityLocationID;
-    private ?string $countryLocationID;
-    private ?string $type;
-    private ?string $ownerID;
-    private ?string $phoneNumber;
-    private ?string $website;
+    public string $objID;
+    public int $syncStatusDateTime;
+    public string $syncAction;
+    public ?string $name;
+    public ?float $latitude;
+    public ?float $longitude;
+    public ?string $address;
+    public ?string $timeZoneIdentifier;
+    public ?string $codeIATA;
+    public ?string $countryCode;
+    public ?string $externalPlaceId;
+    public ?string $searchTags;
+    public ?string $internationalName;
+    public ?string $internationalAddress;
+    public ?string $cityLocationID;
+    public ?string $countryLocationID;
+    public ?string $type;
+    public ?string $ownerID;
+    public ?string $phoneNumber;
+    public ?string $website;
 
     /**
      * @param string $objID
      * @param int $syncStatusDateTime
      * @param string $syncAction
      * @param string|null $name
-     * @param float|null $lat
-     * @param float|null $lon
+     * @param float|null $latitude
+     * @param float|null $longitude
      * @param string|null $address
-     * @param string|null $timeZone
+     * @param string|null $timeZoneIdentifier
      * @param string|null $codeIATA
      * @param string|null $countryCode
      * @param string|null $externalPlaceId
@@ -47,16 +47,16 @@ class SyncObjectLocation
      * @param string|null $phoneNumber
      * @param string|null $website
      */
-    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $lat, ?float $lon, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website)
+    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
         $this->syncAction = $syncAction;
-        $this->lat = $lat;
+        $this->latitude = $latitude;
         $this->name = $name;
         $this->address = $address;
-        $this->lon = $lon;
-        $this->timeZone = $timeZone;
+        $this->longitude = $longitude;
+        $this->timeZoneIdentifier = $timeZoneIdentifier;
         $this->codeIATA = $codeIATA;
         $this->countryCode = $countryCode;
         $this->externalPlaceId = $externalPlaceId;
@@ -138,33 +138,33 @@ class SyncObjectLocation
     /**
      * @return float|null
      */
-    public function getLat(): ?float
+    public function getLatitude(): ?float
     {
-        return $this->lat;
+        return $this->latitude;
     }
 
     /**
-     * @param float|null $lat
+     * @param float|null $latitude
      */
-    public function setLat(?float $lat): void
+    public function setLatitude(?float $latitude): void
     {
-        $this->lat = $lat;
+        $this->latitude = $latitude;
     }
 
     /**
      * @return float|null
      */
-    public function getLon(): ?float
+    public function getLongitude(): ?float
     {
-        return $this->lon;
+        return $this->longitude;
     }
 
     /**
-     * @param float|null $lon
+     * @param float|null $longitude
      */
-    public function setLon(?float $lon): void
+    public function setLongitude(?float $longitude): void
     {
-        $this->lon = $lon;
+        $this->longitude = $longitude;
     }
 
     /**
@@ -186,17 +186,17 @@ class SyncObjectLocation
     /**
      * @return string|null
      */
-    public function getTimeZone(): ?string
+    public function getTimeZoneIdentifier(): ?string
     {
-        return $this->timeZone;
+        return $this->timeZoneIdentifier;
     }
 
     /**
-     * @param string|null $timeZone
+     * @param string|null $timeZoneIdentifier
      */
-    public function setTimeZone(?string $timeZone): void
+    public function setTimeZoneIdentifier(?string $timeZoneIdentifier): void
     {
-        $this->timeZone = $timeZone;
+        $this->timeZoneIdentifier = $timeZoneIdentifier;
     }
 
     /**

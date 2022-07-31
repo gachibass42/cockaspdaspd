@@ -12,6 +12,8 @@ class UserProfile
     public ?string $userDescription;
     public bool $isGuide;
     public ?string $avatarURL;
+    public ?string $login;
+    public ?string $password;
     //public Image $avatar;
 
     /**
@@ -32,6 +34,54 @@ class UserProfile
         $this->isGuide = $isGuide;
         $this->avatarURL = $avatarURL;
         $this->avatar = $avatar;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatarURL(): ?string
+    {
+        return $this->avatarURL;
+    }
+
+    /**
+     * @param string|null $avatarURL
+     */
+    public function setAvatarURL(?string $avatarURL): void
+    {
+        $this->avatarURL = $avatarURL;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    /**
+     * @param string|null $login
+     */
+    public function setLogin(?string $login): void
+    {
+        $this->login = $login;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string|null $password
+     */
+    public function setPassword(?string $password): void
+    {
+        $this->password = $password;
     }
 
     /**

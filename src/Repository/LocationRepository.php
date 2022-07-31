@@ -77,4 +77,17 @@ class LocationRepository extends ServiceEntityRepository
             $object->getWebsite()
         ),$dbObjects));
     }
+
+    public function removeByID(string $objID) {
+
+        $this->createQueryBuilder('t')
+            ->delete(Location::class)
+            ->where('t.objID = :objID')
+            ->setParameter('objID',$objID)
+            ->getQuery()
+            ->execute();
+
+        //->andWhere('a.exampleField = :val')
+
+    }
 }

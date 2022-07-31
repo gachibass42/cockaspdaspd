@@ -48,7 +48,7 @@ class Location
     #[ORM\Column(type: 'string', length: 3, nullable: true)]
     private ?string $countryCode = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $externalPlaceId = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -139,7 +139,7 @@ class Location
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description  ?? null;
     }
 
     public function setDescription(?string $description): self
@@ -151,7 +151,7 @@ class Location
 
     public function getAddress(): ?string
     {
-        return $this->address;
+        return $this->address ?? null;
     }
 
     public function setAddress(?string $address): self
@@ -163,7 +163,7 @@ class Location
 
     public function getTimeZone(): ?string
     {
-        return $this->timeZone;
+        return $this->timeZone ?? null;
     }
 
     public function setTimeZone(?string $timeZone): self
@@ -175,7 +175,7 @@ class Location
 
     public function getCodeIATA(): ?string
     {
-        return $this->codeIATA;
+        return $this->codeIATA ?? null;
     }
 
     public function setCodeIATA(?string $codeIATA): self
@@ -187,7 +187,7 @@ class Location
 
     public function getCountryCode(): ?string
     {
-        return $this->countryCode;
+        return $this->countryCode ?? null;
     }
 
     public function setCountryCode(?string $countryCode): self
@@ -199,7 +199,7 @@ class Location
 
     public function getCityLocation(): ?Location
     {
-        return $this->cityLocation;
+        return $this->cityLocation ?? null;
     }
 
     public function setCityLocation(?Location $cityLocation): Location
@@ -211,7 +211,7 @@ class Location
     #[Ignore]
     public function getCityLocationIATACode(): ?string
     {
-        return $this->cityLocation->codeIATA;
+        return $this->cityLocation->codeIATA ?? null;
     }
 
     #[Ignore]
@@ -225,7 +225,7 @@ class Location
 
     public function getCountryLocation(): ?Location
     {
-        return $this->countryLocation;
+        return $this->countryLocation ?? null;
     }
 
     public function setCountryLocation(?Location $countryLocation): Location
@@ -236,7 +236,7 @@ class Location
 
     public function getSearchTags(): ?string
     {
-        return $this->searchTags;
+        return $this->searchTags ?? null;
     }
 
     public function setSearchTags(?string $searchTags): Location
@@ -261,7 +261,7 @@ class Location
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function setType(?string $type): self
@@ -285,7 +285,7 @@ class Location
 
     public function getInternationalName(): ?string
     {
-        return $this->internationalName;
+        return $this->internationalName ?? null;
     }
 
     public function setInternationalName(?string $internationalName): self
@@ -297,7 +297,7 @@ class Location
 
     public function getInternationalAddress(): ?string
     {
-        return $this->internationalAddress;
+        return $this->internationalAddress ?? null;
     }
 
     public function setInternationalAddress(?string $internationalAddress): self
@@ -309,7 +309,7 @@ class Location
 
     public function getOwner(): ?User
     {
-        return $this->owner;
+        return $this->owner ?? null;
     }
 
     public function setOwner(?User $owner): self
@@ -321,7 +321,7 @@ class Location
 
     public function getSyncDate(): ?\DateTimeInterface
     {
-        return $this->syncDate;
+        return $this->syncDate ?? null;
     }
 
     public function setSyncDate(?\DateTimeInterface $syncDate): self
@@ -333,7 +333,7 @@ class Location
 
     public function getPhoneNumber(): ?string
     {
-        return $this->phoneNumber;
+        return $this->phoneNumber ?? null;
     }
 
     public function setPhoneNumber(?string $phoneNumber): self
@@ -345,7 +345,7 @@ class Location
 
     public function getWebsite(): ?string
     {
-        return $this->website;
+        return $this->website ?? null;
     }
 
     public function setWebsite(?string $website): self

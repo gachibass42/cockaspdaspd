@@ -11,11 +11,11 @@ use Symfony\Component\Uid\UuidV6;
 #[ORM\Entity(repositoryClass: AirlineRepository::class)]
 class Airline
 {
-    #[ORM\Id]
+
     #[ORM\GeneratedValue(strategy: "CUSTOM")]
     #[ORM\Column(type: 'uuid',unique: 'true')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private UuidV6 $id;
+    private UuidV6 $guid;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $name;
@@ -29,35 +29,36 @@ class Airline
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $description;
 
+    #[ORM\Id]
     #[ORM\Column(type: 'string', length: 24, unique: true, nullable: true)]
     private ?string $objID;
 
     public function __construct()
     {
-        $this->id = Uuid::v6();
+        $this->guid = Uuid::v6();
     }
 
     /**
      * @return UuidV6
      */
-    public function getId(): UuidV6
+    public function getGuid(): UuidV6
     {
-        return $this->id;
+        return $this->guid;
     }
 
     /**
-     * @param UuidV6 $id
+     * @param UuidV6 $guid
      */
-    public function setId(UuidV6 $id): void
+    public function setGuid(UuidV6 $guid): void
     {
-        $this->id = $id;
+        $this->guid = $guid;
     }
 
 
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(?string $name): self
@@ -69,7 +70,7 @@ class Airline
 
     public function getCode(): ?string
     {
-        return $this->code;
+        return $this->code ?? null;
     }
 
     public function setCode(?string $code): self
@@ -81,7 +82,7 @@ class Airline
 
     public function getInternationalName(): ?string
     {
-        return $this->internationalName;
+        return $this->internationalName ?? null;
     }
 
     public function setInternationalName(?string $internationalName): self
@@ -93,7 +94,7 @@ class Airline
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? null;
     }
 
     public function setDescription(?string $description): self
@@ -105,7 +106,7 @@ class Airline
 
     public function getObjID(): ?string
     {
-        return $this->objID;
+        return $this->objID ?? null;
     }
 
     public function setObjID(?string $objID): self

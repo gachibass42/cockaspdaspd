@@ -62,12 +62,12 @@ class AirportIATA
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getAirportCode(): ?string
     {
-        return $this->airportCode;
+        return $this->airportCode ?? null;
     }
 
     public function setAirportCode(string $airportCode): self
@@ -79,7 +79,7 @@ class AirportIATA
 
     public function getCountryCode(): ?string
     {
-        return $this->countryCode;
+        return $this->countryCode ?? null;
     }
 
     public function setCountryCode(?string $countryCode): self
@@ -91,7 +91,7 @@ class AirportIATA
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(?string $name): self
@@ -103,7 +103,7 @@ class AirportIATA
 
     public function getCityName(): ?string
     {
-        return $this->cityName;
+        return $this->cityName ?? null;
     }
 
     public function setCityName(?string $cityName): self
@@ -115,7 +115,7 @@ class AirportIATA
 
     public function getInternationalName(): ?string
     {
-        return $this->internationalName;
+        return $this->internationalName ?? null;
     }
 
     public function setInternationalName(?string $internationalName): self
@@ -127,7 +127,7 @@ class AirportIATA
 
     public function getTimeZone(): ?string
     {
-        return $this->timeZone;
+        return $this->timeZone ?? null;
     }
 
     public function setTimeZone(?string $timeZone): self
@@ -139,7 +139,7 @@ class AirportIATA
 
     public function getLatitude(): ?float
     {
-        return $this->latitude;
+        return $this->latitude ?? null;
     }
 
     public function setLatitude(?float $latitude): self
@@ -151,7 +151,7 @@ class AirportIATA
 
     public function getLongitude(): ?float
     {
-        return $this->longitude;
+        return $this->longitude ?? null;
     }
 
     public function setLongitude(?float $longitude): self
@@ -163,7 +163,7 @@ class AirportIATA
 
     public function getCityInternationalName(): ?string
     {
-        return $this->cityInternationalName;
+        return $this->cityInternationalName ?? null;
     }
 
     public function setCityInternationalName(?string $cityInternationalName): self
@@ -175,7 +175,7 @@ class AirportIATA
 
     public function getCityLatitude(): ?float
     {
-        return $this->cityLatitude;
+        return $this->cityLatitude ?? null;
     }
 
     public function setCityLatitude(?float $cityLatitude): self
@@ -187,7 +187,7 @@ class AirportIATA
 
     public function getCityLongitude(): ?float
     {
-        return $this->cityLongitude;
+        return $this->cityLongitude ?? null;
     }
 
     public function setCityLongitude(?float $cityLongitude): self
@@ -199,7 +199,7 @@ class AirportIATA
 
     public function getLocation(): ?Location
     {
-        return $this->location;
+        return $this->location ?? null;
     }
 
     public function setLocation(?Location $location): self
@@ -211,7 +211,7 @@ class AirportIATA
 
     public function getCityLocation(): ?Location
     {
-        return $this->cityLocation;
+        return $this->cityLocation ?? null;
     }
 
     public function setCityLocation(?Location $cityLocation): self
@@ -223,7 +223,7 @@ class AirportIATA
 
     public function getCityCode(): ?string
     {
-        return $this->cityCode;
+        return $this->cityCode ?? null;
     }
 
     public function setCityCode(?string $cityCode): self
@@ -235,7 +235,7 @@ class AirportIATA
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function setType(?string $type): self

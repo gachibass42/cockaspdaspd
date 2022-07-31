@@ -54,9 +54,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $lastSyncTryDate;
 
+    #[ORM\OneToMany(mappedBy: 'tripUser', targetEntity: TripUserRole::class, orphanRemoval: true)]
+    private $tripsRoles;
+
     public function __construct()
     {
         $this->trips = new ArrayCollection();
+        $this->tripsRoles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -267,6 +271,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastSyncTryDate(?\DateTimeInterface $lastSyncTryDate): self
     {
         $this->lastSyncTryDate = $lastSyncTryDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TripUserRole>
+     */
+    public function getTripsRoles(): Collection
+    {
+        return $this->tripsRoles;
+    }
+
+    public function addTripsRole(TripUserRole $tripsRole): self
+    {
+        if (!$this->tripsRoles->contains($tripsRole)) {
+            $this->tripsRoles[] = $tripsRole;
+            $tripsRole->setTripUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTripsRole(TripUserRole $tripsRole): self
+    {
+        if ($this->tripsRoles->removeElement($tripsRole)) {
+            // set the owning side to null (unless already changed)
+            if ($tripsRole->getTripUser() === $this) {
+                $tripsRole->setTripUser(null);
+            }
+        }
 
         return $this;
     }

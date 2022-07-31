@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CheckList;
+use App\Modules\Syncer\Model\SyncObjectCheckList;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -48,13 +49,35 @@ class CheckListRepository extends ServiceEntityRepository
     }
 
     public function getObjectsForSync (\DateTime $lastSyncDate): array {
-        return $this->createQueryBuilder('object')
+        $dbObjects =  $this->createQueryBuilder('object')
             ->where('object.syncDate > :value')
             ->setParameter('value', $lastSyncDate)
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
             ->getResult()
             ;
+        return (array_map(fn(CheckList $object) => new SyncObjectCheckList(
+            $object->getObjId(),
+            $object->getName(),
+            $object->getSyncDate()->getTimestamp(),
+            $object->getType(),
+            $object->getBoxes()
+        ),$dbObjects));
+    }
+
+    public function save(CheckList $checkList) {
+        $this->getEntityManager()->persist($checkList);
+    }
+
+    public function removeByID(string $objID) {
+
+        $this->createQueryBuilder('checkList')
+            ->delete('App:CheckList','checkList')
+            ->where('checkList.objID = :objID')
+            ->setParameter('objID',$objID)
+            ->getQuery()
+            ->execute();
+
     }
 
     // /**

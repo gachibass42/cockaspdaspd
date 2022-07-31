@@ -30,7 +30,7 @@ class CheckList
 
     public function getObjId(): ?string
     {
-        return $this->objID;
+        return $this->objID ?? null;
     }
 
     public function setObjId(string $objID): self
@@ -42,7 +42,7 @@ class CheckList
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(string $name): self
@@ -54,7 +54,7 @@ class CheckList
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function setType(string $type): self
@@ -66,7 +66,7 @@ class CheckList
 
     public function getBoxes(): ?array
     {
-        return $this->boxes;
+        return $this->boxes ?? null;
     }
 
     public function setBoxes(?array $boxes): self
@@ -78,7 +78,7 @@ class CheckList
 
     public function getSyncDate(): ?\DateTimeInterface
     {
-        return $this->syncDate;
+        return $this->syncDate ?? null;
     }
 
     public function setSyncDate(?\DateTimeInterface $syncDate): self

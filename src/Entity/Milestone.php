@@ -106,10 +106,10 @@ class Milestone
     private ?string $roomNumber;
 
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
-    private $locationID;
+    private ?string $locationID;
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
-    private $images = [];
+    private array $images = [];
 
     public function __construct()
     {
@@ -130,7 +130,7 @@ class Milestone
 
     public function getDate(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->date ?? null;
     }
 
     public function setDate(\DateTimeInterface $date): self
@@ -142,7 +142,7 @@ class Milestone
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function setType(string $type): self
@@ -154,7 +154,7 @@ class Milestone
 
     public function getMilestoneDescription(): ?string
     {
-        return $this->milestoneDescription;
+        return $this->milestoneDescription ?? null;
     }
 
     public function setMilestoneDescription(?string $milestoneDescription): self
@@ -166,7 +166,7 @@ class Milestone
 
     public function getMilestoneOrder(): ?int
     {
-        return $this->milestoneOrder;
+        return $this->milestoneOrder ?? null;
     }
 
     public function setMilestoneOrder(?int $milestoneOrder): self
@@ -178,7 +178,7 @@ class Milestone
 
     public function getUserEdited(): ?bool
     {
-        return $this->userEdited;
+        return $this->userEdited ?? null;
     }
 
     public function setUserEdited(bool $userEdited): self
@@ -190,7 +190,7 @@ class Milestone
 
     public function getJourneyNumber(): ?string
     {
-        return $this->journeyNumber;
+        return $this->journeyNumber ?? null;
     }
 
     public function setJourneyNumber(?string $journeyNumber): self
@@ -202,7 +202,7 @@ class Milestone
 
     public function getSeat(): ?string
     {
-        return $this->seat;
+        return $this->seat ?? null;
     }
 
     public function setSeat(?string $seat): self
@@ -214,7 +214,7 @@ class Milestone
 
     public function getVagon(): ?int
     {
-        return $this->vagon;
+        return $this->vagon ?? null;
     }
 
     public function setVagon(?int $vagon): self
@@ -226,7 +226,7 @@ class Milestone
 
     public function getClassType(): ?string
     {
-        return $this->classType;
+        return $this->classType ?? null;
     }
 
     public function setClassType(?string $classType): self
@@ -238,7 +238,7 @@ class Milestone
 
     public function getTerminal(): ?string
     {
-        return $this->terminal;
+        return $this->terminal ?? null;
     }
 
     public function setTerminal(?string $terminal): self
@@ -250,7 +250,7 @@ class Milestone
 
     public function getDistance(): ?float
     {
-        return $this->distance;
+        return $this->distance ?? null;
     }
 
     public function setDistance(?float $distance): self
@@ -262,7 +262,7 @@ class Milestone
 
     public function getAircraft(): ?string
     {
-        return $this->aircraft;
+        return $this->aircraft ?? null;
     }
 
     public function setAircraft(?string $aircraft): self
@@ -274,7 +274,7 @@ class Milestone
 
     public function getDuration(): ?string
     {
-        return $this->duration;
+        return $this->duration ?? null;
     }
 
     public function setDuration(?string $duration): self
@@ -286,7 +286,7 @@ class Milestone
 
     public function getAddress(): ?string
     {
-        return $this->address;
+        return $this->address ?? null;
     }
 
     public function setAddress(?string $address): self
@@ -298,7 +298,7 @@ class Milestone
 
     public function getWebsite(): ?string
     {
-        return $this->website;
+        return $this->website ?? null;
     }
 
     public function setWebsite(?string $website): self
@@ -310,7 +310,7 @@ class Milestone
 
     public function getPhoneNumber(): ?string
     {
-        return $this->phoneNumber;
+        return $this->phoneNumber ?? null;
     }
 
     public function setPhoneNumber(?string $phoneNumber): self
@@ -358,7 +358,7 @@ class Milestone
 
     public function getRentType(): ?string
     {
-        return $this->rentType;
+        return $this->rentType ?? null;
     }
 
     public function setRentType(?string $rentType): self
@@ -370,7 +370,7 @@ class Milestone
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->name ?? null;
     }
 
     public function setName(?string $name): self
@@ -382,7 +382,7 @@ class Milestone
 
     public function getCarrier(): ?Airline
     {
-        return $this->carrier;
+        return $this->carrier ?? null;
     }
 
     public function setCarrier(?Airline $carrier): self
@@ -418,7 +418,7 @@ class Milestone
 
     public function getSyncDate(): ?\DateTimeInterface
     {
-        return $this->syncDate;
+        return $this->syncDate ?? null;
     }
 
     public function setSyncDate(?\DateTimeInterface $syncDate): self
@@ -430,7 +430,7 @@ class Milestone
 
     public function getVisibility(): ?bool
     {
-        return $this->visibility;
+        return $this->visibility ?? null;
     }
 
     public function setVisibility(bool $visibility): self
@@ -442,7 +442,7 @@ class Milestone
 
     public function getOwner(): ?User
     {
-        return $this->owner;
+        return $this->owner ?? null;
     }
 
     public function setOwner(?User $owner): self
@@ -454,7 +454,7 @@ class Milestone
 
     public function getTags(): ?array
     {
-        return $this->tags;
+        return $this->tags ?? null;
     }
 
     public function setTags(?array $tags): self
@@ -466,7 +466,7 @@ class Milestone
 
     public function getRoomNumber(): ?string
     {
-        return $this->roomNumber;
+        return $this->roomNumber ?? null;
     }
 
     public function setRoomNumber(?string $roomNumber): self
@@ -478,7 +478,7 @@ class Milestone
 
     public function getLocationID(): ?string
     {
-        return $this->locationID;
+        return $this->locationID ?? null;
     }
 
     public function setLocationID(?string $locationID): self
@@ -490,7 +490,7 @@ class Milestone
 
     public function getImages(): ?array
     {
-        return $this->images;
+        return $this->images ?? null;
     }
 
     public function setImages(?array $images): self

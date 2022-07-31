@@ -24,7 +24,7 @@ class CarrierInfoService
                     $airline->getCode(),
                     $airline->getInternationalName(),
                     'airline',
-                    $airline->getId(),
+                    $airline->getGuid(),
                     $airline->getObjID()
                 ),
                 $carriers

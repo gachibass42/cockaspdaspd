@@ -2,7 +2,7 @@
 
 namespace App\Modules\Syncer\Model;
 
-use App\Repository\TripRepository;
+use App\Entity\TripUserRole;
 
 class SyncObjectTrip
 {
@@ -18,9 +18,10 @@ class SyncObjectTrip
     public ?string $tripDescription;
     public ?string $tags;
     public ?array $users;
-    public ?array $images;
+    public ?string $mainImage;
     public ?array $milestonesIDs;
     public bool $visibility;
+    public ?array $checkListsIDs;
 
     /**
      * @param string $objID
@@ -33,12 +34,14 @@ class SyncObjectTrip
      * @param int|null $duration
      * @param string|null $tripDescription
      * @param string|null $tags
-     * @param array|null $users
-     * @param array|null $images
+     * @param TripUserRole[]|null $users
+     * @param string|null $mainImage
      * @param array|null $milestonesIDs
      * @param bool $visibility
+     * @param array|null $checkListsIDs
      */
-    public function __construct(string $objID, int $syncStatusDateTime, ?string $name, ?string $ownerID, int $startDate, int $endDate, bool $locked, ?int $duration, ?string $tripDescription, ?string $tags, ?array $users, ?array $images, ?array $milestonesIDs, bool $visibility)
+    public function __construct(string $objID, int $syncStatusDateTime, ?string $name, ?string $ownerID, int $startDate, int $endDate, bool $locked, ?int $duration, ?string $tripDescription, ?string $tags, ?array
+    $users, ?string $mainImage, ?array $milestonesIDs, bool $visibility, ?array $checkListsIDs)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
@@ -50,15 +53,12 @@ class SyncObjectTrip
         $this->duration = $duration;
         $this->tripDescription = $tripDescription;
         $this->tags = $tags;
-        $this->users = $users;
-        $this->images = $images;
+        $this->users = array_map(fn (TripUserRole $userRole) => new SyncObjectTripUserRole($userRole->getTripUser()->getId(),$userRole->getRoleName()),//[$userRole->getTripUser()->getId() => $userRole->getRoleName()],
+            $users);
+        $this->mainImage = $mainImage;
         $this->milestonesIDs = $milestonesIDs;
         $this->visibility = $visibility;
+        $this->checkListsIDs = $checkListsIDs;
     }
 
-
-    function mapFromArray(array $object)
-    {
-
-    }
 }

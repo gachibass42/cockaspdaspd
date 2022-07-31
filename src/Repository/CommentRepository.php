@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
+use App\Modules\Syncer\Model\SyncObjectComment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -47,7 +48,7 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+    /*public function getObjectsForSync (\DateTime $lastSyncDate): array {
         return $this->createQueryBuilder('object')
             ->where('object.syncDate > :value')
             ->setParameter('value', $lastSyncDate)
@@ -55,6 +56,42 @@ class CommentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }*/
+
+    public function save (Comment $comment) {
+        $this->getEntityManager()->persist($comment);
+        //$this->_em->flush();
+    }
+
+    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+        $dbObjects = $this->createQueryBuilder('object')
+            ->where('object.syncDate > :value')
+            ->setParameter('value', $lastSyncDate)
+            ->orderBy('object.objID', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+        return (array_map(fn(Comment $object) => new SyncObjectComment(
+            $object->getSyncDate()->getTimestamp(),
+            $object->getObjId(),
+            $object->getLinkedObjID(),
+            $object->getType(),
+            $object->getOwner() ? $object->getOwner()->getId() : null,
+            $object->getImages(),
+            $object->getTags(),
+            $object->getDate()->getTimestamp(),
+            $object->getContent()
+        ), $dbObjects));
+    }
+
+    public function removeByID(string $objID) {
+
+        $this->createQueryBuilder('comment')
+            ->delete(Comment::class,'comment')
+            ->where('comment.objID = :objID')
+            ->setParameter('objID',$objID)
+            ->getQuery()
+            ->execute();
     }
 
     // /**
