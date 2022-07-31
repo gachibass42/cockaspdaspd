@@ -66,7 +66,7 @@ class Comment
 
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ?? null;
     }
 
     public function setType(?string $type): self
@@ -78,7 +78,7 @@ class Comment
 
     public function getOwner(): ?User
     {
-        return $this->owner;
+        return $this->owner ?? null;
     }
 
     public function setOwner(?User $owner): self
@@ -90,7 +90,7 @@ class Comment
 
     public function getImages(): ?array
     {
-        return $this->images;
+        return $this->images ?? null;
     }
 
     public function setImages(?array $images): self
@@ -102,7 +102,7 @@ class Comment
 
     public function getTags(): ?array
     {
-        return $this->tags;
+        return $this->tags ?? null;
     }
 
     public function setTags(?array $tags): self
@@ -114,7 +114,7 @@ class Comment
 
     public function getDate(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->date ?? null;
     }
 
     public function setDate(?\DateTimeInterface $date): self
@@ -126,7 +126,7 @@ class Comment
 
     public function getContent(): ?string
     {
-        return $this->content;
+        return $this->content ?? null;
     }
 
     public function setContent(?string $content): self
@@ -138,7 +138,7 @@ class Comment
 
     public function getSyncDate(): ?\DateTimeInterface
     {
-        return $this->syncDate;
+        return $this->syncDate ?? null;
     }
 
     public function setSyncDate(?\DateTimeInterface $syncDate): self
