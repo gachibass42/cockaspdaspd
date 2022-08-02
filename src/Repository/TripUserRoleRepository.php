@@ -50,6 +50,19 @@ class TripUserRoleRepository extends ServiceEntityRepository
     public function save(TripUserRole $tripUserRole) {
         $this->_em->persist($tripUserRole);
     }
+
+    public function removeByTrip(string $trip) {
+
+        $this->createQueryBuilder('trip_user_role')
+            ->delete(TripUserRole::class,'trip_user_role')
+            ->where('trip_user_role.trip = :tripID')
+            ->setParameter('tripID',$trip)
+            ->getQuery()
+            ->execute();
+
+        //->andWhere('a.exampleField = :val')
+
+    }
     // /**
     //  * @return TripUserRole[] Returns an array of TripUserRole objects
     //  */

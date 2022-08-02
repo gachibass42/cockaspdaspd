@@ -34,6 +34,7 @@ class SyncerService
     private array $corpses = [];
     private array $comments = [];
     private array $images = [];
+    private ?\DateTime $lastSuccessfulSyncDate;
 
     public function __construct(private FileManagerService $fileManagerService,
                                 private LocationRepository $locationRepository,
@@ -250,10 +251,17 @@ class SyncerService
         foreach ($this->corpses as $corpse) {
             switch ($corpse["corpseType"]) {
                 case "Trip":
+                    $this->tripUserRoleRepository->removeByTrip($corpse["corpseID"]);
                     $this->tripRepository->removeByID($corpse["corpseID"]);
                     break;
                 case "Milestone":
                     $this->milestoneRepository->removeByID($corpse["corpseID"]);
+                    break;
+                case "Comment":
+                    $this->commentRepository->removeByID($corpse["corpseID"]);
+                    break;
+                case "CheckList":
+                    $this->checkListRepository->removeByID($corpse["corpseID"]);
                     break;
             }
         }
@@ -302,9 +310,10 @@ class SyncerService
                     $this->comments[$object['object']['objID']] = $object['object'];
                     break;
                 case 'Syncer':
-                    /*$this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
+                    $this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
                         'U',
-                        (int)$object["object"]["lastSuccessfulSyncDate"] ?? 1);*/
+                        (int)$object["object"]["lastSuccessfulSyncDate"] ?? null);
+                    //dump($this->lastSuccessfulSyncDate);
                     $this->sessionID = $object["object"]["sessionID"] ?? null;
                     break;
                 case 'Images':
@@ -359,7 +368,8 @@ class SyncerService
         $responseList = new SyncResponseList();
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $this->sessionID, 'requestHandlingStatus' => $this->requestHandlingStatus]);
         $responseList->items[] = $syncer;
-        $lastSuccessfulSyncDate = $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
+        $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
+        //dump($lastSuccessfulSyncDate);
         foreach ($repositories as $objectType => $repository) {
             $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate ?? \DateTime::createFromFormat('U', 1));
 
