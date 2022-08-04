@@ -9,7 +9,7 @@ class SyncObjectMilestone
     public int $syncStatusDateTime;
     public ?string $carrierID;
     public ?string $locationID;
-
+    public ?string $organizationLocationID;
     public ?array $linkedMilestonesIDs;
     public ?bool $userEdited;
     public ?int $date;
@@ -71,8 +71,9 @@ class SyncObjectMilestone
      * @param array|null $images
      * @param array|null $tags
      * @param array|null $mealTimetables
+     * @param string|null $organizationLocationID
      */
-    public function __construct(?string $objID, ?string $name, int $syncStatusDateTime, ?string $carrierID, ?string $locationID, ?array $linkedMilestonesIDs, ?bool $userEdited, ?int $date, ?string $type, ?string $milestoneDescription, ?int $order, ?string $journeyNumber, ?string $seat, ?string $vagon, ?string $classType, ?string $terminal, ?float $distance, ?string $aircraft, ?string $duration, ?string $address, ?string $website, ?string $phoneNumber, ?bool $isStartPoint, ?bool $isEndPoint, ?bool $inTransit, ?string $roomNumber, ?string $rentType, ?string $ownerID, ?bool $visibility, ?array $images, ?array $tags, ?array $mealTimetables)
+    public function __construct(?string $objID, ?string $name, int $syncStatusDateTime, ?string $carrierID, ?string $locationID, ?array $linkedMilestonesIDs, ?bool $userEdited, ?int $date, ?string $type, ?string $milestoneDescription, ?int $order, ?string $journeyNumber, ?string $seat, ?string $vagon, ?string $classType, ?string $terminal, ?float $distance, ?string $aircraft, ?string $duration, ?string $address, ?string $website, ?string $phoneNumber, ?bool $isStartPoint, ?bool $isEndPoint, ?bool $inTransit, ?string $roomNumber, ?string $rentType, ?string $ownerID, ?bool $visibility, ?array $images, ?array $tags, ?array $mealTimetables, ?string $organizationLocationID)
     {
         $this->objID = $objID;
         $this->name = $name;
@@ -106,6 +107,7 @@ class SyncObjectMilestone
         $this->images = $images;
         $this->tags = $tags;
         $this->mealTimetables = $mealTimetables;
+        $this->organizationLocationID = $organizationLocationID;
     }
 
 

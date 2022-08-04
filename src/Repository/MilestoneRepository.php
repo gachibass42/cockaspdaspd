@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+//use phpDocumentor\Reflection\Types\Object_;
 
 /**
  * @extends ServiceEntityRepository<Milestone>
@@ -92,7 +93,8 @@ class MilestoneRepository extends ServiceEntityRepository
             $object->getVisibility(),
             count($object->getImages()) > 0 ? array_map(fn ($imageName) => [$imageName => null],$object->getImages()) : null,
             $object->getTags(),
-            $object->getMealTimetables()),
+            $object->getMealTimetables(),
+            $object->getOrganizationLocationID()),
         $dbObjects));
     }
 

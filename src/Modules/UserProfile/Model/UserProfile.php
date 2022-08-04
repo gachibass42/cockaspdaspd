@@ -12,6 +12,8 @@ class UserProfile
     public ?string $userDescription;
     public bool $isGuide;
     public ?string $avatarURL;
+    public ?string $homeLocationID;
+    public ?string $sex;
     public ?string $login;
     public ?string $password;
     //public Image $avatar;
@@ -23,9 +25,10 @@ class UserProfile
      * @param string|null $description
      * @param bool $isGuide
      * @param string|null $avatarURL
+     * @param string|null $homeLocationID
      * @param Image|null $avatar
      */
-    public function __construct(string $id, string $name, ?string $phone, ?string $description, bool $isGuide, ?string $avatarURL, Image $avatar = null)
+    public function __construct(string $id, string $name, ?string $phone, ?string $description, bool $isGuide, ?string $avatarURL, ?string $homeLocationID, ?string $sex, Image $avatar = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -33,6 +36,8 @@ class UserProfile
         $this->userDescription = $description;
         $this->isGuide = $isGuide;
         $this->avatarURL = $avatarURL;
+        $this->homeLocationID = $homeLocationID;
+        $this->sex = $sex;
         $this->avatar = $avatar;
     }
 

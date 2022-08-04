@@ -27,7 +27,8 @@ class GooglePlacesApi
         'spa' => 'spa', 'stadium' => 'stadium', 'playground' => '', 'attraction' => 'tourist_attraction', 'casino' => 'casino',
         'church' => 'church', 'gym' => 'gym', 'store' => 'store', 'drugstore' => 'drugstore', 'rent' => 'car_rental',
         'parking' => 'parking', 'service' => '', 'bank' => 'atm', 'gasStation' => 'gas_station',
-        'publicStation' => 'subway_station', 'port' => 'transit_station', 'plusCode' => 'plus_code', 'streetAddress' => 'street_address'];
+        'publicStation' => 'subway_station', 'port' => 'transit_station', 'plusCode' => 'plus_code', 'streetAddress' => 'street_address',
+        'travel' => 'travel_agency'];
     private array $localTypes = ['locality' => 'city',
         'country' => 'country', 'airport' => 'airport', '' => '', 'lodging' => 'hotel', 'museum' => 'museum',
         'train_station' => 'railwayStation', 'bus_station' => 'busStation', 'cemetery' => 'other', 'campground' => 'camping',
@@ -45,7 +46,7 @@ class GooglePlacesApi
         'lawyer' => 'service',  'painter' => 'service', 'car_repair' => 'service', 'plumber' => 'service',
         'physiotherapist' => 'service', 'movie_rental' => 'service', 'veterinary_care' => 'service', 'car_wash' => 'service',
         'laundry' => 'service', 'dentist' => 'service', 'florist' => 'service', 'doctor' => 'service', 'electrician' => 'service',
-        'travel_agency' => 'service', 'insurance_agency' => 'service', 'accounting' => 'service', 'moving_company' => 'service',
+        'travel_agency' => 'travel', 'insurance_agency' => 'service', 'accounting' => 'service', 'moving_company' => 'service',
         'post_office' => 'service', 'locksmith' => 'service', 'library' => 'service','funeral_home' => 'service',
         'hospital' => 'service', 'atm' => 'bank', 'bank' => 'bank', 'gas_station' => 'gasStation',
         'subway_station' => 'publicStation', 'taxi_stand' => 'publicStation', 'primary_school' => 'other',

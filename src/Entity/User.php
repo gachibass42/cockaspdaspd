@@ -57,6 +57,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'tripUser', targetEntity: TripUserRole::class, orphanRemoval: true)]
     private $tripsRoles;
 
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $homeLocationID;
+
+    #[ORM\Column(type: 'string', length: 16, nullable: true)]
+    private ?string $sex;
+
     public function __construct()
     {
         $this->trips = new ArrayCollection();
@@ -301,6 +307,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $tripsRole->setTripUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getHomeLocationID(): ?string
+    {
+        return $this->homeLocationID;
+    }
+
+    public function setHomeLocationID(?string $homeLocationID): self
+    {
+        $this->homeLocationID = $homeLocationID;
+
+        return $this;
+    }
+
+    public function getSex(): ?string
+    {
+        return $this->sex;
+    }
+
+    public function setSex(?string $sex): self
+    {
+        $this->sex = $sex;
 
         return $this;
     }

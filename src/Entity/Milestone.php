@@ -111,6 +111,9 @@ class Milestone
     #[ORM\Column(type: 'simple_array', nullable: true)]
     private array $images = [];
 
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $organizationLocationID;
+
     public function __construct()
     {
 
@@ -503,6 +506,18 @@ class Milestone
     public function appendImage(string $imageName): self
     {
         $this->images[] = $imageName;
+
+        return $this;
+    }
+
+    public function getOrganizationLocationID(): ?string
+    {
+        return $this->organizationLocationID;
+    }
+
+    public function setOrganizationLocationID(?string $organizationLocationID): self
+    {
+        $this->organizationLocationID = $organizationLocationID;
 
         return $this;
     }

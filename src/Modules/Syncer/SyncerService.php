@@ -183,7 +183,8 @@ class SyncerService
                     ->setUserEdited($milestone['userEdited'])
                     ->setVisibility($milestone["visibility"])
                     ->setLinkedMilestonesIDs($milestone['linkedMilestonesIDs'] ?? [])
-                    ->setImages($milestone['images']);
+                    ->setImages($milestone['images'])
+                    ->setOrganizationLocationID($milestone["organizationLocationID"] ?? null);
                 if (isset($milestone ["ownerID"])) {
                     $owner = $this->userRepository->findOneBy(["id" => (int)$milestone["ownerID"]]);
                     if (isset($owner)) {
@@ -312,7 +313,7 @@ class SyncerService
                 case 'Syncer':
                     $this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
                         'U',
-                        (int)$object["object"]["lastSuccessfulSyncDate"] ?? null);
+                        (int)($object["object"]["lastSuccessfulSyncDate"] ?? null));
                     //dump($this->lastSuccessfulSyncDate);
                     $this->sessionID = $object["object"]["sessionID"] ?? null;
                     break;
