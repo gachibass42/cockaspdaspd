@@ -235,8 +235,9 @@ class SyncerService
                     ->setImages($comment["images"] ?? null)
                     ->setTags($comment["tags"] ?? null)
                     ->setDate(\DateTime::createFromFormat('U',(int)$comment["date"]))
+                    ->setType($comment["type"])
                     ->setContent($comment["content"] ?? null);
-                if (isset($comment["ownerID"])) {
+                if (isset($comment["userID"])) {
                     $owner = $this->userRepository->findOneBy(["id" => (int)$comment["userID"]]);
                     if (isset($owner)) {
                         $dbComment->setOwner($owner);
