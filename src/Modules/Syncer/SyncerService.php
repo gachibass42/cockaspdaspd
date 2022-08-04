@@ -369,7 +369,7 @@ class SyncerService
         $responseList = new SyncResponseList();
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $this->sessionID, 'requestHandlingStatus' => $this->requestHandlingStatus]);
         $responseList->items[] = $syncer;
-        $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
+        $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate;// ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
         //dump($lastSuccessfulSyncDate);
         foreach ($repositories as $objectType => $repository) {
             $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate ?? \DateTime::createFromFormat('U', 1));
