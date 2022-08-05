@@ -276,7 +276,7 @@ class SyncerService
 
         if (count($this->images) > 0){
             foreach ($this->images as $image) {
-                $this->fileManagerService->saveImage($image['data'],$image['name']);
+                $this->fileManagerService->saveImage(base64_decode($image['data']),$image['name']);
             }
         }
         return true;
