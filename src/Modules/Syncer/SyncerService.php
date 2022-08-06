@@ -23,6 +23,7 @@ use Error;
 
 class SyncerService
 {
+    const LASTSUCCESSFULSYNCSHIFTSECONDS = 120;
     private ?string $sessionID;
     private ?string $requestHandlingStatus;
     private array $trips = [];
@@ -314,7 +315,8 @@ class SyncerService
                 case 'Syncer':
                     $this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
                         'U',
-                        (int)($object["object"]["lastSuccessfulSyncDate"] ?? null));
+                        isset($object["object"]["lastSuccessfulSyncDate"]) ?
+                            (int)($object["object"]["lastSuccessfulSyncDate"]) - SyncerService::LASTSUCCESSFULSYNCSHIFTSECONDS : null);
                     //dump($this->lastSuccessfulSyncDate);
                     $this->sessionID = $object["object"]["sessionID"] ?? null;
                     break;
