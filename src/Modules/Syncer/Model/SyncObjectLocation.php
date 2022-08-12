@@ -14,7 +14,7 @@ class SyncObjectLocation
     public ?string $timeZoneIdentifier;
     public ?string $codeIATA;
     public ?string $countryCode;
-    public ?string $externalPlaceId;
+    public ?string $externalID;
     public ?string $searchTags;
     public ?string $internationalName;
     public ?string $internationalAddress;
@@ -24,6 +24,7 @@ class SyncObjectLocation
     public ?string $ownerID;
     public ?string $phoneNumber;
     public ?string $website;
+    public ?string $descriptionLocation;
 
     /**
      * @param string $objID
@@ -36,7 +37,7 @@ class SyncObjectLocation
      * @param string|null $timeZoneIdentifier
      * @param string|null $codeIATA
      * @param string|null $countryCode
-     * @param string|null $externalPlaceId
+     * @param string|null $externalID
      * @param string|null $searchTags
      * @param string|null $internationalName
      * @param string|null $internationalAddress
@@ -46,20 +47,21 @@ class SyncObjectLocation
      * @param string|null $ownerID
      * @param string|null $phoneNumber
      * @param string|null $website
+     * @param string|null $descriptionLocation
      */
-    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website)
+    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalID, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website, ?string $descriptionLocation)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
         $this->syncAction = $syncAction;
-        $this->latitude = $latitude;
         $this->name = $name;
-        $this->address = $address;
+        $this->latitude = $latitude;
         $this->longitude = $longitude;
+        $this->address = $address;
         $this->timeZoneIdentifier = $timeZoneIdentifier;
         $this->codeIATA = $codeIATA;
         $this->countryCode = $countryCode;
-        $this->externalPlaceId = $externalPlaceId;
+        $this->externalID = $externalID;
         $this->searchTags = $searchTags;
         $this->internationalName = $internationalName;
         $this->internationalAddress = $internationalAddress;
@@ -69,6 +71,23 @@ class SyncObjectLocation
         $this->ownerID = $ownerID;
         $this->phoneNumber = $phoneNumber;
         $this->website = $website;
+        $this->descriptionLocation = $descriptionLocation;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescriptionLocation(): ?string
+    {
+        return $this->descriptionLocation;
+    }
+
+    /**
+     * @param string|null $descriptionLocation
+     */
+    public function setDescriptionLocation(?string $descriptionLocation): void
+    {
+        $this->descriptionLocation = $descriptionLocation;
     }
 
     /**
@@ -234,17 +253,17 @@ class SyncObjectLocation
     /**
      * @return string|null
      */
-    public function getExternalPlaceId(): ?string
+    public function getExternalID(): ?string
     {
-        return $this->externalPlaceId;
+        return $this->externalID;
     }
 
     /**
-     * @param string|null $externalPlaceId
+     * @param string|null $externalID
      */
-    public function setExternalPlaceId(?string $externalPlaceId): void
+    public function setExternalID(?string $externalID): void
     {
-        $this->externalPlaceId = $externalPlaceId;
+        $this->externalID = $externalID;
     }
 
     /**

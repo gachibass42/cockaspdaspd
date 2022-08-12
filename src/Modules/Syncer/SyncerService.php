@@ -316,7 +316,7 @@ class SyncerService
                     $this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
                         'U',
                         isset($object["object"]["lastSuccessfulSyncDate"]) ?
-                            (int)($object["object"]["lastSuccessfulSyncDate"]) - SyncerService::LASTSUCCESSFULSYNCSHIFTSECONDS : null);
+                            (int)($object["object"]["lastSuccessfulSyncDate"]) - SyncerService::LASTSUCCESSFULSYNCSHIFTSECONDS : 1);
                     //dump($this->lastSuccessfulSyncDate);
                     $this->sessionID = $object["object"]["sessionID"] ?? null;
                     break;
