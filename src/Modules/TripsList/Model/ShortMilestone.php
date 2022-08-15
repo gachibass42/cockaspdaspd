@@ -8,20 +8,24 @@ class ShortMilestone
     public string $locationName;
     public int $reviewsNumber;
     public int $date;
+    public string $type;
 
     /**
      * @param string $objID
      * @param string $locationName
      * @param int $reviewsNumber
      * @param int $date
+     * @param string $type
      */
-    public function __construct(string $objID, string $locationName, int $reviewsNumber, int $date)
+    public function __construct(string $objID, string $locationName, int $reviewsNumber, int $date, string $type)
     {
         $this->objID = $objID;
         $this->locationName = $locationName;
         $this->reviewsNumber = $reviewsNumber;
         $this->date = $date;
+        $this->type = $type;
     }
+
 
     /**
      * @return string
@@ -86,5 +90,22 @@ class ShortMilestone
     {
         $this->date = $date;
     }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
 
 }

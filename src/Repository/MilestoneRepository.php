@@ -107,13 +107,14 @@ class MilestoneRepository extends ServiceEntityRepository
      * @return ShortMilestone[]
      */
     public function getShortMilestones(array $milestonesIDs): array {
-        $sql = "select milestones.obj_id as obj_id, milestones.location_name as name, count(c.obj_id) as reviews_number, milestones.date as milestone_date from 
-                (select m.obj_id, m.location_id, m.date as date, l.name as location_name from milestone m join location l on m.location_id = l.obj_id where m.obj_id in (:milestonesIDs))
-                as milestones left join comment c on c.linked_obj_id = milestones.obj_id 
-                group by milestones.obj_id, milestones.location_id, milestones.location_name, milestones.date";
+        $sql = "select milestones.obj_id as obj_id, milestones.location_name as name, count(c.obj_id) as reviews_number, milestones.date as milestone_date, milestones.type as type from 
+                (select m.obj_id, m.location_id, m.date as date, m.type as type, l.name as location_name from milestone m join location l on m.location_id = l.obj_id where m.obj_id in (:milestonesIDs))
+                as milestones left join comment c on c.linked_obj_id = milestones.obj_id and c.type = 'review'
+                group by milestones.obj_id, milestones.location_id, milestones.location_name, milestones.date, milestones.type";
         $resultSet = new ResultSetMapping();
         $resultSet->addScalarResult('obj_id', 'objID');
         $resultSet->addScalarResult('name', 'name');
+        $resultSet->addScalarResult('type', 'type');
         $resultSet->addScalarResult('reviews_number', 'reviewsNumber','integer');
         $resultSet->addScalarResult('milestone_date', 'milestoneDate','datetime');
         $qb = $this->_em->createNativeQuery($sql,$resultSet);
@@ -124,6 +125,7 @@ class MilestoneRepository extends ServiceEntityRepository
                 ,$shortMilestoneScalars['name']
                 ,$shortMilestoneScalars['reviewsNumber']
                 ,$shortMilestoneScalars['milestoneDate']->getTimestamp()
+                ,$shortMilestoneScalars['type']
             ),
             $qb->getResult()
         );

@@ -55,4 +55,8 @@ class FileManagerService
         }
         return null;
     }
+
+    public function getImageContent(string $filename): ?string{
+        return file_get_contents($this->avatarImagesDir.$filename);
+    }
 }
