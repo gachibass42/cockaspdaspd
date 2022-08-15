@@ -4,9 +4,12 @@ namespace App\Repository;
 
 use App\Entity\Milestone;
 use App\Modules\Syncer\Model\SyncObjectMilestone;
+use App\Modules\TripsList\Model\ShortMilestone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 //use phpDocumentor\Reflection\Types\Object_;
 
@@ -96,6 +99,34 @@ class MilestoneRepository extends ServiceEntityRepository
             $object->getMealTimetables(),
             $object->getOrganizationLocationID()),
         $dbObjects));
+    }
+
+
+    /**
+     * @param array $milestonesIDs
+     * @return ShortMilestone[]
+     */
+    public function getShortMilestones(array $milestonesIDs): array {
+        $sql = "select milestones.obj_id as obj_id, milestones.location_name as name, count(c.obj_id) as reviews_number, milestones.date as milestone_date from 
+                (select m.obj_id, m.location_id, m.date as date, l.name as location_name from milestone m join location l on m.location_id = l.obj_id where m.obj_id in (:milestonesIDs))
+                as milestones left join comment c on c.linked_obj_id = milestones.obj_id 
+                group by milestones.obj_id, milestones.location_id, milestones.location_name, milestones.date";
+        $resultSet = new ResultSetMapping();
+        $resultSet->addScalarResult('obj_id', 'objID');
+        $resultSet->addScalarResult('name', 'name');
+        $resultSet->addScalarResult('reviews_number', 'reviewsNumber','integer');
+        $resultSet->addScalarResult('milestone_date', 'milestoneDate','datetime');
+        $qb = $this->_em->createNativeQuery($sql,$resultSet);
+        $qb->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY);
+        return array_map(fn (array $shortMilestoneScalars) =>
+            new ShortMilestone(
+                $shortMilestoneScalars['objID']
+                ,$shortMilestoneScalars['name']
+                ,$shortMilestoneScalars['reviewsNumber']
+                ,$shortMilestoneScalars['milestoneDate']->getTimestamp()
+            ),
+            $qb->getResult()
+        );
     }
 
     public function removeByID(string $objID) {

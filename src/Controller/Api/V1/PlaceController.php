@@ -89,7 +89,7 @@ class PlaceController extends AbstractController
     }
 
     #[Route('/place/coordinates', name: 'api_v1_place_get_by_coordinates')]
-    public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
+    public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService): JsonResponse
     {
         $latitude = $request->query->get('lat');
         $longitude = $request->query->get('lon');

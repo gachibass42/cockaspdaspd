@@ -2,10 +2,16 @@
 
 namespace App\Repository;
 
+use App\Entity\Milestone;
 use App\Entity\Trip;
 use App\Modules\Syncer\Model\SyncObjectTrip;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\String_;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -46,6 +52,10 @@ class TripRepository extends ServiceEntityRepository
         //$this->_em->flush();
     }
 
+    /**
+     * @param \DateTime $lastSyncDate
+     * @return SyncObjectTrip[]
+     */
     public function getObjectsForSync (\DateTime $lastSyncDate): array {
         $dbObjects = $this->createQueryBuilder('object')
             ->where('object.syncDate > :value')
@@ -85,6 +95,28 @@ class TripRepository extends ServiceEntityRepository
         //->andWhere('a.exampleField = :val')
 
     }
+
+    /**
+     * @param string $locationID
+     * @return Trip[]|null
+     */
+    public function getTripsWithLocation (string $locationID):?array {
+        $sql = "select distinct trip.* from trip, milestone where milestone.location_id = :locationID and milestone.obj_id = ANY(string_to_array(trip.milestones_ids, ','))";
+        $resultSet = new ResultSetMappingBuilder($this->_em);
+        $resultSet->addRootEntityFromClassMetadata(Trip::class,'t');
+        $qb = $this->_em->createNativeQuery($sql,$resultSet);
+        $qb->setParameter('locationID', $locationID, Types::STRING);
+
+        return $qb->getResult();
+    }
+
+    /**
+     * @param int $userID
+     * @return Trip[]|null
+     */
+    /*public function getUserTrips (int $userID):?array {
+
+    }*/
 
     // /**
     //  * @return Trip[] Returns an array of Trip objects
