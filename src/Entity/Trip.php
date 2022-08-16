@@ -59,7 +59,13 @@ class Trip
     private $usersRoles;
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
-    private $checkListsIDs = [];
+    private array $checkListsIDs = [];
+
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    private ?string $cost;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $costDescription;
 
     public function __construct()
     {
@@ -265,6 +271,30 @@ class Trip
     public function setCheckListsIDs(?array $checkListsIDs): self
     {
         $this->checkListsIDs = $checkListsIDs;
+
+        return $this;
+    }
+
+    public function getCost(): ?string
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?string $cost): self
+    {
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    public function getCostDescription(): ?string
+    {
+        return $this->costDescription;
+    }
+
+    public function setCostDescription(?string $costDescription): self
+    {
+        $this->costDescription = $costDescription;
 
         return $this;
     }

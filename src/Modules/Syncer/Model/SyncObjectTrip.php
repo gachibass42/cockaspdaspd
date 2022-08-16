@@ -22,6 +22,8 @@ class SyncObjectTrip
     public ?array $milestonesIDs;
     public bool $visibility;
     public ?array $checkListsIDs;
+    public ?string $cost;
+    public ?string $costDescription;
 
     /**
      * @param string $objID
@@ -41,7 +43,7 @@ class SyncObjectTrip
      * @param array|null $checkListsIDs
      */
     public function __construct(string $objID, int $syncStatusDateTime, ?string $name, ?string $ownerID, int $startDate, int $endDate, bool $locked, ?int $duration, ?string $tripDescription, ?string $tags, ?array
-    $users, ?string $mainImage, ?array $milestonesIDs, bool $visibility, ?array $checkListsIDs)
+    $users, ?string $mainImage, ?array $milestonesIDs, bool $visibility, ?array $checkListsIDs, ?string $cost, ?string $costDescription)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
@@ -59,6 +61,8 @@ class SyncObjectTrip
         $this->milestonesIDs = $milestonesIDs;
         $this->visibility = $visibility;
         $this->checkListsIDs = $checkListsIDs;
+        $this->cost = $cost;
+        $this->costDescription = $costDescription;
     }
 
 }

@@ -79,7 +79,9 @@ class TripRepository extends ServiceEntityRepository
             $object->getMainImage(),
             $object->getMilestonesIDs(),
             $object->getVisibility(),
-            $object->getCheckListsIDs()
+            $object->getCheckListsIDs(),
+            $object->getCost(),
+            $object->getCostDescription()
         ), $dbObjects));
     }
 
