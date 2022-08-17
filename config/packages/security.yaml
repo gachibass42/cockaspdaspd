@@ -9,20 +9,28 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        api_token_provider:
             entity:
                 class: App\Entity\User
-                #property: username
-                property: apiToken
+                property: username
+#                property: apiToken
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+#        main:
+#            lazy: true
+#            provider: app_user_provider
+#            json_login:
+#                check_path: api_login
+        api:
+            pattern: ^/api/
+            stateless: true
             lazy: true
-            provider: app_user_provider
-            json_login:
-                check_path: api_login
+            provider: api_token_provider
+            custom_authenticator: App\Security\TokenAuthenticator
+#            login_throttling:
+#                max_attempts: 3
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
