@@ -25,10 +25,10 @@ class Trip
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $startDate;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $endDate;
 
     #[ORM\Column(type: 'boolean')]

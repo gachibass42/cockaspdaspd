@@ -131,6 +131,19 @@ class MilestoneRepository extends ServiceEntityRepository
         );
     }
 
+    /**
+     * @param string[] $milestonesIDs
+     * @return Milestone[]|null
+     */
+    public function getMilestones(array $milestonesIDs): ?array {
+        return $this->createQueryBuilder('milestone')
+            ->where('milestone.objID in (:milestonesIDs)')
+            ->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY)
+            ->orderBy('milestone.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function removeByID(string $objID) {
 
         $this->createQueryBuilder('milestone')

@@ -2,16 +2,13 @@
 
 namespace App\Repository;
 
-use App\Entity\Milestone;
 use App\Entity\Trip;
 use App\Modules\Syncer\Model\SyncObjectTrip;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use phpDocumentor\Reflection\Types\String_;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -53,12 +50,12 @@ class TripRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param \DateTime $lastSyncDate
+     * @param DateTime $lastSyncDate
      * @return SyncObjectTrip[]
      */
-    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+    public function getObjectsForSync (DateTime $lastSyncDate): array {
         $dbObjects = $this->createQueryBuilder('object')
-            ->where('object.syncDate > :value')
+            ->where('object.syncDate > :value') //TODO: select only the current user's trips (owner or is at roles)
             ->setParameter('value', $lastSyncDate)
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
