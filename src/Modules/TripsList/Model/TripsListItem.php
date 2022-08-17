@@ -12,6 +12,7 @@ class TripsListItem
     public ?string $mainImage;
     public ?int $reviewsNumber;
     public array $shortMilestones;
+    public string $name;
 
     //visibility
 
@@ -26,7 +27,7 @@ class TripsListItem
      * @param int|null $reviewsNumber
      * @param array $shortMilestones
      */
-    public function __construct(string $objID, string $ownerID, int $startDate, int $endDate, ?string $tags, ?string $mainImage, ?int $reviewsNumber, array $shortMilestones)
+    public function __construct(string $objID, string $ownerID, int $startDate, int $endDate, ?string $tags, ?string $mainImage, ?int $reviewsNumber, array $shortMilestones, string $name)
     {
         $this->objID = $objID;
         $this->ownerID = $ownerID;
@@ -36,6 +37,7 @@ class TripsListItem
         $this->mainImage = $mainImage;
         $this->reviewsNumber = $reviewsNumber;
         $this->shortMilestones = $shortMilestones;
+        $this->name = $name;
     }
 
 
