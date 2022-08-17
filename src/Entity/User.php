@@ -67,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->trips = new ArrayCollection();
         $this->tripsRoles = new ArrayCollection();
+        $this->isGuide = false;
     }
 
     public function getId(): ?int
@@ -74,9 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    public function setId(?int $id): self
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
