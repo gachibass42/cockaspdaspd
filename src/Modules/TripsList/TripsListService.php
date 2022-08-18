@@ -52,8 +52,8 @@ class TripsListService
         return new TripsListResponse($items);
     }
 
-    public function getTripsListWithLocation (string $locationID): TripsListResponse{
-
+    public function getTripsListWithLocation (string $locationID): TripsListResponse
+    {
         $trips = $this->tripRepository->getTripsWithLocation($locationID);
         //dump($trips);
         return $this->mapTripsToResponse($trips);

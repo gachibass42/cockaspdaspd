@@ -411,7 +411,8 @@ class SyncerService
         }
     }
 
-    public function getSyncerResponse($sessionID): SyncResponseList {
+    public function getSyncerResponse($sessionID): SyncResponseList
+    {
         $responseList = new SyncResponseList();
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $sessionID ?? "", 'requestHandlingStatus' => $this->requestHandlingStatus ?? "Commit"]);
         $responseList->items[] = $syncer;

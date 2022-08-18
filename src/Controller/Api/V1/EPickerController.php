@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\V1;
 
+use App\Controller\JsonResponseTrait;
 use App\Modules\EPicker\EPickerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,7 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EPickerController extends AbstractController
 {
-    #[Route('/api/epicker', name: 'app_e_picker')]
+    use JsonResponseTrait;
+
+    #[Route('/epicker', name: 'api_v1_e_picker')]
     public function index(Request $request, EPickerService $service): JsonResponse
     {
         $item = array_pop(json_decode($request->getContent(),true)['items']);
@@ -21,6 +24,7 @@ class EPickerController extends AbstractController
             $service->saveMessage($name, $description, $additional);
         }
         $stub['items'] = array();
-        return $this->json($stub);
+
+        return $this->successResponse($stub);
     }
 }

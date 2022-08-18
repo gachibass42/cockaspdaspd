@@ -56,7 +56,8 @@ class TripDetailsService
         );
     }
 
-    public function getTripDetailsByObjectID (string $tripID): TripDetailsResponse {
+    public function getTripDetailsByObjectID (string $tripID): TripDetailsResponse
+    {
         $trip = $this->tripRepository->findOneBy(['objID'=>$tripID]);
         $tripObject = new TripDetailsObject(
             $trip->getObjId(),

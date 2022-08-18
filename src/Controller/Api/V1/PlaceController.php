@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\V1;
 
+use App\Controller\JsonResponseTrait;
 use App\Helpers\TravelpayoutsIATAParser;
 use App\Modules\LocationAutocomplete\LocationAutocompleteService;
 use App\Modules\LocationDetails\LocationDetailsService;
@@ -11,12 +12,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class PlaceController extends AbstractController
 {
+    use JsonResponseTrait;
+
     #[Route('/place/autocomplete', name: 'api_v1_place_autocomplete')]
     public function autocomplete(Request $request, NormalizerInterface $normalizer, LocationAutocompleteService $autocompleteService): JsonResponse
     {
@@ -24,12 +26,13 @@ class PlaceController extends AbstractController
         $type = $request->query->get('type') != null ? $request->query->get('type') : "";
         $sessionID = $request->query->get('session');
         if (!$text) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Text is required');
+            return $this->errorResponse(error: 'Text is required', statusCode: Response::HTTP_BAD_REQUEST);
         }
 
         $predictions = $autocompleteService->getLocationsSearchText($text, $sessionID, $type);
         $data = $normalizer->normalize($predictions, 'json', ['groups' => 'location_predictions']);
-        return new JsonResponse(['items' => $data]);
+
+        return $this->successResponse($data);
     }
 
     /*#[Route('/place/search', name: 'api_v1_place_search')]
@@ -64,12 +67,12 @@ class PlaceController extends AbstractController
         } elseif (isset($latitude) && isset($longitude) && isset($name)){
             $location = $detailsService->prepareLocationWithCoordinates((float)$latitude,(float)$longitude,$name, $type);
         } else {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
+            return $this->errorResponse(error: 'ID is required', statusCode: Response::HTTP_BAD_REQUEST);
         }
 
-        //$data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
+        $data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
 
-        return $this->json($location);//new JsonResponse(['items' => $data]);
+        return $this->successResponse(['location' => $data]);
     }
 
     #[Route('/place/address', name: 'api_v1_place_get_by_address')]
@@ -80,16 +83,16 @@ class PlaceController extends AbstractController
         if (isset($address)) {
             $location = $detailsService->getPlaceDetailsByAddress($address);
         } else {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'ID is required');
+            return $this->errorResponse(error: 'ID is required', statusCode: Response::HTTP_BAD_REQUEST);
         }
 
-        //$data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
+        $data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
 
-        return $this->json($location);//new JsonResponse(['items' => $data]);
+        return $this->successResponse(['location' => $data]);
     }
 
     #[Route('/place/coordinates', name: 'api_v1_place_get_by_coordinates')]
-    public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService): JsonResponse
+    public function getPlaceByCoordinates (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
         $latitude = $request->query->get('lat');
         $longitude = $request->query->get('lon');
@@ -99,10 +102,12 @@ class PlaceController extends AbstractController
         if (isset($latitude) && isset($longitude) && isset($name)){
             $location = $detailsService->prepareLocationWithCoordinates((float)$latitude,(float)$longitude,$name, $type);
         } else {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'More parameters is required');
+            return $this->errorResponse(error: 'More parameters is required', statusCode: Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json($location);//new JsonResponse(['items' => $data]);
+        $data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
+
+        return $this->successResponse(['location' => $data]);
     }
 
     /*#[Route('place/add', name: 'api_v1_add_new_place')]
@@ -123,7 +128,6 @@ class PlaceController extends AbstractController
             $travelpayoutsIATAParser->parseAirlines();
         }
 
-        return $this->json('{"status":"OK"}');
+        return $this->successResponse(['status' => 'OK']);
     }
-
 }

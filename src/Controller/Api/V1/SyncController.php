@@ -1,18 +1,21 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\V1;
 
+use App\Controller\JsonResponseTrait;
 use App\Modules\Syncer\SyncerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SyncController extends AbstractController
 {
-    #[Route('api/sync', name: 'app_sync')]
-    public function sync(Request $request, SyncerService $syncerService): JsonResponse
+    use JsonResponseTrait;
+
+    #[Route('/sync', name: 'api_v1_app_sync')]
+    public function sync(Request $request, SyncerService $syncerService, NormalizerInterface $normalizer): JsonResponse
     {
         $status = $request->query->get('status');
         $sessionTimestamp = $request->query->get('syncSessionDate');
@@ -23,14 +26,15 @@ class SyncController extends AbstractController
                 $syncerService->failedSyncTry($this->getAuthToken($request),$sessionTimestamp);
             }
 
-            return $this->json($syncerService->getSyncerResponse($request->query->get('sessionID')));
+            $data = $normalizer->normalize($syncerService->getSyncerResponse($request->query->get('sessionID')), 'json');
+            return $this->successResponse($data);
         }
 
         $json = json_decode($request->getContent(),true);
-        //dump ($json);
         $syncerService->processRequestObjectsArray($json['items']);
 
-        return $this->json($syncerService->getSyncResponse($this->getAuthToken($request)),200,[],[]);
+        $data = $normalizer->normalize($syncerService->getSyncResponse($this->getAuthToken($request)), 'json');
+        return $this->successResponse($data);
     }
 
     private function getAuthToken(Request $request): ?string

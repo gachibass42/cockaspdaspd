@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\V1;
 
-use App\Helpers\FileManager\FileManagerService;
+use App\Controller\JsonResponseTrait;
 use App\Modules\CarrierInfo\CarrierInfoService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,23 +11,25 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CarrierInfoController extends AbstractController
 {
+    use JsonResponseTrait;
 
     public function __construct(private CarrierInfoService $carrierInfoService)
     {
     }
 
-    #[Route('api/carrier/list', name: 'carriers_list')]
+    #[Route('/carrier/list', name: 'api_v1_carriers_list')]
     public function getCarriersList (Request $request): JsonResponse
     {
-        return $this->json($this->carrierInfoService->getCarriersList($request->query->get('type')));
+        return $this->successResponse(['list' => $this->carrierInfoService->getCarriersList($request->query->get('type'))]);
     }
 
-    #[Route('api/carrier/sync', name: 'carriers_sync')]
+    #[Route('/carrier/sync', name: 'api_v1_carriers_sync')]
     public function loadCarriersList (Request $request): JsonResponse
     {
         $items = json_decode($request->getContent(), true);
         //dump ($items);
         $this->carrierInfoService->loadCarriers($items['items']);
-        return $this->json("{\"status\": \"OK\"}");
+
+        return $this->successResponse(['status' => 'OK']);
     }
 }

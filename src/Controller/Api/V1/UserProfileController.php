@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api\V1;
 
+use App\Controller\JsonResponseTrait;
 use App\Entity\User;
-use App\Helpers\FileManager\FileManagerService;
 use App\Modules\UserProfile\UserProfileService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class UserProfileController extends AbstractController
 {
+    use JsonResponseTrait;
 
     public function __construct(private UserProfileService $userProfileService)
     {
     }
 
-    #[Route('api/user/profile', name: 'user_profile')]
-    public function userProfile(Request $request): Response
+    #[Route('/user/profile', name: 'api_v1_user_profile')]
+    public function userProfile(Request $request, NormalizerInterface $normalizer): Response
     {
         $user = new User();
         $user->setId($request->query->getInt('id'));
@@ -26,11 +28,13 @@ class UserProfileController extends AbstractController
         /*return $this->render('user_profile/index.html.twig', [
             'controller_name' => 'UserProfileController',
         ]);*/
-        return $this->json($this->userProfileService->getUserProfile($user));
+        $data = $normalizer->normalize($this->userProfileService->getUserProfile($user), 'json');
+
+        return $this->successResponse($data);
     }
 
-    #[Route('api/user/profile/update', name: 'user_profile_update')]
-    public function userProfileUpdate(Request $request):Response
+    #[Route('/user/profile/update', name: 'api_v1_user_profile_update')]
+    public function userProfileUpdate(Request $request, NormalizerInterface $normalizer):Response
     {
         /*$user = new User();
         if ($request->files->count()>0){
@@ -44,12 +48,17 @@ class UserProfileController extends AbstractController
         }
         */
          //TODO: refactor auth and getting token
-        return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
+        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)), 'json');
+
+        return $this->successResponse($data);
     }
 
-    #[Route('api/user/profile/update/avatar', name: 'user_profile_update_avatar')]
-    public function userProfileUpdateAvatar(Request $request, FileManagerService $fileManagerService):Response{
-        return $this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
+    #[Route('/user/profile/update/avatar', name: 'api_v1_user_profile_update_avatar')]
+    public function userProfileUpdateAvatar(Request $request, NormalizerInterface $normalizer):Response
+    {
+        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)), 'json');
+
+        return $this->successResponse($data);
     }
 
     private function getAuthToken(Request $request): ?string
