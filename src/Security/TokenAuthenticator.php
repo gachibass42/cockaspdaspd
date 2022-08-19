@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Controller\JsonResponseTrait;
 use App\Modules\UserProfile\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -18,6 +20,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class TokenAuthenticator extends AbstractAuthenticator
 {
+    use JsonResponseTrait;
+
     public function __construct(
         private UserRepository $userRepository
     ) {}
@@ -50,6 +54,10 @@ class TokenAuthenticator extends AbstractAuthenticator
                 throw new UserNotFoundException();
             }
 
+            if ($user->isTokenExpired()) {
+                throw new CredentialsExpiredException();
+            }
+
             return $user;
         }));
     }
@@ -61,10 +69,6 @@ class TokenAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $data = [
-            'error' => strtr($exception->getMessageKey(), $exception->getMessageData()),
-        ];
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+        return $this->errorResponse(error: strtr($exception->getMessageKey(), $exception->getMessageData()), statusCode: Response::HTTP_UNAUTHORIZED);
     }
 }

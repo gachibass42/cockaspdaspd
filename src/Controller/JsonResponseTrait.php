@@ -11,8 +11,7 @@ trait JsonResponseTrait
     protected function errorResponse(?string $error = null, $data = [], $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
     {
         return new JsonResponse([
-            'items' => [
-                ...($error !== null ? ['error' => $error] : []),
+            'items' => ($error !== null ? ['error' => $error] : []) + [
                 'data' => $data,
             ]
         ], $statusCode);

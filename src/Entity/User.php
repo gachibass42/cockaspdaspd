@@ -63,9 +63,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 16, nullable: true)]
     private ?string $sex;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $apiTokenExpiresAt = null;
+
     public function __construct()
     {
-        $this->trips = new ArrayCollection();
+//        $this->trips = new ArrayCollection();
         $this->tripsRoles = new ArrayCollection();
         $this->isGuide = false;
     }
@@ -336,5 +339,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sex = $sex;
 
         return $this;
+    }
+
+    public function getApiTokenExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->apiTokenExpiresAt;
+    }
+
+    public function setApiTokenExpiresAt(?\DateTimeImmutable $apiTokenExpiresAt): self
+    {
+        $this->apiTokenExpiresAt = $apiTokenExpiresAt;
+
+        return $this;
+    }
+
+    public function isTokenExpired(): bool
+    {
+        return new \DateTimeImmutable() > $this->apiTokenExpiresAt;
     }
 }
