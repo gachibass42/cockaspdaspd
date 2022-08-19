@@ -14,11 +14,16 @@ class CarrierInfoService
     {
     }
 
-    public function getCarriersList(string $type): CarriersListResponse {
-        $carriers = new CarriersListResponse([]);
+
+    /**
+     * @param string $type
+     * @return CarriersListItem[]
+     */
+    public function getCarriersList(string $type): array {
+        $carriers = [];
         if ($type == 'airline') {
             $carriers = $this->airlineRepository->findAll();
-            return new CarriersListResponse(array_map(
+            return array_map(
                 fn (Airline $airline) => new CarriersListItem(
                     $airline->getName(),
                     $airline->getCode(),
@@ -28,7 +33,7 @@ class CarrierInfoService
                     $airline->getObjID()
                 ),
                 $carriers
-            ));
+            );
         }
 
        return $carriers;

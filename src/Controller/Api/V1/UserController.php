@@ -27,12 +27,12 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/login', name: 'api_v1_user_login', methods: ['POST'])]
+    #[Route('/user/login', name: 'api_v1_user_login', methods: ['GET'])]
     public function login(Request $request, Authentication $authentication): JsonResponse
     {
         $data = $authentication->login(
-            $request->request->get('username'),
-            $request->request->get('password')
+            $request->get('username'),
+            $request->get('password')
         );
 
         if ($data === null) {
@@ -41,8 +41,6 @@ class UserController extends AbstractController
             ], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->successResponse([
-            'apiToken' => $data['apiToken'],
-        ]);
+        return $this->successResponse([$data]);
     }
 }

@@ -56,7 +56,12 @@ class TripDetailsService
         );
     }
 
-    public function getTripDetailsByObjectID (string $tripID): TripDetailsResponse
+
+    /**
+     * @param string $tripID
+     * @return TripDetailsObject[]
+     */
+    public function getTripDetailsByObjectID (string $tripID): array
     {
         $trip = $this->tripRepository->findOneBy(['objID'=>$tripID]);
         $tripObject = new TripDetailsObject(
@@ -75,6 +80,6 @@ class TripDetailsService
             $trip->getCost(),
             $trip->getCostDescription()
         );
-        return new TripDetailsResponse([$tripObject]);
+        return [$tripObject];
     }
 }

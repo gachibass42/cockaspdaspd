@@ -35,21 +35,6 @@ class PlaceController extends AbstractController
         return $this->successResponse($data);
     }
 
-    /*#[Route('/place/search', name: 'api_v1_place_search')]
-    public function search(Request $request, LocationManager $locationManager, NormalizerInterface $normalizer): JsonResponse
-    {
-        $text = $request->query->get('query');
-        $sessionID = $request->query->get('session');
-        if (!$text) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Text is required');
-        }
-
-        $locations = $locationManager->getLocationsSearchText($text, $sessionID);
-        $data = $normalizer->normalize($locations, 'json', ['groups' => 'location_details']);
-
-        return new JsonResponse(['items' => $data]);
-    }*/
-
     #[Route('/place/details', name: 'api_v1_place_get_by_id')]
     public function getPlace(Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer): JsonResponse
     {
@@ -109,14 +94,6 @@ class PlaceController extends AbstractController
 
         return $this->successResponse(['location' => $data]);
     }
-
-    /*#[Route('place/add', name: 'api_v1_add_new_place')]
-    public function addNewPlace (Request $request, LocationDetailsService $detailsService, NormalizerInterface $normalizer)
-    {
-
-        //$this->json($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)));
-        $detailsService->addNewLocationFromExternal($request->getContent());
-    }*/
 
     #[Route('/place/parseIATA', name: 'api_v1_parse_iata')]
     public function parseIATA (Request $request, TravelpayoutsIATAParser $travelpayoutsIATAParser) : JsonResponse

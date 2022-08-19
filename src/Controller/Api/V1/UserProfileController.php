@@ -22,13 +22,13 @@ class UserProfileController extends AbstractController
     #[Route('/user/profile', name: 'api_v1_user_profile')]
     public function userProfile(Request $request, NormalizerInterface $normalizer): Response
     {
-        $user = new User();
+        /*$user = new User();
         $user->setId($request->query->getInt('id'));
-        $user->setApiToken($this->getAuthToken($request)); //TODO: use another way to pass the token
+        $user->setApiToken($this->getAuthToken($request));*/ //TODO: use another way to pass the token
         /*return $this->render('user_profile/index.html.twig', [
             'controller_name' => 'UserProfileController',
         ]);*/
-        $data = $normalizer->normalize($this->userProfileService->getUserProfile($user), 'json');
+        $data = $normalizer->normalize($this->userProfileService->getUserProfile($this->getUser()->getUserIdentifier()), 'json');
 
         return $this->successResponse($data);
     }
@@ -48,7 +48,7 @@ class UserProfileController extends AbstractController
         }
         */
          //TODO: refactor auth and getting token
-        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)), 'json');
+        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getUser()->getUserIdentifier()), 'json');
 
         return $this->successResponse($data);
     }
@@ -56,17 +56,8 @@ class UserProfileController extends AbstractController
     #[Route('/user/profile/update/avatar', name: 'api_v1_user_profile_update_avatar')]
     public function userProfileUpdateAvatar(Request $request, NormalizerInterface $normalizer):Response
     {
-        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getAuthToken($request)), 'json');
+        $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getUser()->getUserIdentifier()), 'json');
 
         return $this->successResponse($data);
-    }
-
-    private function getAuthToken(Request $request): ?string
-    {
-        if ($request->headers->get('auth') != null) {
-            $auth = explode(" ",$request->headers->get('auth'));
-            return $auth[1];
-        }
-        return null;
     }
 }

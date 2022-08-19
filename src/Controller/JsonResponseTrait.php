@@ -18,9 +18,9 @@ trait JsonResponseTrait
         ], $statusCode);
     }
 
-    protected function successResponse($data = []): JsonResponse
+    protected function successResponse(array $dataArray = []/*array $data = []*/): JsonResponse
     {
-        $response = new JsonResponse(['items' => $data], Response::HTTP_OK);
+        $response = new JsonResponse(['items' => $dataArray], Response::HTTP_OK);
         $responseHeaders = [
             'Content-Length' => mb_strlen($response->getContent()),
         ];

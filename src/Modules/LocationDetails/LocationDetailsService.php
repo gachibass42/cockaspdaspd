@@ -89,7 +89,13 @@ class LocationDetailsService
         ) : null;
     }
 
-    private function getLocationDetailsResponse(?Location $location, ?string $type = ""): LocationDetailsResponse {
+
+    /**
+     * @param Location|null $location
+     * @param string|null $type
+     * @return LocationDetailsItem[]
+     */
+    private function getLocationDetailsResponse(?Location $location, ?string $type = ""): array {
         $items = [];
         if (isset($location)) {
             $responseItem = $this->mapLocationToResponseItem($location, $type);
@@ -100,11 +106,20 @@ class LocationDetailsService
             }
             $items[0] = $responseItem;
         }
-        return new LocationDetailsResponse($items);
+        return $items;
     }
 
+
     //get Location by coordinates and set front name and type
-    public function prepareLocationWithCoordinates (float $latitude, float $longitude, string $name, ?string $type): LocationDetailsResponse {
+
+    /**
+     * @param float $latitude
+     * @param float $longitude
+     * @param string $name
+     * @param string|null $type
+     * @return LocationDetailsItem[]
+     */
+    public function prepareLocationWithCoordinates (float $latitude, float $longitude, string $name, ?string $type): array {
         $location = $this->googlePlacesApi->getPlacesArrayByCoordinates($latitude,$longitude);
         $result = null;
         if (isset($location['premise'])) {
@@ -131,18 +146,18 @@ class LocationDetailsService
     /**
      * @param string $externalID
      * @param string|null $type
-     * @return LocationDetailsResponse
+     * @return LocationDetailsItem[]
      */
-    public function getPlaceDetailsByExternalID (string $externalID, ?string $type = ""): LocationDetailsResponse {
+    public function getPlaceDetailsByExternalID (string $externalID, ?string $type = ""): array {
         $location = $this->getLocationByExternalID ($externalID);
         return $this->getLocationDetailsResponse ($location, $type);
 
     }
 
     /**
-     * @return LocationDetailsResponse
+     * @return LocationDetailsItem[]
      */
-    public function getPlaceDetails (string $objID): LocationDetailsResponse {
+    public function getPlaceDetails (string $objID): array {
         $location = $this->entityManager->find(Location::class,$objID);
         return $this->getLocationDetailsResponse($location);
     }
@@ -208,7 +223,12 @@ class LocationDetailsService
 
     }*/
 
-    public function getPlaceDetailsByAddress (string $address, ?string $type = "address"): LocationDetailsResponse
+    /**
+     * @param string $address
+     * @param string|null $type
+     * @return LocationDetailsItem[]
+     */
+    public function getPlaceDetailsByAddress (string $address, ?string $type = "address"): array
     {
         $location = $this->googlePlacesApi->getPlaceByAddress($address);
         if (isset($location)) {

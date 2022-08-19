@@ -6,9 +6,6 @@ use App\Entity\Trip;
 use App\Helpers\FileManager\FileManagerService;
 use App\Modules\TripsList\Model\ShortMilestone;
 use App\Modules\TripsList\Model\TripsListItem;
-use App\Modules\TripsList\Model\TripsListResponse;
-use App\Repository\CommentRepository;
-use App\Repository\LocationRepository;
 use App\Repository\MilestoneRepository;
 use App\Repository\TripRepository;
 
@@ -23,9 +20,9 @@ class TripsListService
 
     /**
      * @param Trip[]|null $trips
-     * @return TripsListResponse
+     * @return TripsListItem[]
      */
-    private function mapTripsToResponse (?array $trips): TripsListResponse {
+    private function mapTripsToResponse (?array $trips): array {
         $items = [];
         if (isset($trips)) {
             $shortMilestones = [];
@@ -49,10 +46,15 @@ class TripsListService
             //dump($items);
 
         }
-        return new TripsListResponse($items);
+        return $items;
     }
 
-    public function getTripsListWithLocation (string $locationID): TripsListResponse
+
+    /**
+     * @param string $locationID
+     * @return TripsListItem[]
+     */
+    public function getTripsListWithLocation (string $locationID): array
     {
         $trips = $this->tripRepository->getTripsWithLocation($locationID);
         //dump($trips);

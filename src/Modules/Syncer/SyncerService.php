@@ -355,7 +355,10 @@ class SyncerService
 
     }
 
-    public function getSyncResponse(string $apiToken):SyncResponseList {
+    /**
+     * @return SyncResponseListItem[]
+     */
+    public function getSyncResponse():array {
         $repositories = [
             "Trip" => $this->tripRepository,
             "Location" => $this->locationRepository,
@@ -371,9 +374,9 @@ class SyncerService
             $this->comments,
             $this->checklists
         );
-        $responseList = new SyncResponseList();
+        $responseList = [];
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $this->sessionID, 'requestHandlingStatus' => $this->requestHandlingStatus]);
-        $responseList->items[] = $syncer;
+        $responseList[] = $syncer;
         $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate;// ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
         //dump($lastSuccessfulSyncDate);
         foreach ($repositories as $objectType => $repository) {
@@ -382,7 +385,7 @@ class SyncerService
             foreach ($dbObjects as $dbObject) {
                 $objID = $dbObject->objID;
                 if (!isset($requestObjects[$objID]) || $dbObject->syncStatusDateTime > (int)$requestObjects[$objID]["syncStatusDateTime"]) {
-                    $responseList->items[] = new SyncResponseListItem($objectType,$dbObject);
+                    $responseList[] = new SyncResponseListItem($objectType,$dbObject);
                 }
 
             }
@@ -393,29 +396,35 @@ class SyncerService
         return $responseList;
     }
 
-    public function commitSyncSession($apiToken, $syncTimestamp): void
+    public function commitSyncSession(string $username, $syncTimestamp): void
     {
-        $user = $this->userRepository->findOneBy(['apiToken' => $apiToken]);
+        $user = $this->userRepository->findOneBy(['username' => $username]);
         if (isset($user)) {
             $user->setLastSuccessfulSyncDate(\DateTime::createFromFormat('U', isset($syncTimestamp) ? (int)$syncTimestamp : 1));
             $this->userRepository->updateUser($user);
         }
     }
 
-    public function failedSyncTry($apiToken, $syncTimestamp): void
+    public function failedSyncTry(string $username, $syncTimestamp): void
     {
-        $user = $this->userRepository->findOneBy(['apiToken' => $apiToken]);
+        $user = $this->userRepository->findOneBy(['username' => $username]);
         if (isset($user)) {
             $user->setLastSyncTryDate(isset($syncTimestamp) ? \DateTime::createFromFormat('U', (int)$syncTimestamp) : new \DateTime());
             $this->userRepository->updateUser($user);
         }
     }
 
-    public function getSyncerResponse($sessionID): SyncResponseList
+
+    /**
+     * @param $sessionID
+     * @return SyncResponseListItem[]
+     */
+    public function getSyncerResponse($sessionID): array
     {
-        $responseList = new SyncResponseList();
+        //$responseList = new SyncResponseList();
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $sessionID ?? "", 'requestHandlingStatus' => $this->requestHandlingStatus ?? "Commit"]);
-        $responseList->items[] = $syncer;
-        return $responseList;
+        //$responseList->items[] = $syncer;
+        //return $responseList;
+        return [$syncer];
     }
 }

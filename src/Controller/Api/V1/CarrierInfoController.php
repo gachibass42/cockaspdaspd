@@ -20,7 +20,7 @@ class CarrierInfoController extends AbstractController
     #[Route('/carrier/list', name: 'api_v1_carriers_list')]
     public function getCarriersList (Request $request): JsonResponse
     {
-        return $this->successResponse(['list' => $this->carrierInfoService->getCarriersList($request->query->get('type'))]);
+        return $this->successResponse($this->carrierInfoService->getCarriersList($request->query->get('type')));
     }
 
     #[Route('/carrier/sync', name: 'api_v1_carriers_sync')]

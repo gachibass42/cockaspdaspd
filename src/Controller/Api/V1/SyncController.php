@@ -21,9 +21,9 @@ class SyncController extends AbstractController
         $sessionTimestamp = $request->query->get('syncSessionDate');
         if (isset($status) && isset($sessionTimestamp)) {
             if ($status == "syncResponseSuccess") {
-                $syncerService->commitSyncSession($this->getAuthToken($request),$sessionTimestamp);
+                $syncerService->commitSyncSession($this->getUser()->getUserIdentifier(),$sessionTimestamp);
             } elseif ($status == "syncResponseRejected") {
-                $syncerService->failedSyncTry($this->getAuthToken($request),$sessionTimestamp);
+                $syncerService->failedSyncTry($this->getUser()->getUserIdentifier(),$sessionTimestamp);
             }
 
             $data = $normalizer->normalize($syncerService->getSyncerResponse($request->query->get('sessionID')), 'json');
@@ -33,10 +33,10 @@ class SyncController extends AbstractController
         $json = json_decode($request->getContent(),true);
         $syncerService->processRequestObjectsArray($json['items']);
 
-        $data = $normalizer->normalize($syncerService->getSyncResponse($this->getAuthToken($request)), 'json');
+        $data = $normalizer->normalize($syncerService->getSyncResponse(), 'json');
         return $this->successResponse($data);
     }
-
+/*
     private function getAuthToken(Request $request): ?string
     {
         if ($request->headers->get('auth') != null) {
@@ -44,5 +44,5 @@ class SyncController extends AbstractController
             return $auth[1];
         }
         return null;
-    }
+    }*/
 }

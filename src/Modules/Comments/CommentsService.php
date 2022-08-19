@@ -15,8 +15,13 @@ class CommentsService
     {
     }
 
-    public function getCommentsForObject (string $linkedObjID): CommentsResponse {
-        return new CommentsResponse(array_map(fn (Comment $comment) => new CommentItem(
+
+    /**
+     * @param string $linkedObjID
+     * @return CommentItem[]
+     */
+    public function getCommentsForObject (string $linkedObjID): array {
+        return array_map(fn (Comment $comment) => new CommentItem(
             $comment->getObjId(),
             $comment->getLinkedObjID(),
             $comment->getType(),
@@ -25,6 +30,6 @@ class CommentsService
             $comment->getTags(),
             $comment->getDate()->getTimestamp(),
             $comment->getContent()
-        ),$this->commentRepository->findBy(['linkedObjID' => $linkedObjID])));
+        ),$this->commentRepository->findBy(['linkedObjID' => $linkedObjID]));
     }
 }

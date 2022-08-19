@@ -24,10 +24,10 @@ class TokenAuthenticator extends AbstractAuthenticator
 
     public function supports(Request $request): ?bool
     {
-        if ('api_v1_user_register' === $request->attributes->get('_route') && $request->isMethod('POST')) {
+        if ('api_v1_user_register' === $request->attributes->get('_route') && $request->isMethod('GET')) {
             return false;
         }
-        if ('api_v1_user_login' === $request->attributes->get('_route') && $request->isMethod('POST')) {
+        if ('api_v1_user_login' === $request->attributes->get('_route') && $request->isMethod('GET')) {
             return false;
         }
 

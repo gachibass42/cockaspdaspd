@@ -13,16 +13,20 @@ class UsersListService
     {
     }
 
-    public function getUsersList(): UsersListResponse {
+
+    /**
+     * @return UsersListItem[]
+     */
+    public function getUsersList(): array {
         $users = $this->usersListRepository->findAll();
 
-        return new UsersListResponse(array_map(
+        return array_map(
             fn (User $user) => new UsersListItem(
                 $user->getId(),
                 $user->getName(),
-                $this->urlHelper->getAbsoluteUrl('/api/image/'.$user->getAvatar())
+                $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$user->getAvatar())
             ),
             $users
-        ));
+        );
     }
 }
