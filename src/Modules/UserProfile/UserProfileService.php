@@ -7,16 +7,11 @@ use App\Helpers\FileManager\FileManagerService;
 use App\Modules\UserProfile\Model\UserProfile;
 use App\Modules\UserProfile\Model\UserProfileResponse;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
-//use Symfony\Component\HttpFoundation\File\File;
 
 class UserProfileService
 {
@@ -46,21 +41,22 @@ class UserProfileService
         } while ($profile->getName() == null);*/
         $items = [];
         if (isset($profile)) {
-            $items[] = new UserProfile(
+            $items[] = $this->mapToUserProfile($profile); /*new UserProfile(
                 (string)$profile->getId(),
                 $profile->getName(),
                 $profile->getPhone(),
                 $profile->getDescription(),
                 $profile->getIsGuide(),
-                $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$profile->getAvatar()), //TODO: move images directory path to global
+                $profile->getAvatar() != null ? $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$profile->getAvatar()) : null, //TODO: move images directory path to global
                 $profile->getHomeLocationID(),
                 $profile->getSex()
-            );
+            );*/
+
         }
         return $items;
     }
 
-    public function updateUserProfile(string $data, int $username = null):UserProfileResponse
+    public function updateUserProfile(string $data, string $username = null):array
     {
         //serialize data from request
         $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
@@ -76,14 +72,14 @@ class UserProfileService
             $userItem = array_pop($requestData->items);
         }
         //Get user from DB and update properties according to user requestData
-        $profile = $this->userRepository->findOneBy(['username'=>$username]); //TODO: get user by token, check auth
+        $profile = $this->userRepository->findOneBy(['username'=>$username]);
         if (isset($userItem) && $profile != null){
-            $profile->setName($userItem['name']);
+            $profile->setName($userItem['name'] ?? null);
             $profile->setIsGuide($userItem['isGuide']);
-            $profile->setDescription($userItem['userDescription']);
-            $profile->setPhone($userItem['phone']);
-            $profile->setSex($userItem['sex']);
-            $profile->setHomeLocationID($userItem['homeLocationID']);
+            $profile->setDescription($userItem['userDescription'] ?? null);
+            $profile->setPhone($userItem['phone'] ?? null);
+            $profile->setSex($userItem['sex'] ?? null);
+            $profile->setHomeLocationID($userItem['homeLocationID'] ?? null);
             if (isset($userItem['avatar']) && $userItem['avatar'] != null){
                 $filename = $this->fm->saveImage(base64_decode($userItem['avatar']), $userItem['avatarFileName']);
                 if ($filename != null){
@@ -95,6 +91,20 @@ class UserProfileService
             print 'User trouble';
         }
         $profile = $this->userRepository->findOneBy(['username'=>$username]);
-        return $this->getUserProfile($profile);
+        //return $this->getUserProfile($profile);
+        return [$this->mapToUserProfile($profile)];
+    }
+
+    private function mapToUserProfile(User $profile): UserProfile {
+        return new UserProfile(
+            (string)$profile->getId(),
+            $profile->getName(),
+            $profile->getPhone(),
+            $profile->getDescription(),
+            $profile->getIsGuide(),
+            $profile->getAvatar() != null ? $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$profile->getAvatar()) : null, //TODO: move images directory path to global
+            $profile->getHomeLocationID(),
+            $profile->getSex()
+        );
     }
 }

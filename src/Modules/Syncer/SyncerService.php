@@ -8,8 +8,8 @@ use App\Entity\Location;
 use App\Entity\Milestone;
 use App\Entity\Trip;
 use App\Entity\TripUserRole;
+use App\Entity\User;
 use App\Helpers\FileManager\FileManagerService;
-use App\Modules\Syncer\Model\SyncResponseList;
 use App\Modules\Syncer\Model\SyncResponseListItem;
 use App\Modules\UserProfile\UserRepository;
 use App\Repository\AirlineRepository;
@@ -35,7 +35,8 @@ class SyncerService
     private array $corpses = [];
     private array $comments = [];
     private array $images = [];
-    private ?\DateTime $lastSuccessfulSyncDate;
+    private ?\DateTimeImmutable $lastSuccessfulSyncDate;
+    private User $user;
 
     public function __construct(private FileManagerService $fileManagerService,
                                 private LocationRepository $locationRepository,
@@ -315,7 +316,7 @@ class SyncerService
                     $this->comments[$object['object']['objID']] = $object['object'];
                     break;
                 case 'Syncer':
-                    $this->lastSuccessfulSyncDate = \DateTime::createFromFormat(
+                    $this->lastSuccessfulSyncDate = \DateTimeImmutable::createFromFormat(
                         'U',
                         isset($object["object"]["lastSuccessfulSyncDate"]) ?
                             (int)($object["object"]["lastSuccessfulSyncDate"]) - SyncerService::LASTSUCCESSFULSYNCSHIFTSECONDS : 1);
@@ -358,7 +359,8 @@ class SyncerService
     /**
      * @return SyncResponseListItem[]
      */
-    public function getSyncResponse():array {
+    public function getSyncResponse(string $username):array {
+        $this->user = $this->userRepository->findOneBy(['username' => $username]);
         $repositories = [
             "Trip" => $this->tripRepository,
             "Location" => $this->locationRepository,
@@ -374,25 +376,73 @@ class SyncerService
             $this->comments,
             $this->checklists
         );
-        $responseList = [];
+        //$responseList = [];
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $this->sessionID, 'requestHandlingStatus' => $this->requestHandlingStatus]);
-        $responseList[] = $syncer;
-        $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate;// ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
+        //$responseList[] = $syncer;
+        $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate ?? \DateTimeImmutable::createFromFormat('U', 1);// ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
         //dump($lastSuccessfulSyncDate);
-        foreach ($repositories as $objectType => $repository) {
+        /*foreach ($repositories as $objectType => $repository) {
             $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate ?? \DateTime::createFromFormat('U', 1));
 
-            foreach ($dbObjects as $dbObject) {
-                $objID = $dbObject->objID;
-                if (!isset($requestObjects[$objID]) || $dbObject->syncStatusDateTime > (int)$requestObjects[$objID]["syncStatusDateTime"]) {
-                    $responseList[] = new SyncResponseListItem($objectType,$dbObject);
-                }
 
-            }
+        }*/
+
+        $locationsResponse = $this->mapToSyncResponseListItems($this->locationRepository->getObjectsForSync($lastSuccessfulSyncDate),
+            array_merge($this->cities,$this->countries,$this->locations),
+            'Location'
+        );
+
+        $dbTrips = $this->tripRepository->getObjectsForSync($lastSuccessfulSyncDate, $this->user->getId());
+        $tripsResponse = $this->mapToSyncResponseListItems(
+            $dbTrips,
+            $this->trips,
+            'Trip'
+        );
+
+        $milestonesArray = [];
+        $checkListsArray = [];
+        foreach ($dbTrips as $trip) {
+            $milestonesArray = array_merge($milestonesArray,$trip->milestonesIDs);
+            $checkListsArray = array_merge($checkListsArray,$trip->checkListsIDs);
         }
 
-        //dump ($responseList);
+        $dbMilestones = count($milestonesArray) > 0 ? $this->milestoneRepository->getObjectsForSync($lastSuccessfulSyncDate,$milestonesArray) : [];
+        $milestonesResponse = $this->mapToSyncResponseListItems($dbMilestones,
+            $this->milestones,
+            'Milestone'
+        );
 
+        $dbComments = count($milestonesArray) > 0 ? $this->commentRepository->getObjectsForSync($lastSuccessfulSyncDate,$milestonesArray) : [];
+        $commentsResponse = $this->mapToSyncResponseListItems($dbComments,
+            $this->comments,
+            'Comment'
+        );
+
+        $dbChecklists = count($checkListsArray) > 0 ? $this->checkListRepository->getObjectsForSync($lastSuccessfulSyncDate,$checkListsArray) : [];
+        $checklistsResponse = $this->mapToSyncResponseListItems($dbChecklists,
+            $this->checklists,
+            'CheckList'
+        );
+
+        //dump ($responseList);
+        $responseList = array_merge($locationsResponse,$tripsResponse,$milestonesResponse,$commentsResponse,$checklistsResponse);
+        $responseList[] = $syncer;
+        return $responseList;
+    }
+
+    /**
+     * @param array $dbObjects
+     * @return SyncResponseListItem[]
+     */
+    private function mapToSyncResponseListItems(array $dbObjects, array $requestObjects, string $objectType): array {
+        $responseList = [];
+        foreach ($dbObjects as $dbObject) {
+            $objID = $dbObject->objID;
+            if (!isset($requestObjects[$objID]) || $dbObject->syncStatusDateTime > (int)$requestObjects[$objID]["syncStatusDateTime"]) {
+                $responseList[] = new SyncResponseListItem($objectType,$dbObject);
+            }
+
+        }
         return $responseList;
     }
 

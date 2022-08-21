@@ -56,14 +56,16 @@ class MilestoneRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($milestone);
     }
 
-    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+    public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, array $milestonesIDs): array {
+        $expr = $this->_em->getExpressionBuilder();
         $dbObjects = $this->createQueryBuilder('object')
-            ->where('object.syncDate > :value')
+            ->where($expr->in('object.objID', ':milestonesIDs'))
+            ->andWhere('object.syncDate > :value')
             ->setParameter('value', $lastSyncDate)
+            ->setParameter('milestonesIDs', $milestonesIDs)
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
         return (array_map(fn(Milestone $object) => new SyncObjectMilestone(
             $object->getObjID(),
             $object->getName(),

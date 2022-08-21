@@ -7,7 +7,7 @@ use App\Model\Image;
 class UserProfile
 {
     public string $id;
-    public string $name;
+    public ?string $name;
     public ?string $phone;
     public ?string $userDescription;
     public bool $isGuide;
@@ -20,7 +20,7 @@ class UserProfile
 
     /**
      * @param string $id
-     * @param string $name
+     * @param string|null $name
      * @param string|null $phone
      * @param string|null $description
      * @param bool $isGuide
@@ -28,7 +28,7 @@ class UserProfile
      * @param string|null $homeLocationID
      * @param Image|null $avatar
      */
-    public function __construct(string $id, string $name, ?string $phone, ?string $description, bool $isGuide, ?string $avatarURL, ?string $homeLocationID, ?string $sex, Image $avatar = null)
+    public function __construct(string $id, ?string $name, ?string $phone, ?string $description, bool $isGuide, ?string $avatarURL, ?string $homeLocationID, ?string $sex, Image $avatar = null)
     {
         $this->id = $id;
         $this->name = $name;

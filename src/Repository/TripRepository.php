@@ -3,12 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Trip;
+use App\Entity\TripUserRole;
 use App\Modules\Syncer\Model\SyncObjectTrip;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\expr;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -50,17 +52,38 @@ class TripRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param DateTime $lastSyncDate
+     * @param \DateTimeImmutable $lastSyncDate
+     * @param int $userID
      * @return SyncObjectTrip[]
      */
-    public function getObjectsForSync (DateTime $lastSyncDate): array {
+    public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, int $userID): array {
+        /*$expr = $this->_em->getExpressionBuilder();
+        $rolesTrips = $this->createQueryBuilder('r')
+            ->select('roles.trip')
+            ->from(TripUserRole::class,'roles')
+            ->where('roles.tripUser = :userid')
+            ->setParameter('userid', $userID)
+            ->getDQL();
         $dbObjects = $this->createQueryBuilder('object')
-            ->where('object.syncDate > :value') //TODO: select only the current user's trips (owner or is at roles)
+            ->where('object.syncDate > :value')
+            ->andWhere($expr->orX(
+                'object.owner = :userid',
+                $expr->in('object.objID',$rolesTrips)
+            ))
             ->setParameter('value', $lastSyncDate)
+            ->setParameter('userid', $userID)
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
             ->getResult()
-            ;
+            ;*/
+        $sql = "select t.* from trip t where (owner_id = :userid or obj_id in (select r.trip_id from trip_user_role r where r.trip_user_id = :userid)) and sync_date > :syncDate";
+        $resultSet = new ResultSetMappingBuilder($this->_em);
+        $resultSet->addRootEntityFromClassMetadata(Trip::class,'t');
+        $qb = $this->_em->createNativeQuery($sql,$resultSet);
+        $qb->setParameter('syncDate', $lastSyncDate, Types::DATETIME_IMMUTABLE);
+        $qb->setParameter('userid', $userID, Types::INTEGER);
+        $dbObjects = $qb->getResult();
+
         return (array_map(fn(Trip $object) => new SyncObjectTrip(
             $object->getObjId(),
             $object->getSyncDate()->getTimestamp(),

@@ -8,6 +8,7 @@ use App\Controller\JsonResponseTrait;
 use App\Helpers\TravelpayoutsIATAParser;
 use App\Modules\LocationAutocomplete\LocationAutocompleteService;
 use App\Modules\LocationDetails\LocationDetailsService;
+use PhpParser\Error;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,10 +55,9 @@ class PlaceController extends AbstractController
         } else {
             return $this->errorResponse(error: 'ID is required', statusCode: Response::HTTP_BAD_REQUEST);
         }
+        $data = $normalizer->normalize($location, 'json');
 
-        $data = $normalizer->normalize($location, 'json', ['groups' => 'location_details']);
-
-        return $this->successResponse(['location' => $data]);
+        return $this->successResponse($data);
     }
 
     #[Route('/place/address', name: 'api_v1_place_get_by_address')]

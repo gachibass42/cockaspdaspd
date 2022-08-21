@@ -23,8 +23,8 @@ class UsersListService
         return array_map(
             fn (User $user) => new UsersListItem(
                 $user->getId(),
-                $user->getName(),
-                $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$user->getAvatar())
+                $user->getName() ?? $user->getUserIdentifier(),
+                $user->getAvatar() != null ? $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$user->getAvatar()) : null
             ),
             $users
         );

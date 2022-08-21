@@ -63,14 +63,23 @@ class CommentRepository extends ServiceEntityRepository
         //$this->_em->flush();
     }
 
-    public function getObjectsForSync (\DateTime $lastSyncDate): array {
-        $dbObjects = $this->createQueryBuilder('object')
+    public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, array $linkedObjIDs): array {
+        /*$dbObjects = $this->createQueryBuilder('object')
             ->where('object.syncDate > :value')
             ->setParameter('value', $lastSyncDate)
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
             ->getResult()
-            ;
+            ;*/
+        $expr = $this->_em->getExpressionBuilder();
+        $dbObjects = $this->createQueryBuilder('object')
+            ->where($expr->in('object.linkedObjID', $linkedObjIDs))
+            ->andWhere('object.syncDate > :value')
+            ->setParameter('value', $lastSyncDate)
+            ->orderBy('object.objID', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
         return (array_map(fn(Comment $object) => new SyncObjectComment(
             $object->getSyncDate()->getTimestamp(),
             $object->getObjId(),

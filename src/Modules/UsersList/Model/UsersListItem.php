@@ -6,14 +6,14 @@ class UsersListItem
 {
     public string $id;
     public string $name;
-    public string $avatarURL;
+    public ?string $avatarURL;
 
     /**
      * @param string $id
      * @param string $name
      * @param string $avatarURL
      */
-    public function __construct(string $id, string $name, string $avatarURL)
+    public function __construct(string $id, string $name, ?string $avatarURL)
     {
         $this->id = $id;
         $this->name = $name;

@@ -46,7 +46,7 @@ class LocationRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function getObjectsForSync (\DateTime $lastSyncDate): array {
+    public function getObjectsForSync (\DateTimeImmutable $lastSyncDate): array {
         $dbObjects = $this->createQueryBuilder('object')
             ->where('object.syncDate > :value')
             ->setParameter('value', $lastSyncDate)

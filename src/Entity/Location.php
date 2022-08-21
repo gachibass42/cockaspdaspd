@@ -9,14 +9,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: LocationRepository::class)]
-//#[ORM\Index(name: "ix_location_external_place_id", fields: ["googlePlaceId"])]
-//#[ORM\Index(name: "ix_location_search_tags", fields: ["searchTags"])]
 class Location
 {
-    //#[ORM\Id]
-    //#[ORM\GeneratedValue]
-    /*#[ORM\Column(type: 'integer')]
-    private ?int $id = null;*/
+
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 64)]
     private string $objID;

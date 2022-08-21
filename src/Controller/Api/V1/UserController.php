@@ -17,13 +17,13 @@ class UserController extends AbstractController
 {
     use JsonResponseTrait;
 
-    #[Route('/user/register', name: 'api_v1_user_register', methods: ['POST'])]
+    #[Route('/user/register', name: 'api_v1_user_register', methods: ['GET'])]
     public function register(Authentication $authentication, NormalizerInterface $normalizer): JsonResponse
     {
         $user = $authentication->register();
 
         return $this->successResponse([
-            'user' => $normalizer->normalize($user, 'json'),
+            $normalizer->normalize($user, 'json'),
         ]);
     }
 
@@ -36,9 +36,7 @@ class UserController extends AbstractController
         );
 
         if ($data === null) {
-            return $this->json([
-                'error' => 'User not found'
-            ], Response::HTTP_NOT_FOUND);
+            return $this->errorResponse('User not found', [],Response::HTTP_NOT_FOUND);
         }
 
         return $this->successResponse([$data]);
