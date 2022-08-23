@@ -44,6 +44,7 @@ class UserDestructorService
         }
         $this->milestoneRepository->clearMilestonesForUser($id);
         $this->locationRepository->defaultLocationsOwner($id);
+        $this->commentRepository->clearComments($id);
         $this->userRepository->remove($profile);
         return [
             'result' => 'completed'

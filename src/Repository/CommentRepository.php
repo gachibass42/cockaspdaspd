@@ -103,6 +103,15 @@ class CommentRepository extends ServiceEntityRepository
             ->execute();
     }
 
+    public function clearComments (int $userID) {
+        $this->createQueryBuilder('comment')
+            ->delete('App:Comment','comment')
+            ->where('comment.owner = :userID')
+            ->setParameter('userID', $userID)
+            ->getQuery()
+            ->execute();
+    }
+
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */
