@@ -175,6 +175,25 @@ class MilestoneRepository extends ServiceEntityRepository
 
     }
 
+    public function updateMilestonesOwner(array $milestonesIDs, int $userID) {
+        $this->createQueryBuilder('milestone')
+            ->update('App:Milestone','milestone')
+            ->set('milestone.owner', $userID)
+            ->where('milestone.objID in (:milestonesIDs)')
+            ->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->execute();
+        $this->getEntityManager()->flush();
+    }
+
+    public function clearMilestonesForUser (int $userID) {
+        $this->createQueryBuilder('milestone')
+            ->delete('App:Milestone','milestone')
+            ->where('milestone.owner = :userID')
+            ->setParameter('userID', $userID)
+            ->getQuery()
+            ->execute();
+    }
     // /**
     //  * @return Milestone[] Returns an array of Milestone objects
     //  */

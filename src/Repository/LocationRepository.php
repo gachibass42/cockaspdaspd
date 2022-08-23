@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Location;
 use App\Modules\Syncer\Model\SyncObjectLocation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -90,5 +91,17 @@ class LocationRepository extends ServiceEntityRepository
 
         //->andWhere('a.exampleField = :val')
 
+    }
+
+    public function defaultLocationsOwner (int $userID) {
+        $qb = $this->createQueryBuilder('location')
+            ->update('App:Location','location')
+            ->set('location.owner', 'NULL')
+            ->where('location.owner = :userID')
+            ->setParameter('userID',$userID)
+            ->getQuery();
+        //dump($qb->getSQL());
+        $qb->execute();
+        $this->getEntityManager()->flush();
     }
 }

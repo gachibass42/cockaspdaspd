@@ -26,10 +26,8 @@ class UserProfileController extends AbstractController
         /*$user = new User();
         $user->setId($request->query->getInt('id'));
         $user->setApiToken($this->getAuthToken($request));*/ //TODO: use another way to pass the token
-        /*return $this->render('user_profile/index.html.twig', [
-            'controller_name' => 'UserProfileController',
-        ]);*/
-        $data = $normalizer->normalize($this->userProfileService->getUserProfile($this->getUser()->getUserIdentifier()), 'json');
+        $userID = $request->query->getInt('id');
+        $data = $normalizer->normalize($this->userProfileService->getUserProfile($this->getUser()->getUserIdentifier(), $userID), 'json');
 
         return $this->successResponse($data);
     }
