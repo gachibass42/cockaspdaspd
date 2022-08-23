@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\TripUserRole;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -62,6 +63,15 @@ class TripUserRoleRepository extends ServiceEntityRepository
 
         //->andWhere('a.exampleField = :val')
 
+    }
+
+    public function removeByUser (User $user) {
+        $this->createQueryBuilder('trip_user_role')
+            ->delete(TripUserRole::class,'trip_user_role')
+            ->where('trip_user_role.tripUser = :user')
+            ->setParameter('user',$user)
+            ->getQuery()
+            ->execute();
     }
     // /**
     //  * @return TripUserRole[] Returns an array of TripUserRole objects

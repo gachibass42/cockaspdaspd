@@ -114,6 +114,8 @@ class Milestone
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $organizationLocationID;
 
+    private ?int $reviewsNumber;
+
     public function __construct()
     {
 
@@ -520,5 +522,21 @@ class Milestone
         $this->organizationLocationID = $organizationLocationID;
 
         return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getReviewsNumber(): ?int
+    {
+        return $this->reviewsNumber;
+    }
+
+    /**
+     * @param int|null $reviewsNumber
+     */
+    public function setReviewsNumber(?int $reviewsNumber): void
+    {
+        $this->reviewsNumber = $reviewsNumber;
     }
 }

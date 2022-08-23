@@ -23,7 +23,7 @@ class TripDetailsService
         return new MilestoneDetailsObject(
             $milestone->getObjId(),
             $milestone->getName(),
-            $milestone->getCarrier(),
+            $milestone->getCarrier()?->getObjID(),
             $milestone->getLocationID(),
             $milestone->getOrganizationLocationID(),
             //$milestone->getLinkedMilestonesIDs(),

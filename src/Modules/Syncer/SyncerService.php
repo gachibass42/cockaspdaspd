@@ -125,8 +125,8 @@ class SyncerService
                     ->setVisibility($trip["visibility"])
                     ->setMainImage($trip['mainImage'] ?? null)
                     ->setCheckListsIDs($trip['checkListsIDs'])
-                    ->setCost($trip['cost'])
-                    ->setCostDescription($trip['costDescription']);
+                    ->setCost($trip['cost'] ?? null)
+                    ->setCostDescription($trip['costDescription'] ?? null);
                 if (isset($trip["ownerID"])) {
                     $owner = $this->userRepository->findOneBy(["id" => (int)$trip["ownerID"]]);
                     if (isset($owner)) {

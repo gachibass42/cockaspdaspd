@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\CheckList;
 use App\Modules\Syncer\Model\SyncObjectCheckList;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -46,6 +47,15 @@ class CheckListRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function removeCheckLists (array $checkListsIDs) {
+        $this->createQueryBuilder('checkList')
+            ->delete('App:CheckList','checkList')
+            ->where('checkList.objID in (:checkListsIDs)')
+            ->setParameter('checkListsIDs',$checkListsIDs,Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->execute();
     }
 
     public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, array $checkListsIDs): array {

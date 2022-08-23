@@ -30,10 +30,15 @@ class UserProfileService
      * @param string $username
      * @return UserProfile[]
      */
-    public function getUserProfile(string $username):array
+    public function getUserProfile(string $username, ?int $id = null):array
     {
+        if (isset($id)) {
+            $profile = $this->userRepository->findOneBy(['id' => $id]);
+        } else {
+            $profile = $this->userRepository->findOneBy(['username'=>$username]);
+        }
 
-        $profile = $this->userRepository->findOneBy(['username'=>$username]);
+
 
         //$users = $this->userRepository->findAll();
         /*do {
@@ -93,6 +98,10 @@ class UserProfileService
         $profile = $this->userRepository->findOneBy(['username'=>$username]);
         //return $this->getUserProfile($profile);
         return [$this->mapToUserProfile($profile)];
+    }
+
+    public function deleteUser(string $username) {
+
     }
 
     private function mapToUserProfile(User $profile): UserProfile {

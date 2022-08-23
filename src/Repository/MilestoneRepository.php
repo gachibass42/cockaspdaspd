@@ -66,6 +66,7 @@ class MilestoneRepository extends ServiceEntityRepository
             ->orderBy('object.objID', 'ASC')
             ->getQuery()
             ->getResult();
+
         return (array_map(fn(Milestone $object) => new SyncObjectMilestone(
             $object->getObjID(),
             $object->getName(),
@@ -144,6 +145,21 @@ class MilestoneRepository extends ServiceEntityRepository
             ->orderBy('milestone.date', 'ASC')
             ->getQuery()
             ->getResult();
+
+    }
+
+
+    /**
+     * @param string[] $milestonesIDs
+     * @return void
+     */
+    public function removeMilestones (array $milestonesIDs) {
+        $this->createQueryBuilder('milestone')
+            ->delete('App:Milestone','milestone')
+            ->where('milestone.objID in (:milestonesIDs)')
+            ->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->execute();
     }
 
     public function removeByID(string $objID) {

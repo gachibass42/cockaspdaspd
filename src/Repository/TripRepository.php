@@ -6,7 +6,9 @@ use App\Entity\Trip;
 use App\Entity\TripUserRole;
 use App\Modules\Syncer\Model\SyncObjectTrip;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -52,11 +54,11 @@ class TripRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param \DateTimeImmutable $lastSyncDate
+     * @param DateTimeImmutable $lastSyncDate
      * @param int $userID
      * @return SyncObjectTrip[]
      */
-    public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, int $userID): array {
+    public function getObjectsForSync (DateTimeImmutable $lastSyncDate, int $userID): array {
         /*$expr = $this->_em->getExpressionBuilder();
         $rolesTrips = $this->createQueryBuilder('r')
             ->select('roles.trip')
@@ -103,6 +105,19 @@ class TripRepository extends ServiceEntityRepository
             $object->getCost(),
             $object->getCostDescription()
         ), $dbObjects));
+    }
+
+
+    /**
+     * @param string[] $tripsIDs
+     * @return Trip[]
+     */
+    public function getTripsByIDs (array $tripsIDs): array {
+        return $this->createQueryBuilder('trip')
+            ->where('trip.objID in (:tripsIDs)')
+            ->setParameter('tripsIDs',$tripsIDs,Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->getResult();
     }
 
     public function removeByID(string $objID) {

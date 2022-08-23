@@ -4,6 +4,7 @@ namespace App\Controller\Api\V1;
 
 use App\Controller\JsonResponseTrait;
 use App\Entity\User;
+use App\Modules\UserDestructor\UserDestructorService;
 use App\Modules\UserProfile\UserProfileService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,5 +60,13 @@ class UserProfileController extends AbstractController
         $data = $normalizer->normalize($this->userProfileService->updateUserProfile($request->getContent(),$this->getUser()->getUserIdentifier()), 'json');
 
         return $this->successResponse($data);
+    }
+
+    #[Route('/user/profile/delete', name: 'api_v1_user_delete')]
+    public function deleteUser (Request $request, UserDestructorService $destructorService):Response
+    {
+        $data = $destructorService->deleteUser($this->getUser()->getUserIdentifier());
+
+        return $this->successResponse([$data]);
     }
 }
