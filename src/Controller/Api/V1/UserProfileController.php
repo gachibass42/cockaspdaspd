@@ -32,6 +32,29 @@ class UserProfileController extends AbstractController
         return $this->successResponse($data);
     }
 
+    #[Route('/user/profile/recover', name: 'api_v1_user_profile_recover')]
+    public function userProfileRecover(Request $request, NormalizerInterface $normalizer):Response
+    {
+        $phoneNumber = $request->query->get('phone');
+        //dump($phoneNumber);
+        if (isset($phoneNumber)){
+            return $this->successResponse($this->userProfileService->recoverUser($phoneNumber));
+        } else {
+            return $this->errorResponse('Phone number is required');
+        }
+    }
+
+    #[Route('/user/profile/check', name: 'api_v1_user_profile_check')]
+    public function userProfileCheck(Request $request, NormalizerInterface $normalizer):Response
+    {
+        $phoneNumber = $request->query->get('phone');
+        if (isset($phoneNumber)){
+            return $this->successResponse($this->userProfileService->checkPhone($phoneNumber));
+        } else {
+            return $this->errorResponse('Phone number is required');
+        }
+    }
+
     #[Route('/user/profile/update', name: 'api_v1_user_profile_update')]
     public function userProfileUpdate(Request $request, NormalizerInterface $normalizer):Response
     {

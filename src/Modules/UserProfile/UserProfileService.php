@@ -4,8 +4,10 @@ namespace App\Modules\UserProfile;
 
 use App\Entity\User;
 use App\Helpers\FileManager\FileManagerService;
+use App\Modules\UserProfile\Model\UserCheckResult;
 use App\Modules\UserProfile\Model\UserProfile;
 use App\Modules\UserProfile\Model\UserProfileResponse;
+use App\Modules\UserProfile\Model\UserRecoverItem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -32,13 +34,11 @@ class UserProfileService
      */
     public function getUserProfile(string $username, ?int $id = null):array
     {
-        if (isset($id)) {
+        if (isset($id) && $id > 0) {
             $profile = $this->userRepository->findOneBy(['id' => $id]);
         } else {
             $profile = $this->userRepository->findOneBy(['username'=>$username]);
         }
-
-
 
         //$users = $this->userRepository->findAll();
         /*do {
@@ -100,8 +100,23 @@ class UserProfileService
         return [$this->mapToUserProfile($profile)];
     }
 
-    public function deleteUser(string $username) {
+    public function recoverUser (string $phone): array {
+        $profile = $this->userRepository->findOneBy(['phone'=>$phone]);
+        if (isset($profile)) {
+            return [new UserRecoverItem($profile->getUserIdentifier(),$profile->getPassword(),$profile->getApiToken(), null)];
+        } else {
+            return [new UserRecoverItem(null,null,null, "UserNotExisted")];
+        }
 
+    }
+
+    public function checkPhone (string $phone): array {
+        $profile = $this->userRepository->findOneBy(['phone'=>$phone]);
+        if (isset($profile)){
+            return [new UserCheckResult('UserExisted')];
+        } else {
+            return [new UserCheckResult('UserNotExisted')];
+        }
     }
 
     private function mapToUserProfile(User $profile): UserProfile {
