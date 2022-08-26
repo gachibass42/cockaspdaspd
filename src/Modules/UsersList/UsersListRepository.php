@@ -19,5 +19,11 @@ class UsersListRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-
+    public function getUsersWithPhones (): array{
+        return $this->createQueryBuilder('user')
+            ->where('user.phone is not null')
+            ->orderBy('user.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

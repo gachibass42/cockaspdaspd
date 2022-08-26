@@ -18,7 +18,7 @@ class UsersListService
      * @return UsersListItem[]
      */
     public function getUsersList(): array {
-        $users = $this->usersListRepository->findAll();
+        $users = $this->usersListRepository->getUsersWithPhones();
 
         return array_map(
             fn (User $user) => new UsersListItem(
