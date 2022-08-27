@@ -76,7 +76,8 @@ class LocationRepository extends ServiceEntityRepository
             $object->getOwner() ? (string)$object->getOwner()->getId() : null,
             $object->getPhoneNumber(),
             $object->getWebsite(),
-            $object->getDescription()
+            $object->getDescription(),
+            $object->getIsUsing()
         ),$dbObjects));
     }
 

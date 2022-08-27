@@ -79,6 +79,9 @@ class Location
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $website;
 
+    #[ORM\Column(type: 'boolean', options: ['default'=>'true'])]
+    private $isUsing;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
@@ -346,6 +349,18 @@ class Location
     public function setWebsite(?string $website): self
     {
         $this->website = $website;
+
+        return $this;
+    }
+
+    public function getIsUsing(): ?bool
+    {
+        return $this->isUsing;
+    }
+
+    public function setIsUsing(bool $isUsing): self
+    {
+        $this->isUsing = $isUsing;
 
         return $this;
     }

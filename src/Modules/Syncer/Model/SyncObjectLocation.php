@@ -25,6 +25,7 @@ class SyncObjectLocation
     public ?string $phoneNumber;
     public ?string $website;
     public ?string $descriptionLocation;
+    public bool $isUsing;
 
     /**
      * @param string $objID
@@ -48,8 +49,9 @@ class SyncObjectLocation
      * @param string|null $phoneNumber
      * @param string|null $website
      * @param string|null $descriptionLocation
+     * @param bool $isUsing
      */
-    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalID, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website, ?string $descriptionLocation)
+    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalID, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website, ?string $descriptionLocation, bool $isUsing)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
@@ -72,6 +74,7 @@ class SyncObjectLocation
         $this->phoneNumber = $phoneNumber;
         $this->website = $website;
         $this->descriptionLocation = $descriptionLocation;
+        $this->isUsing = $isUsing;
     }
 
     /**
@@ -408,6 +411,22 @@ class SyncObjectLocation
     public function setWebsite(?string $website): void
     {
         $this->website = $website;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUsing(): bool
+    {
+        return $this->isUsing;
+    }
+
+    /**
+     * @param bool $isUsing
+     */
+    public function setIsUsing(bool $isUsing): void
+    {
+        $this->isUsing = $isUsing;
     }
 
 
