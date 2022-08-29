@@ -18,7 +18,7 @@ class CommentsController extends AbstractController
     {
         $linkedObjID = $request->get('id');
         if (isset($linkedObjID)) {
-            return $this->successResponse(['comments' => $commentsService->getCommentsForObject($linkedObjID)]);
+            return $this->successResponse($commentsService->getCommentsForObject($linkedObjID));
         }
 
         return $this->successResponse([]);
