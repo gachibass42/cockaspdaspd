@@ -7,15 +7,19 @@ use App\Entity\TripUserRole;
 use App\Helpers\FileManager\FileManagerService;
 use App\Modules\TripDetails\Model\MilestoneDetailsObject;
 use App\Modules\TripDetails\Model\TripDetailsObject;
-use App\Modules\TripDetails\Model\TripDetailsResponse;
 use App\Modules\TripDetails\Model\TripDetailsUserRole;
+use App\Repository\CommentRepository;
 use App\Repository\MilestoneRepository;
 use App\Repository\TripRepository;
 
 class TripDetailsService
 {
 
-    public function __construct(private TripRepository $tripRepository, private MilestoneRepository $milestoneRepository, private FileManagerService $fileManagerService)
+    public function __construct(private TripRepository $tripRepository,
+                                private MilestoneRepository $milestoneRepository,
+                                private FileManagerService $fileManagerService,
+                                private CommentRepository $commentRepository
+    )
     {
     }
 
@@ -52,7 +56,8 @@ class TripDetailsService
             $milestone->getOwner()->getId(),
             $milestone->getImages(),
             $milestone->getTags(),
-            $milestone->getMealTimetables()
+            $milestone->getMealTimetables(),
+            $this->commentRepository->getReviewsNumberForObject($milestone->getObjId())
         );
     }
 

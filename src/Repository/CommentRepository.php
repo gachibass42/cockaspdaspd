@@ -64,13 +64,6 @@ class CommentRepository extends ServiceEntityRepository
     }
 
     public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, array $linkedObjIDs): array {
-        /*$dbObjects = $this->createQueryBuilder('object')
-            ->where('object.syncDate > :value')
-            ->setParameter('value', $lastSyncDate)
-            ->orderBy('object.objID', 'ASC')
-            ->getQuery()
-            ->getResult()
-            ;*/
         $expr = $this->_em->getExpressionBuilder();
         $dbObjects = $this->createQueryBuilder('object')
             ->where($expr->in('object.linkedObjID', $linkedObjIDs))
@@ -110,6 +103,21 @@ class CommentRepository extends ServiceEntityRepository
             ->setParameter('userID', $userID)
             ->getQuery()
             ->execute();
+    }
+
+    public function getReviewsNumberForObject (string $linkedObjID): int {
+        $expr = $this->_em->getExpressionBuilder();
+        $reviewsNumber = $this->createQueryBuilder('comment')
+            ->select($expr->count('comment.objID'))
+            ->where('comment.linkedObjID = :linkedObjID')
+            ->andWhere('comment.type = :type')
+            ->setParameter('linkedObjID', $linkedObjID)
+            ->setParameter('type', 'review')
+            ->getQuery()
+            ->getResult()
+        ;
+        //dump ($reviewsNumber[0][1]);
+        return $reviewsNumber[0][1] ?? 0;
     }
 
     // /**

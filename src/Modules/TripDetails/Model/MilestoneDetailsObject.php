@@ -37,6 +37,7 @@ class MilestoneDetailsObject
     public ?array $images;
     public ?array $tags;
     public ?array $mealTimetables;
+    public int $reviewsNumber;
 
     /**
      * @param string|null $objID
@@ -70,8 +71,9 @@ class MilestoneDetailsObject
      * @param array|null $images
      * @param array|null $tags
      * @param array|null $mealTimetables
+     * @param int $reviewsNumber;
      */
-    public function __construct(?string $objID, ?string $name, ?string $carrierID, ?string $locationID, ?string $organizationLocationID, ?array $linkedMilestones, ?bool $userEdited, ?int $date, ?string $type, ?string $milestoneDescription, ?int $order, ?string $journeyNumber, ?string $seat, ?string $vagon, ?string $classType, ?string $terminal, ?float $distance, ?string $aircraft, ?string $duration, ?string $address, ?string $website, ?string $phoneNumber, ?bool $isStartPoint, ?bool $isEndPoint, ?bool $inTransit, ?string $roomNumber, ?string $rentType, ?string $ownerID, ?array $images, ?array $tags, ?array $mealTimetables)
+    public function __construct(?string $objID, ?string $name, ?string $carrierID, ?string $locationID, ?string $organizationLocationID, ?array $linkedMilestones, ?bool $userEdited, ?int $date, ?string $type, ?string $milestoneDescription, ?int $order, ?string $journeyNumber, ?string $seat, ?string $vagon, ?string $classType, ?string $terminal, ?float $distance, ?string $aircraft, ?string $duration, ?string $address, ?string $website, ?string $phoneNumber, ?bool $isStartPoint, ?bool $isEndPoint, ?bool $inTransit, ?string $roomNumber, ?string $rentType, ?string $ownerID, ?array $images, ?array $tags, ?array $mealTimetables, int $reviewsNumber)
     {
         $this->objID = $objID;
         $this->name = $name;
@@ -104,5 +106,6 @@ class MilestoneDetailsObject
         $this->images = $images;
         $this->tags = $tags;
         $this->mealTimetables = $mealTimetables;
+        $this->reviewsNumber = $reviewsNumber;
     }
 }

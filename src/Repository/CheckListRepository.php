@@ -59,13 +59,6 @@ class CheckListRepository extends ServiceEntityRepository
     }
 
     public function getObjectsForSync (\DateTimeImmutable $lastSyncDate, array $checkListsIDs): array {
-        /*$dbObjects =  $this->createQueryBuilder('object')
-            ->where('object.syncDate > :value')
-            ->setParameter('value', $lastSyncDate)
-            ->orderBy('object.objID', 'ASC')
-            ->getQuery()
-            ->getResult()
-            ;*/
         $expr = $this->_em->getExpressionBuilder();
         $dbObjects = $this->createQueryBuilder('object')
             ->where($expr->in('object.objID', $checkListsIDs))
