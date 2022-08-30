@@ -48,9 +48,12 @@ class TripRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    public function save (Trip $trip) {
+    public function save (Trip $trip, bool $flush = false) {
         $this->getEntityManager()->persist($trip);
-        //$this->_em->flush();
+        if ($flush) {
+            $this->_em->flush();
+        }
+        //
     }
 
     /**

@@ -175,12 +175,14 @@ class MilestoneRepository extends ServiceEntityRepository
 
     }
 
-    public function updateMilestonesOwner(array $milestonesIDs, int $userID) {
+    public function updateMilestonesOwner(array $milestonesIDs, int $userID, int $oldUserID) {
         $this->createQueryBuilder('milestone')
             ->update('App:Milestone','milestone')
             ->set('milestone.owner', $userID)
             ->where('milestone.objID in (:milestonesIDs)')
+            ->andWhere('milestone.owner = :oldUserID')
             ->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY)
+            ->setParameter('oldUserID', $oldUserID)
             ->getQuery()
             ->execute();
         $this->getEntityManager()->flush();

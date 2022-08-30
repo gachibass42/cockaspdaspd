@@ -120,6 +120,21 @@ class CommentRepository extends ServiceEntityRepository
         return $reviewsNumber[0][1] ?? 0;
     }
 
+
+    /**
+     * @param string $linkedObjIDs
+     * @return Comment[]
+     */
+    public function getObjectsComments (array $linkedObjIDs): array{
+        $expr = $this->_em->getExpressionBuilder();
+        return $this->createQueryBuilder('object')
+            ->where($expr->in('object.linkedObjID', $linkedObjIDs))
+            ->orderBy('object.objID', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */

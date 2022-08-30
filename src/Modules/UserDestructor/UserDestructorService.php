@@ -35,7 +35,7 @@ class UserDestructorService
             $roles = $this->tripUserRoleRepository->findBy(['trip'=>$trip]);
             if (count($roles) > 0) {
                 $trip->setOwner($roles[0]->getTripUser());
-                $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(),$roles[0]->getTripUser()->getId());
+                $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(),$roles[0]->getTripUser()->getId(),$id);
             } else {
                 $this->milestoneRepository->removeMilestones($trip->getMilestonesIDs());
                 $this->checkListRepository->removeCheckLists($trip->getCheckListsIDs());

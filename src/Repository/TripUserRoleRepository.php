@@ -73,6 +73,17 @@ class TripUserRoleRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function removeUserFromTrip (string $tripID, User $user) {
+        $this->createQueryBuilder('trip_user_role')
+            ->delete(TripUserRole::class,'trip_user_role')
+            ->where('trip_user_role.tripUser = :user')
+            ->andWhere('trip_user_role.trip = :tripID')
+            ->setParameter('user',$user)
+            ->setParameter('tripID', $tripID)
+            ->getQuery()
+            ->execute();
+    }
     // /**
     //  * @return TripUserRole[] Returns an array of TripUserRole objects
     //  */

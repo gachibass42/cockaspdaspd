@@ -256,25 +256,67 @@ class SyncerService
     private function processCorpses(): void
     {
         foreach ($this->corpses as $corpse) {
-            switch ($corpse["corpseType"]) {
-                case "Trip":
-                    $this->tripUserRoleRepository->removeByTrip($corpse["corpseID"]);
-                    $this->tripRepository->removeByID($corpse["corpseID"]);
-                    break;
-                case "Milestone":
-                    $this->milestoneRepository->removeByID($corpse["corpseID"]);
-                    break;
-                case "Comment":
-                    $this->commentRepository->removeByID($corpse["corpseID"]);
-                    break;
-                case "CheckList":
-                    $this->checkListRepository->removeByID($corpse["corpseID"]);
-                    break;
+            if ($corpse["corpseType"] == "Trip") {
+                $this->deleteUserTrip($corpse["corpseID"]);
             }
         }
-        //dump ($this);
-        //$this->locationRepository->commit();
+        foreach ($this->corpses as $corpse) {
+            if (!empty($corpse)) {
+                switch ($corpse["corpseType"]) {
+                    case "Milestone":
+                        $this->milestoneRepository->removeByID($corpse["corpseID"]);
+                        break;
+                    case "Comment":
+                        $this->commentRepository->removeByID($corpse["corpseID"]);
+                        break;
+                    case "CheckList":
+                        $this->checkListRepository->removeByID($corpse["corpseID"]);
+                        break;
+                }
+            }
+        }
     }
+
+    private function deleteUserTrip (string $tripID): void
+    {
+        $trip = $this->tripRepository->findOneBy(['objID'=>$tripID]);
+        $roles = $this->tripUserRoleRepository->findBy(['trip'=>$tripID]);
+        if ($trip->getOwner()->getId() == $this->user->getId()) {
+            if (count($roles) > 0) {
+                $trip->setOwner($roles[0]->getTripUser());
+                $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(),$roles[0]->getTripUser()->getId(), $this->user->getId());
+                $this->cleanupCemeteryDeleteUserTrip($trip);
+                $this->tripRepository->save($trip, true);
+            } else {
+                $this->milestoneRepository->removeMilestones($trip->getMilestonesIDs());
+                $this->checkListRepository->removeCheckLists($trip->getCheckListsIDs());
+                $this->tripRepository->remove($trip);
+            }
+        } else {
+            $this->cleanupCemeteryDeleteUserTrip($trip);
+            $this->tripUserRoleRepository->removeUserFromTrip($trip->getObjId(),$this->user);
+        }
+    }
+
+    private function cleanupCemeteryDeleteUserTrip (Trip $trip): void
+    {
+        foreach ($trip->getMilestonesIDs() as $milestoneID) {
+            if (isset($this->corpses[$milestoneID])) {
+                $this->corpses[$milestoneID] = null;
+            }
+        }
+        foreach ($trip->getCheckListsIDs() as $checkListID) {
+            if (isset($this->corpses[$checkListID])) {
+                $this->corpses[$checkListID] = null;
+            }
+        }
+        foreach ($this->commentRepository->getObjectsComments($trip->getMilestonesIDs()) as $comment) {
+            if (isset($this->corpses[$comment->getObjId()])) {
+                $this->corpses[$comment->getObjId()] = null;
+            }
+        }
+    }
+
 
     private function saveImages(): bool
     {
@@ -287,9 +329,18 @@ class SyncerService
         return true;
     }
 
-    public function processRequestObjectsArray(?array $objects): void
+    private function indexCemetery($corpses):array {
+        $newCemetery = [];
+        foreach ($corpses as $corpse) {
+            $newCemetery[$corpse['corpseID']] = $corpse;
+        }
+        return $newCemetery;
+    }
+
+    public function processRequestObjectsArray(?array $objects, string $username): void
     {
         //dump($objects);
+        $this->user = $this->userRepository->findOneBy(['username' => $username]);
         foreach ($objects as $object) {
             switch ($object['type']) {
                 case 'Location' && isset($object['object']['type']) && $object['object']['type'] == 'country':
@@ -311,7 +362,9 @@ class SyncerService
                     $this->checklists[$object['object']['objID']] = $object['object'];
                     break;
                 case 'Cemetery':
-                    $this->corpses = $object['object']['corpses'];
+                    $this->corpses = $this->indexCemetery ($object['object']['corpses']);//array_map(fn (array $corpse) => $corpse['corpseID'] = $corpse,$object['object']['corpses']);
+                    //dump($this->corpses);
+                    //dump ($object['object']['corpses']);
                     break;
                 case 'Comment':
                     $this->comments[$object['object']['objID']] = $object['object'];
@@ -352,6 +405,7 @@ class SyncerService
             }
 
         } catch (Error $error) {
+            //dump($error);
             $this->requestHandlingStatus = "Error";
         }
 
@@ -362,31 +416,8 @@ class SyncerService
      */
     public function getSyncResponse(string $username):array {
         $this->user = $this->userRepository->findOneBy(['username' => $username]);
-        $repositories = [
-            "Trip" => $this->tripRepository,
-            "Location" => $this->locationRepository,
-            "Milestone" => $this->milestoneRepository,
-            "Comment" => $this->commentRepository,
-            "CheckList" => $this->checkListRepository
-        ];
-        $requestObjects = array_merge($this->cities,
-            $this->locations,
-            $this->countries,
-            $this->trips,
-            $this->milestones,
-            $this->comments,
-            $this->checklists
-        );
-        //$responseList = [];
         $syncer = new SyncResponseListItem('Syncer', ['sessionID' => $this->sessionID, 'requestHandlingStatus' => $this->requestHandlingStatus]);
-        //$responseList[] = $syncer;
         $lastSuccessfulSyncDate = $this->lastSuccessfulSyncDate ?? \DateTimeImmutable::createFromFormat('U', 1);// ?? $this->userRepository->findOneBy(['apiToken' => $apiToken])->getLastSuccessfulSyncDate();
-        //dump($lastSuccessfulSyncDate);
-        /*foreach ($repositories as $objectType => $repository) {
-            $dbObjects = $repository->getObjectsForSync($lastSuccessfulSyncDate ?? \DateTime::createFromFormat('U', 1));
-
-
-        }*/
 
         $locationsResponse = $this->mapToSyncResponseListItems($this->locationRepository->getObjectsForSync($lastSuccessfulSyncDate),
             array_merge($this->cities,$this->countries,$this->locations),
@@ -433,6 +464,8 @@ class SyncerService
 
     /**
      * @param array $dbObjects
+     * @param array $requestObjects
+     * @param string $objectType
      * @return SyncResponseListItem[]
      */
     private function mapToSyncResponseListItems(array $dbObjects, array $requestObjects, string $objectType): array {

@@ -31,7 +31,7 @@ class SyncController extends AbstractController
         }
 
         $json = json_decode($request->getContent(),true);
-        $syncerService->processRequestObjectsArray($json['items']);
+        $syncerService->processRequestObjectsArray($json['items'], $this->getUser()->getUserIdentifier());
 
         $data = $normalizer->normalize($syncerService->getSyncResponse($this->getUser()->getUserIdentifier()), 'json');
         return $this->successResponse($data);
