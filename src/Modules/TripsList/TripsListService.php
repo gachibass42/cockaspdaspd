@@ -4,6 +4,7 @@ namespace App\Modules\TripsList;
 
 use App\Entity\Trip;
 use App\Helpers\FileManager\FileManagerService;
+use App\Helpers\FileManager\ImagesManager;
 use App\Modules\TripsList\Model\ShortMilestone;
 use App\Modules\TripsList\Model\TripsListItem;
 use App\Repository\MilestoneRepository;
@@ -14,7 +15,8 @@ class TripsListService
 
     public function __construct(private TripRepository $tripRepository,
                                 private MilestoneRepository $milestoneRepository,
-                                private FileManagerService $fileManagerService)
+                                private FileManagerService $fileManagerService,
+                                private ImagesManager $imagesManager)
     {
     }
 
@@ -37,7 +39,7 @@ class TripsListService
                     $trip->getStartDate()->getTimestamp(),
                     $trip->getEndDate()->getTimestamp(),
                     $trip->getTags(),
-                    $trip->getMainImage() ? base64_encode($this->fileManagerService->getImageContent($trip->getMainImage())) : null,
+                    $trip->getMainImage() ? base64_encode($this->imagesManager->getThumbnailDataForImage($trip->getMainImage())) : null,
                     array_reduce($shortMilestones[$trip->getObjId()], fn (?int $carry, ShortMilestone $milestone) => $carry + $milestone->getReviewsNumber()),
                     //array_values(array_filter($shortMilestones[$trip->getObjId()], fn (ShortMilestone $milestone) => $milestone->getType() == 'Город')),
                     array_values($shortMilestones[$trip->getObjId()]),

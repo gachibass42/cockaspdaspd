@@ -79,7 +79,7 @@ class Location
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $website;
 
-    #[ORM\Column(type: 'boolean', options: ['default'=>'true'])]
+    #[ORM\Column(type: 'boolean', options: ['default'=>'false'])]
     private $isUsing;
 
     public function __construct()

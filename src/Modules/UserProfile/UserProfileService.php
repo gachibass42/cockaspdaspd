@@ -4,6 +4,7 @@ namespace App\Modules\UserProfile;
 
 use App\Entity\User;
 use App\Helpers\FileManager\FileManagerService;
+use App\Helpers\FileManager\ImagesManager;
 use App\Modules\UserProfile\Model\UserCheckResult;
 use App\Modules\UserProfile\Model\UserProfile;
 use App\Modules\UserProfile\Model\UserProfileResponse;
@@ -19,7 +20,8 @@ class UserProfileService
 {
     public function __construct(private UserRepository $userRepository,
                                 private UrlHelper $urlHelper,
-                                private FileManagerService $fm
+                                private FileManagerService $fm,
+                                private ImagesManager $imagesManager
     )
     {
         $this->client = HttpClient::create([
@@ -86,7 +88,7 @@ class UserProfileService
             $profile->setSex($userItem['sex'] ?? null);
             $profile->setHomeLocationID($userItem['homeLocationID'] ?? null);
             if (isset($userItem['avatar']) && $userItem['avatar'] != null){
-                $filename = $this->fm->saveImage(base64_decode($userItem['avatar']), $userItem['avatarFileName']);
+                $filename = $this->imagesManager->saveImage(base64_decode($userItem['avatar']), $userItem['avatarFileName']);
                 if ($filename != null){
                     $profile->setAvatar($filename);
                 }
