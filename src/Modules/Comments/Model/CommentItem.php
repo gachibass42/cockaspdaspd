@@ -20,7 +20,7 @@ class CommentItem
      * @param string $linkedObjID
      * @param string|null $type
      * @param string|null $userID
-     * @param string[]|null $images
+     * @param ImageItem[]|null $images
      * @param string[]|null $tags
      * @param int $date
      * @param string|null $content

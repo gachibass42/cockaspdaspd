@@ -7,12 +7,16 @@ use App\Helpers\FileManager\FileManagerService;
 use App\Helpers\FileManager\ImagesManager;
 use App\Modules\Comments\Model\CommentItem;
 use App\Modules\Comments\Model\CommentsResponse;
+use App\Modules\Comments\Model\ImageItem;
 use App\Repository\CommentRepository;
+use Symfony\Component\HttpFoundation\UrlHelper;
 
 class CommentsService
 {
 
-    public function __construct(private CommentRepository $commentRepository, private ImagesManager $imagesManager)
+    public function __construct(private CommentRepository $commentRepository,
+                                private ImagesManager $imagesManager,
+                                private UrlHelper $urlHelper)
     {
     }
 
@@ -27,7 +31,12 @@ class CommentsService
             $comment->getLinkedObjID(),
             $comment->getType(),
             $comment->getOwner()->getId(),
-            $comment->getImages() != null ? array_map(fn (string $imageName) => base64_encode($this->imagesManager->getThumbnailDataForImage($imageName)),$comment->getImages()) : [],
+            $comment->getImages() != null ? array_map(
+                fn (string $imageName) => new ImageItem(
+                    $this->urlHelper->getAbsoluteUrl('/api/v1/image/'.$imageName),
+                    base64_encode($this->imagesManager->getThumbnailDataForImage($imageName))
+                ),$comment->getImages()
+            ) : [],
             $comment->getTags(),
             $comment->getDate()->getTimestamp(),
             $comment->getContent()
