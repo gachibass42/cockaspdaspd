@@ -280,21 +280,23 @@ class SyncerService
     private function deleteUserTrip (string $tripID): void
     {
         $trip = $this->tripRepository->findOneBy(['objID'=>$tripID]);
-        $roles = $this->tripUserRoleRepository->findBy(['trip'=>$tripID]);
-        if ($trip->getOwner()->getId() == $this->user->getId()) {
-            if (count($roles) > 0) {
-                $trip->setOwner($roles[0]->getTripUser());
-                $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(),$roles[0]->getTripUser()->getId(), $this->user->getId());
-                $this->cleanupCemeteryDeleteUserTrip($trip);
-                $this->tripRepository->save($trip, true);
+        if (isset($trip)) {
+            $roles = $this->tripUserRoleRepository->findBy(['trip' => $tripID]);
+            if ($trip->getOwner()->getId() == $this->user->getId()) {
+                if (count($roles) > 0) {
+                    $trip->setOwner($roles[0]->getTripUser());
+                    $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(), $roles[0]->getTripUser()->getId(), $this->user->getId());
+                    $this->cleanupCemeteryDeleteUserTrip($trip);
+                    $this->tripRepository->save($trip, true);
+                } else {
+                    $this->milestoneRepository->removeMilestones($trip->getMilestonesIDs());
+                    $this->checkListRepository->removeCheckLists($trip->getCheckListsIDs());
+                    $this->tripRepository->remove($trip);
+                }
             } else {
-                $this->milestoneRepository->removeMilestones($trip->getMilestonesIDs());
-                $this->checkListRepository->removeCheckLists($trip->getCheckListsIDs());
-                $this->tripRepository->remove($trip);
+                $this->cleanupCemeteryDeleteUserTrip($trip);
+                $this->tripUserRoleRepository->removeUserFromTrip($trip->getObjId(), $this->user);
             }
-        } else {
-            $this->cleanupCemeteryDeleteUserTrip($trip);
-            $this->tripUserRoleRepository->removeUserFromTrip($trip->getObjId(),$this->user);
         }
     }
 
