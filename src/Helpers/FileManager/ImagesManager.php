@@ -20,11 +20,15 @@ class ImagesManager
 
     public function getThumbnailDataForImage (string $name): string {
         $filePath = pathinfo($name);
-        if (!file_exists($this->thumbnailsDir.$filePath['filename'].'.webp')) {
-            $image = imagecreatefromstring($this->fileManagerService->getImageContent($name));
-            $scaledImage = imagescale($image, 320);
-            imagewebp($scaledImage,$this->thumbnailsDir.$filePath['filename'].'.webp', quality: 30);
+        $fileContent = $this->fileManagerService->getImageContent($name);
+        if (isset($fileContent)) {
+            if (!file_exists($this->thumbnailsDir.$filePath['filename'].'.webp')) {
+                $image = imagecreatefromstring($fileContent);
+                $scaledImage = imagescale($image, 320);
+                imagewebp($scaledImage,$this->thumbnailsDir.$filePath['filename'].'.webp', quality: 30);
+            }
+            return file_get_contents($this->thumbnailsDir.$filePath['filename'].'.webp');
         }
-        return file_get_contents($this->thumbnailsDir.$filePath['filename'].'.webp');
+        return "";
     }
 }

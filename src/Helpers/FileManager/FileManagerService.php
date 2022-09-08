@@ -57,6 +57,9 @@ class FileManagerService
     }
 
     public function getImageContent(string $filename): ?string{
-        return file_get_contents($this->avatarImagesDir.$filename);
+        if (file_exists($this->avatarImagesDir.$filename)) {
+            return file_get_contents($this->avatarImagesDir.$filename);
+        }
+        return null;
     }
 }
