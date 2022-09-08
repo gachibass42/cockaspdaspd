@@ -26,6 +26,7 @@ class TripsListItem
      * @param string|null $mainImage
      * @param int|null $reviewsNumber
      * @param array $shortMilestones
+     * @param string $name
      */
     public function __construct(string $objID, string $ownerID, int $startDate, int $endDate, ?string $tags, ?string $mainImage, ?int $reviewsNumber, array $shortMilestones, string $name)
     {

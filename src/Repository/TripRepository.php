@@ -141,11 +141,14 @@ class TripRepository extends ServiceEntityRepository
      * @return Trip[]|null
      */
     public function getTripsWithLocation (string $locationID):?array {
-        $sql = "select distinct t.* from trip t, milestone where t.visibility = true and milestone.location_id = :locationID and milestone.obj_id = ANY(string_to_array(t.milestones_ids, ','))";
+        $sql = "select distinct t.* from trip t, milestone where t.visibility = true and milestone.location_id = :locationID 
+                                             and milestone.is_start_point = false and milestone.is_end_point = false 
+                                             and milestone.obj_id = ANY(string_to_array(t.milestones_ids, ','))";
         $resultSet = new ResultSetMappingBuilder($this->_em);
         $resultSet->addRootEntityFromClassMetadata(Trip::class,'t');
         $qb = $this->_em->createNativeQuery($sql,$resultSet);
         $qb->setParameter('locationID', $locationID, Types::STRING);
+        //dump($qb->getSQL());
         return $qb->getResult();
     }
 

@@ -3,10 +3,8 @@
 namespace App\Modules\Comments;
 
 use App\Entity\Comment;
-use App\Helpers\FileManager\FileManagerService;
 use App\Helpers\FileManager\ImagesManager;
 use App\Modules\Comments\Model\CommentItem;
-use App\Modules\Comments\Model\CommentsResponse;
 use App\Modules\Comments\Model\ImageItem;
 use App\Repository\CommentRepository;
 use Symfony\Component\HttpFoundation\UrlHelper;

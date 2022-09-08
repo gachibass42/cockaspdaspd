@@ -15,7 +15,6 @@ class TripsListService
 
     public function __construct(private TripRepository $tripRepository,
                                 private MilestoneRepository $milestoneRepository,
-                                private FileManagerService $fileManagerService,
                                 private ImagesManager $imagesManager)
     {
     }
@@ -30,7 +29,6 @@ class TripsListService
             $shortMilestones = [];
             foreach ($trips as $trip) {
                 $shortMilestones[$trip->getObjId()] = $this->milestoneRepository->getShortMilestones($trip->getMilestonesIDs());
-                //dump($shortMilestones);
             }
             $items = array_map(
                 fn (Trip $trip) => new TripsListItem(
