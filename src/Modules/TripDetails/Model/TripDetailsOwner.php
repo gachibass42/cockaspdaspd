@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Modules\Comments\Model;
+namespace App\Modules\TripDetails\Model;
 
-class CommentUserShort
+class TripDetailsOwner
 {
     public string $id;
     public string $name;

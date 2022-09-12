@@ -6,7 +6,8 @@ class TripDetailsObject
 {
     public string $objID;
     public ?string $name;
-    public ?string $ownerID;
+    //public ?string $ownerID;
+    public ?TripDetailsOwner $owner;
     public int $startDate;
     public int $endDate;
     public ?int $duration;
@@ -21,7 +22,7 @@ class TripDetailsObject
     /**
      * @param string $objID
      * @param string|null $name
-     * @param string|null $ownerID
+     * @param TripDetailsOwner|null $owner
      * @param int $startDate
      * @param int $endDate
      * @param int|null $duration
@@ -33,11 +34,11 @@ class TripDetailsObject
      * @param string|null $cost
      * @param string|null $costDescription
      */
-    public function __construct(string $objID, ?string $name, ?string $ownerID, int $startDate, int $endDate, ?int $duration, ?string $tripDescription, ?string $tags, ?array $users, ?string $mainImage, ?array $milestones, ?string $cost, ?string $costDescription)
+    public function __construct(string $objID, ?string $name, ?TripDetailsOwner $owner, int $startDate, int $endDate, ?int $duration, ?string $tripDescription, ?string $tags, ?array $users, ?string $mainImage, ?array $milestones, ?string $cost, ?string $costDescription)
     {
         $this->objID = $objID;
         $this->name = $name;
-        $this->ownerID = $ownerID;
+        $this->owner = $owner;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->duration = $duration;

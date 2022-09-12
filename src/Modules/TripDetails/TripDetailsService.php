@@ -5,8 +5,10 @@ namespace App\Modules\TripDetails;
 use App\Entity\Milestone;
 use App\Entity\TripUserRole;
 use App\Helpers\FileManager\FileManagerService;
+use App\Helpers\FileManager\ImagesManager;
 use App\Modules\TripDetails\Model\MilestoneDetailsObject;
 use App\Modules\TripDetails\Model\TripDetailsObject;
+use App\Modules\TripDetails\Model\TripDetailsOwner;
 use App\Modules\TripDetails\Model\TripDetailsUserRole;
 use App\Repository\CommentRepository;
 use App\Repository\MilestoneRepository;
@@ -18,6 +20,7 @@ class TripDetailsService
     public function __construct(private TripRepository $tripRepository,
                                 private MilestoneRepository $milestoneRepository,
                                 private FileManagerService $fileManagerService,
+                                private ImagesManager $imagesManager,
                                 private CommentRepository $commentRepository
     )
     {
@@ -72,7 +75,12 @@ class TripDetailsService
         $tripObject = new TripDetailsObject(
             $trip->getObjId(),
             $trip->getName(),
-            $trip->getOwner()->getId(),
+            //$trip->getOwner()->getId(),
+            new TripDetailsOwner(
+                $trip->getOwner()->getId(),
+                $trip->getOwner()->getName(),
+                base64_encode($this->imagesManager->getThumbnailDataForImage($trip->getOwner()->getAvatar()))
+            ),
             $trip->getStartDate()->getTimestamp(),
             $trip->getEndDate()->getTimestamp(),
             $trip->getDuration(),
