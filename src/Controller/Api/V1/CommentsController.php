@@ -13,14 +13,24 @@ class CommentsController extends AbstractController
 {
     use JsonResponseTrait;
 
-    #[Route('/comments/linked', name: 'api_v1_comments')]
-    public function index(Request $request, CommentsService $commentsService): JsonResponse
+    #[Route('/comments/linked', name: 'api_v1_linked')]
+    public function linked(Request $request, CommentsService $commentsService): JsonResponse
     {
         $linkedObjID = $request->get('id');
         if (isset($linkedObjID)) {
             return $this->successResponse($commentsService->getCommentsForObject($linkedObjID));
         }
 
+        return $this->successResponse([]);
+    }
+
+    #[Route('/comments/list', name: 'api_v1_list')]
+    public function list(Request $request, CommentsService $commentsService): JsonResponse
+    {
+        $json = json_decode($request->getContent(),true);
+        if (isset($json['items'])) {
+            return $this->successResponse($commentsService->getCommentsForObjectsArray($json['items']));
+        }
         return $this->successResponse([]);
     }
 }

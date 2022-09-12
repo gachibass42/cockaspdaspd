@@ -7,7 +7,8 @@ class CommentItem
     public string $objID;
     public string $linkedObjID;
     public ?string $type;
-    public ?string $userID;
+    //public ?string $userID;
+    public CommentUserShort $user;
 
     public ?array $images;
 
@@ -19,19 +20,19 @@ class CommentItem
      * @param string $objID
      * @param string $linkedObjID
      * @param string|null $type
-     * @param string|null $userID
+     * @param CommentUserShort $user
      * @param ImageItem[]|null $images
      * @param string[]|null $tags
      * @param int $date
      * @param string|null $content
      */
-    public function __construct(string $objID, string $linkedObjID, ?string $type, ?string $userID, ?array $images, ?array $tags, int $date, ?string $content)
+    public function __construct(string $objID, string $linkedObjID, ?string $type, CommentUserShort $user, ?array $images, ?array $tags, int $date, ?string $content)
     {
         $this->objID = $objID;
         $this->images = $images;
         $this->linkedObjID = $linkedObjID;
         $this->type = $type;
-        $this->userID = $userID;
+        $this->user = $user;
         $this->tags = $tags;
         $this->date = $date;
         $this->content = $content;
