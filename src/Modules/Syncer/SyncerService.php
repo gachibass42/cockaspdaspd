@@ -81,7 +81,8 @@ class SyncerService
                     ->setDescription($location["descriptionLocation"] ?? null)
                     ->setPhoneNumber($location['phoneNumber'] ?? null)
                     ->setWebsite($location["website"] ?? null)
-                    ->setIsUsing($location['isUsing']);
+                    ->setIsUsing($location['isUsing'])
+                    ->setWildCity($location['wildCity']);
                 if (isset($location["countryLocationID"])){
                     $countryLocation = $this->locationRepository->findOneBy(["objID" => $location["countryLocationID"]]);
                     if (isset($countryLocation)){

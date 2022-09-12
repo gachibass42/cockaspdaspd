@@ -80,7 +80,10 @@ class Location
     private ?string $website;
 
     #[ORM\Column(type: 'boolean', options: ['default'=>'false'])]
-    private $isUsing;
+    private bool $isUsing = false;
+
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default'=>'false'])]
+    private bool $wildCity = false;
 
     public function __construct()
     {
@@ -89,10 +92,10 @@ class Location
 
     public function getExternalPlaceId(): ?string
     {
-        return $this->externalPlaceId;
+        return $this->externalPlaceId ?? null;
     }
 
-    public function setExternalPlaceId(string $externalPlaceId): self
+    public function setExternalPlaceId(?string $externalPlaceId): self
     {
         $this->externalPlaceId = $externalPlaceId;
 
@@ -361,6 +364,18 @@ class Location
     public function setIsUsing(bool $isUsing): self
     {
         $this->isUsing = $isUsing;
+
+        return $this;
+    }
+
+    public function isWildCity(): bool
+    {
+        return $this->wildCity ?? false;
+    }
+
+    public function setWildCity(bool $wildCity): self
+    {
+        $this->wildCity = $wildCity;
 
         return $this;
     }

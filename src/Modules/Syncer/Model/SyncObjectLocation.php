@@ -26,6 +26,7 @@ class SyncObjectLocation
     public ?string $website;
     public ?string $descriptionLocation;
     public bool $isUsing;
+    public bool $wildCity;
 
     /**
      * @param string $objID
@@ -50,8 +51,9 @@ class SyncObjectLocation
      * @param string|null $website
      * @param string|null $descriptionLocation
      * @param bool $isUsing
+     * @param bool $wildCity
      */
-    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalID, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website, ?string $descriptionLocation, bool $isUsing)
+    public function __construct(string $objID, int $syncStatusDateTime, string $syncAction, ?string $name, ?float $latitude, ?float $longitude, ?string $address, ?string $timeZoneIdentifier, ?string $codeIATA, ?string $countryCode, ?string $externalID, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?string $cityLocationID, ?string $countryLocationID, ?string $type, ?string $ownerID, ?string $phoneNumber, ?string $website, ?string $descriptionLocation, bool $isUsing, bool $wildCity)
     {
         $this->objID = $objID;
         $this->syncStatusDateTime = $syncStatusDateTime;
@@ -75,6 +77,7 @@ class SyncObjectLocation
         $this->website = $website;
         $this->descriptionLocation = $descriptionLocation;
         $this->isUsing = $isUsing;
+        $this->wildCity = $wildCity;
     }
 
     /**
@@ -427,6 +430,22 @@ class SyncObjectLocation
     public function setIsUsing(bool $isUsing): void
     {
         $this->isUsing = $isUsing;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWildCity(): bool
+    {
+        return $this->wildCity;
+    }
+
+    /**
+     * @param bool $wildCity
+     */
+    public function setWildCity(bool $wildCity): void
+    {
+        $this->wildCity = $wildCity;
     }
 
 

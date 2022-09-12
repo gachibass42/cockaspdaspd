@@ -23,6 +23,7 @@ class LocationDetailsItem
     private ?string $type;
     private ?string $phoneNumber;
     private ?string $website;
+    private bool $wildCity;
 
     /**
      * @param string $objID
@@ -42,8 +43,9 @@ class LocationDetailsItem
      * @param string|null $type
      * @param string|null $phoneNumber
      * @param string|null $website
+     * @param boolean $wildCity
      */
-    public function __construct(string $objID, ?string $name, ?float $lat, ?float $lon, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?LocationDetailsItem $cityLocation, ?LocationDetailsItem $countryLocation, ?string $type, ?string $phoneNumber, ?string $website)
+    public function __construct(string $objID, ?string $name, ?float $lat, ?float $lon, ?string $address, ?string $timeZone, ?string $codeIATA, ?string $countryCode, ?string $externalPlaceId, ?string $searchTags, ?string $internationalName, ?string $internationalAddress, ?LocationDetailsItem $cityLocation, ?LocationDetailsItem $countryLocation, ?string $type, ?string $phoneNumber, ?string $website, bool $wildCity)
     {
         $this->objID = $objID;
         $this->name = $name;
@@ -62,6 +64,7 @@ class LocationDetailsItem
         $this->type = $type;
         $this->phoneNumber = $phoneNumber;
         $this->website = $website;
+        $this->wildCity = $wildCity;
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Modules\LocationDetails\Model\LocationDetailsResponse;
 use App\Repository\LocationRepository;
 use App\Service\Geo\GooglePlacesApi;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -34,6 +35,25 @@ class LocationDetailsService
         return $location;
     }
 
+    private function getWildCityForCountry (Location $country): Location {
+        $wildCity = $this->locationRepository->getWildCityForCountry($country);
+        if (!isset($wildCity)) {
+            $wildCity = new Location();
+            $wildCity->setIsUsing(false)
+                ->setType('city')
+                ->setCountryLocation($country)
+                ->setCountryCode($country->getCountryCode())
+                ->setDescription('Дикая местность')
+                ->setInternationalName('Wild area')
+                ->setLat($country->getLat())
+                ->setLon($country->getLon())
+                ->setName('Дикая местность')
+                ->setTimeZone($country->getTimeZone())
+                ->setWildCity(true);
+        }
+        return $wildCity;
+    }
+
     private function processExternalLocation(Location $location): ?Location { //fulfill cityLocation and countryLocation for the new external Location
 
         $lat = $location->getLat(); $lon = $location->getLon();
@@ -42,8 +62,12 @@ class LocationDetailsService
         //dump ($location, $type);
         if ($type != "country"){ //fill the countryLocation if new place is not country
             $countryLocation = $this->getRegion($location->getCountryLocation(),'country', $location->getExternalPlaceId());
-            if ($type != 'city' && !empty($cityLocation)) { //fill the cityLocation if new place is not city
-                $cityLocation = $this->getRegion($cityLocation,'city', $location->getExternalPlaceId());
+            if ($type != 'city') { //fill the cityLocation if new place is not city
+                if (!empty($cityLocation)) {
+                    $cityLocation = $this->getRegion($cityLocation,'city', $location->getExternalPlaceId());
+                } else {
+                    $cityLocation = $this->getWildCityForCountry($countryLocation);
+                }
             }
         }
         if ($type == 'airport') {
@@ -51,7 +75,6 @@ class LocationDetailsService
             if (isset($cityIATAcode)) {
                 $cityLocation->setCodeIATA($cityIATAcode);
             }
-
         }
         if ($cityLocation != null && $cityLocation->getCountryCode() == null && $countryLocation != null) {
             $cityLocation->setCountryCode($countryLocation->getCountryCode());
@@ -85,7 +108,8 @@ class LocationDetailsService
             $this->mapLocationToResponseItem($location->getCountryLocation()),
             $location->getType(),
             $location->getPhoneNumber(),
-            $location->getWebsite()
+            $location->getWebsite(),
+            $location->isWildCity()
         ) : null;
     }
 

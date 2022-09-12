@@ -77,7 +77,8 @@ class LocationRepository extends ServiceEntityRepository
             $object->getPhoneNumber(),
             $object->getWebsite(),
             $object->getDescription(),
-            $object->getIsUsing()
+            $object->getIsUsing(),
+            $object->isWildCity()
         ),$dbObjects));
     }
 
@@ -104,5 +105,16 @@ class LocationRepository extends ServiceEntityRepository
         //dump($qb->getSQL());
         $qb->execute();
         $this->getEntityManager()->flush();
+    }
+
+    public function getWildCityForCountry(Location $country): ?Location {
+        $resultSet = $this->createQueryBuilder('l')
+            ->where('l.wildCity = TRUE')
+            ->andWhere('l.countryLocation = :country')
+            ->setParameter('country', $country)
+            ->getQuery()
+            ->getResult()
+            ;
+        return count($resultSet) > 0 ? array_pop($resultSet) : null;
     }
 }
