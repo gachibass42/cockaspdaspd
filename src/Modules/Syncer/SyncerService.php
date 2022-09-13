@@ -135,19 +135,32 @@ class SyncerService
                         $dbTrip->setOwner($owner);
                     }
                 }
+
+                $tripUsersRoles = $this->tripUserRoleRepository->findBy(['trip' => $dbTrip]);
+                $tripUsersRolesIndex = [];
+                foreach ($tripUsersRoles as $tripUserRole) {
+                    $tripUsersRolesIndex[$tripUserRole->getTripUser()->getId()] = $tripUserRole;
+                }
+
                 if (isset($trip['users'])){
                     foreach ($trip['users'] as $userRole) {
                         $userID = $userRole['userID'];
                         $role = $userRole['roleName'];
                         $user = $this->userRepository->findOneBy(["id" => (int)$userID]);
                         if (isset($user)) {
-                            $userRole = $this->tripUserRoleRepository->findOneBy(['trip' => $dbTrip, 'tripUser' => $user]) ?? new TripUserRole();
+                            //$userRole = $this->tripUserRoleRepository->findOneBy(['trip' => $dbTrip, 'tripUser' => $user]) ?? new TripUserRole();
+                            $userRole = $tripUsersRolesIndex[$user->getId()] ?? new TripUserRole();
                             $userRole->setTrip($dbTrip)
                                 ->setTripUser($user)
                                 ->setRoleName($role);
                             $this->tripUserRoleRepository->save($userRole);
+                            unset($tripUsersRolesIndex[$user->getId()]);
                         }
                     }
+                }
+
+                foreach ($tripUsersRolesIndex as $userRole) { //remove all roles is not presented in sync
+                    $this->tripUserRoleRepository->remove($userRole);
                 }
             }
             $this->tripRepository->save($dbTrip);
