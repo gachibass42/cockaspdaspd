@@ -298,10 +298,13 @@ class SyncerService
             $roles = $this->tripUserRoleRepository->findBy(['trip' => $tripID]);
             if ($trip->getOwner()->getId() == $this->user->getId()) {
                 if (count($roles) > 0) {
-                    $trip->setOwner($roles[0]->getTripUser());
-                    $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(), $roles[0]->getTripUser()->getId(), $this->user->getId());
+                    $role = array_pop($roles);
+                    $trip->setOwner($role->getTripUser());
+                    $trip->setSyncDate(new \DateTimeImmutable());
+                    $this->milestoneRepository->updateMilestonesOwner($trip->getMilestonesIDs(), $role->getTripUser()->getId(), $this->user->getId());
                     $this->cleanupCemeteryDeleteUserTrip($trip);
                     $this->tripRepository->save($trip, true);
+                    $this->tripUserRoleRepository->remove($role);
                 } else {
                     $this->milestoneRepository->removeMilestones($trip->getMilestonesIDs());
                     $this->checkListRepository->removeCheckLists($trip->getCheckListsIDs());

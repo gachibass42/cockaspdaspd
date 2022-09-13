@@ -7,6 +7,8 @@ use App\Modules\Syncer\Model\SyncObjectMilestone;
 use App\Modules\TripsList\Model\ShortMilestone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -181,6 +183,7 @@ class MilestoneRepository extends ServiceEntityRepository
         $this->createQueryBuilder('milestone')
             ->update('App:Milestone','milestone')
             ->set('milestone.owner', $userID)
+            ->set('milestone.syncDate', 'CURRENT_TIMESTAMP()')
             ->where('milestone.objID in (:milestonesIDs)')
             ->andWhere('milestone.owner = :oldUserID')
             ->setParameter('milestonesIDs',$milestonesIDs,Connection::PARAM_STR_ARRAY)
