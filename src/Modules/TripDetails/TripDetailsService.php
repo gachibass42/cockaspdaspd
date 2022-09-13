@@ -72,6 +72,32 @@ class TripDetailsService
     public function getTripDetailsByObjectID (string $tripID): array
     {
         $trip = $this->tripRepository->findOneBy(['objID'=>$tripID]);
+        $milestones = $this->milestoneRepository->getMilestones($trip->getMilestonesIDs());
+        $reviews = $this->commentRepository->getReviewsForObjects(array_map(fn (Milestone $m) => $m->getObjId(), $milestones));
+        $imagesNumber = 0;
+        $goodTagsNumber = 0;
+        $badTagsNumber = 0;
+        $attentionTagsNumber = 0;
+        $reviewsNumber = count($reviews);
+        foreach ($reviews as $review) {
+            $tags = $review->getTags();
+            $images = $review->getImages();
+            foreach ($tags as $tag) {
+                switch ($tag){
+                    case 'good':
+                        $goodTagsNumber++;
+                        break;
+                    case 'attention':
+                        $attentionTagsNumber++;
+                        break;
+                    case 'bad':
+                        $badTagsNumber++;
+                        break;
+                }
+            }
+            $imagesNumber += isset($images) ? count($images) : 0;
+        }
+
         $tripObject = new TripDetailsObject(
             $trip->getObjId(),
             $trip->getName(),
@@ -89,9 +115,14 @@ class TripDetailsService
             array_map(fn (TripUserRole $userRole) => new TripDetailsUserRole($userRole->getTripUser()->getId(),$userRole->getRoleName()),
                 $trip->getUsersRoles()->getValues()),
             $trip->getMainImage() ? base64_encode($this->fileManagerService->getImageContent($trip->getMainImage())) : null,
-            array_map([$this,'getMilestoneDetailsObject'], $this->milestoneRepository->getMilestones($trip->getMilestonesIDs())),
+            array_map([$this,'getMilestoneDetailsObject'], $milestones),
             $trip->getCost(),
-            $trip->getCostDescription()
+            $trip->getCostDescription(),
+            $imagesNumber,
+            $reviewsNumber,
+            $goodTagsNumber,
+            $badTagsNumber,
+            $attentionTagsNumber
         );
         return [$tripObject];
     }

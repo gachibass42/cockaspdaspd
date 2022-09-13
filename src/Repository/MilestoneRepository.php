@@ -157,7 +157,8 @@ class MilestoneRepository extends ServiceEntityRepository
      * @param string[] $milestonesIDs
      * @return void
      */
-    public function removeMilestones (array $milestonesIDs) {
+    public function removeMilestones (array $milestonesIDs): void
+    {
         $this->createQueryBuilder('milestone')
             ->delete('App:Milestone','milestone')
             ->where('milestone.objID in (:milestonesIDs)')
@@ -201,33 +202,4 @@ class MilestoneRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
-    // /**
-    //  * @return Milestone[] Returns an array of Milestone objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Milestone
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
-
 }
