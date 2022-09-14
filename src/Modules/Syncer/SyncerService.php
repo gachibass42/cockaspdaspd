@@ -313,6 +313,8 @@ class SyncerService
             } else {
                 $this->cleanupCemeteryDeleteUserTrip($trip);
                 $this->tripUserRoleRepository->removeUserFromTrip($trip->getObjId(), $this->user);
+                $trip->setSyncDate(new \DateTimeImmutable());
+                $this->tripRepository->save($trip, true);
             }
         }
     }
