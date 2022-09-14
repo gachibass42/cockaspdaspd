@@ -22,8 +22,19 @@ class LocationAutocompleteRepository extends ServiceEntityRepository
     /**
      * @return LocationPredictionsItem[]
      */
-    public function searchByText(string $text): array
+    public function searchByText(string $text, ?string $type = null): array
     {
+        $qb = $this->createQueryBuilder('l')
+            ->where('l.name LIKE :value OR l.address LIKE :value OR l.searchTags LIKE :value');
+        if (isset($type)) {
+            $qb->andWhere('l.type = :type')
+                ->setParameter('type',$type);
+        }
+        $resultSet = $qb->setParameter('value', "%{$text}%")
+            ->orderBy('l.objID', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
         return array_map(fn (Location $location) => new LocationPredictionsItem(
                 $location->getObjID(),
                 $location->getName(),
@@ -31,15 +42,7 @@ class LocationAutocompleteRepository extends ServiceEntityRepository
                 $location->getAddress(),
                 $location->getType(),
             ),
-            $this->createQueryBuilder('l')
-                ->where('l.name LIKE :value')
-                ->orWhere('l.address LIKE :value')
-                ->orWhere('l.searchTags LIKE :value')
-                ->setParameter('value', "%{$text}%")
-                ->orderBy('l.objID', 'ASC')
-                ->setMaxResults(10)
-                ->getQuery()
-                ->getResult()
+            $resultSet
         );
     }
 }

@@ -15,11 +15,11 @@ class LocationAutocompleteService
     /**
      * @return LocationPredictionsItem[]
      */
-    public function getLocationsSearchText(string $text, ?string $sessionID, ?string $type = ""): array
+    public function getLocationsSearchText(string $text, ?string $sessionID, ?string $type = null): array
     {
-        $mgLocations = $this->autocompleteRepository->searchByText($text);
+        $mgLocations = $this->autocompleteRepository->searchByText($text, $type);
 
-        $googleLocations = $this->googlePlacesApi->getAutocompleteForText($text, $type,$sessionID);
+        $googleLocations = $this->googlePlacesApi->getAutocompleteForText($text, $type, $sessionID);
         $externalIds = array_keys($googleLocations);
 
         $indexedLocations = [];
