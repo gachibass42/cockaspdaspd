@@ -18,10 +18,13 @@ class TripsListController extends AbstractController
     public function index(Request $request, TripsListService $tripsListService, NormalizerInterface $normalizer): JsonResponse
     {
         $locationID = $request->query->get('location');
-//        $userID = $request->query->get('user');
+        $userID = $request->query->get('user');
         $response['items'] = array();
         if (isset($locationID)) {
-            $response = $tripsListService->getTripsListWithLocation($locationID);
+            $response = $tripsListService->getTripsListWithLocation ($locationID);
+            $response = $normalizer->normalize($response, 'json');
+        } elseif (isset($userID)) {
+            $response = $tripsListService->getUserTripsList ($userID);
             $response = $normalizer->normalize($response, 'json');
         }
 

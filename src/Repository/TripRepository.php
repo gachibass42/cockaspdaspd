@@ -3,16 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Trip;
-use App\Entity\TripUserRole;
 use App\Modules\Syncer\Model\SyncObjectTrip;
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\expr;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -137,7 +134,13 @@ class TripRepository extends ServiceEntityRepository
      * @param int $userID
      * @return Trip[]|null
      */
-    /*public function getUserTrips (int $userID):?array {
-
-    }*/
+    public function getUserTrips (int $userID):?array {
+        //$sql = "select t.* from trip t where (owner_id = :userid or obj_id in (select r.trip_id from trip_user_role r where r.trip_user_id = :userid))";
+        $sql = "select t.* from trip t where (owner_id = :userid or obj_id in (select r.trip_id from trip_user_role r where r.trip_user_id = :userid and (r.role_name = 'reader' or r.role_name = 'editor')))";
+        $resultSet = new ResultSetMappingBuilder($this->_em);
+        $resultSet->addRootEntityFromClassMetadata(Trip::class,'t');
+        $qb = $this->_em->createNativeQuery($sql,$resultSet);
+        $qb->setParameter('userid', $userID, Types::INTEGER);
+        return $qb->getResult();
+    }
 }

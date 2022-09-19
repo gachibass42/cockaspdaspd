@@ -7,6 +7,7 @@ use App\Helpers\FileManager\FileManagerService;
 use App\Helpers\FileManager\ImagesManager;
 use App\Modules\TripsList\Model\ShortMilestone;
 use App\Modules\TripsList\Model\TripsListItem;
+use App\Modules\UserProfile\UserRepository;
 use App\Repository\MilestoneRepository;
 use App\Repository\TripRepository;
 
@@ -15,6 +16,7 @@ class TripsListService
 
     public function __construct(private TripRepository $tripRepository,
                                 private MilestoneRepository $milestoneRepository,
+                                private UserRepository $userRepository,
                                 private ImagesManager $imagesManager)
     {
     }
@@ -62,10 +64,16 @@ class TripsListService
         return $this->mapTripsToResponse($trips);
     }
 
-    /*public function getUserTripsList (string $userID): TripsListResponse {
-        $id = (int)$userID;
-        $trips = $this->tripRepository->getUserTrips($id);
-
+    /**
+     * @param string $userID
+     * @return TripsListItem[]
+     */
+    public function getUserTripsList (string $userID): array {
+        $userID = (int)$userID;
+        $trips = [];
+        if ($userID > 0) {
+            $trips = $this->tripRepository->getUserTrips($userID);
+        }
         return $this->mapTripsToResponse($trips);
-    }*/
+    }
 }
