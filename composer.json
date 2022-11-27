@@ -6,11 +6,13 @@
     "require": {
         "php": ">=8.0",
         "ext-ctype": "*",
+        "ext-gd": "*",
         "ext-iconv": "*",
         "composer/package-versions-deprecated": "1.11.99.4",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
+        "lexik/jwt-authentication-bundle": "^2.16",
         "phpdocumentor/reflection": "^5.2",
         "symfony/asset": "5.4.*",
         "symfony/console": "5.4.*",
@@ -25,8 +27,7 @@
         "symfony/serializer": "5.4.*",
         "symfony/twig-bundle": "5.4.*",
         "symfony/uid": "5.4.*",
-        "symfony/yaml": "5.4.*",
-        "ext-gd": "*"
+        "symfony/yaml": "5.4.*"
     },
     "config": {
         "allow-plugins": {

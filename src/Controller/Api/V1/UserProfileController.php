@@ -6,11 +6,27 @@ use App\Controller\JsonResponseTrait;
 use App\Entity\User;
 use App\Modules\UserDestructor\UserDestructorService;
 use App\Modules\UserProfile\UserProfileService;
+use DateTimeImmutable;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
+use Lcobucci\JWT\Token\InvalidTokenStructure;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Token\UnsupportedHeaderFound;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\LcobucciJWTEncoder;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
+use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Token\Builder;
+
 
 class UserProfileController extends AbstractController
 {
@@ -26,6 +42,8 @@ class UserProfileController extends AbstractController
         /*$user = new User();
         $user->setId($request->query->getInt('id'));
         $user->setApiToken($this->getAuthToken($request));*/ //TODO: use another way to pass the token
+        $user = new User();
+        $user->setId($request->query->getInt('id'));
         $userID = $request->query->getInt('id');
         $data = $normalizer->normalize($this->userProfileService->getUserProfile($this->getUser()->getUserIdentifier(), $userID), 'json');
 

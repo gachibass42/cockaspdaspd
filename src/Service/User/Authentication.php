@@ -7,14 +7,20 @@ namespace App\Service\User;
 use App\Entity\User;
 use App\Modules\UserProfile\UserRepository;
 use App\Security\PasswordEncoder;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Token\Builder;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Authentication
 {
-    private const REGISTER_URL = 'https://proc.minegoat.ru/api/register';
 
     public function __construct(
         private LoggerInterface $logger,
@@ -26,21 +32,19 @@ class Authentication
 
     public function register(): ?User
     {
-        try {
-            $response = $this->client
-                ->request(Request::METHOD_GET, self::REGISTER_URL)
-                ->toArray()
-            ;
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage(), ['method' => __METHOD__]);
-            return null;
-        }
+        $qb = $this->
+        userRepository->
+        createQueryBuilder('u');
+
+        $nextId = $this->getNextId($qb);
+
+        $login = $this->getNextLogin($qb);
 
         $user = new User();
         $user
-            ->setId($response['user']['id'])
-            ->setUsername($response['user']['login'])
-            ->setPassword($response['user']['password'])
+            ->setId($nextId)
+            ->setUsername($login)
+            ->setPassword($this->generatePassword())
             ->setApiToken($this->generateApiToken())
             ->setApiTokenExpiresAt($this->getApiTokenExpirationDatetime())
         ;
@@ -48,6 +52,31 @@ class Authentication
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    public function getJwt(string $userId): ?JsonResponse
+    {
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+        $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
+        $algorithm    = new Sha256();
+        $signingKey   = InMemory::base64Encoded(
+            'hiG8DlOKvtih6AxlZn5XKImZ06yu8I3mkOzaJrEuW8yAv8Jnkw330uMt8AEqQ5LB'
+        );
+
+        $now   = new DateTimeImmutable();
+        $token = $tokenBuilder
+            // Configures the issuer (iss claim)
+            ->withHeader('algorithm', 'sha256')
+            ->withClaim('username', $user ->getUsername())
+            ->withClaim('password', $user ->getPassword())
+            // Builds a new token
+            ->getToken($algorithm, $signingKey);
+        return new JsonResponse([
+            'token' => $token -> toString(),
+            'algorithm' => $token->headers()->get('algorithm'),
+            'username' => $token->claims()->get('username'),
+            'password' => $token->claims()->get('password'),
+            'id' => $user->getId()]);
     }
 
     public function login(string $username, string $hashedPassword): ?array
@@ -79,8 +108,33 @@ class Authentication
         return bin2hex(random_bytes(64));
     }
 
+    private function generatePassword(): string
+    {
+        return bin2hex(random_bytes(8));
+    }
+
     private function getApiTokenExpirationDatetime(): \DateTimeImmutable
     {
         return (new \DateTimeImmutable())->modify('+1 month');
+    }
+
+    public function getNextId(\Doctrine\ORM\QueryBuilder $qb): int
+    {
+        return (int)$qb
+            ->select('MAX(u.id)')
+            ->getQuery()
+            ->getResult() + 1;
+    }
+
+    public function getNextLogin(\Doctrine\ORM\QueryBuilder $qb): string
+    {
+        $current_last_username = $qb
+            ->select('u.username')
+            ->orderBy('LENGTH(u.username)', 'DESC')
+            ->orderBy('u.username', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult()[0]['username'];
+        return 'blinker' . ((int)substr($current_last_username, 7) + 1);
     }
 }
