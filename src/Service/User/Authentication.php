@@ -23,8 +23,6 @@ class Authentication
 {
 
     public function __construct(
-        private LoggerInterface $logger,
-        private HttpClientInterface $client,
         private EntityManagerInterface $entityManager,
         private UserRepository $userRepository,
         private PasswordEncoder $passwordEncoder
@@ -128,13 +126,25 @@ class Authentication
 
     public function getNextLogin(\Doctrine\ORM\QueryBuilder $qb): string
     {
+        $current_max_length_array = $qb
+            -> select('u.username')
+        ->orderBy('LENGTH(u.username)', 'DESC')
+        ->setMaxResults(1)
+        ->getQuery()
+        ->getResult();
+        if (count($current_max_length_array) == 0)
+            return 'blinker1';
+        $current_max_length = strval(strlen($current_max_length_array[0]['username']));
         $current_last_username = $qb
             ->select('u.username')
-            ->orderBy('LENGTH(u.username)', 'DESC')
-            ->orderBy('u.username', 'DESC')
+            ->where('LENGTH(u.username)=:length')
+            ->setParameter('length', $current_max_length)
+            ->orderBy('u.username'  , 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult()[0]['username'];
-        return 'blinker' . ((int)substr($current_last_username, 7) + 1);
+            ->getResult();
+
+        $current_number = (int)substr($current_last_username[0]['username'], 7);
+        return 'blinker' . ($current_number + 1);
     }
 }
