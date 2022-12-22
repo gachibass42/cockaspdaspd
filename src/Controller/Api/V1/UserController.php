@@ -58,11 +58,6 @@ class UserController extends AbstractController
         return $authentication ->getJwt($request->get('id'));
     }
 
-    /*#[Route('/user/read', name: 'api_v1_user_jwt', methods: ['GET'])]
-    public function readMessage(Authentication $authentication, Request $request): JsonResponse
-    {
-
-    }*/
 }
 
 

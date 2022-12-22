@@ -57,24 +57,19 @@ class Authentication
         $user = $this->userRepository->findOneBy(['id' => $userId]);
         $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
         $algorithm    = new Sha256();
-        $signingKey   = InMemory::base64Encoded(
-            'hiG8DlOKvtih6AxlZn5XKImZ06yu8I3mkOzaJrEuW8yAv8Jnkw330uMt8AEqQ5LB'
+
+        $signingKey   = InMemory::plainText(
+            'ffb0e788-e18e-4bf2-93c7-1a21eadc58e6'
         );
 
         $now   = new DateTimeImmutable();
         $token = $tokenBuilder
-            // Configures the issuer (iss claim)
-            ->withHeader('algorithm', 'sha256')
-            ->withClaim('username', $user ->getUsername())
-            ->withClaim('password', $user ->getPassword())
-            // Builds a new token
+            //->issuedAt($now)
+            //->expiresAt($now->modify('+1 hour'))
+            ->relatedTo($user ->getUsername())
             ->getToken($algorithm, $signingKey);
         return new JsonResponse([
-            'token' => $token -> toString(),
-            'algorithm' => $token->headers()->get('algorithm'),
-            'username' => $token->claims()->get('username'),
-            'password' => $token->claims()->get('password'),
-            'id' => $user->getId()]);
+            'token' => $token -> toString()]);
     }
 
     public function login(string $username, string $hashedPassword): ?array
