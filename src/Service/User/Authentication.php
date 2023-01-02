@@ -43,7 +43,7 @@ class Authentication
             ->setId($nextId)
             ->setUsername($login)
             ->setPassword($this->generatePassword())
-            ->setApiToken($this->generateApiToken())
+            ->setApiToken($this->generateApiToken($login))
             ->setApiTokenExpiresAt($this->getApiTokenExpirationDatetime())
         ;
         $this->entityManager->persist($user);
@@ -52,9 +52,8 @@ class Authentication
         return $user;
     }
 
-    public function getJwt(string $userId): ?JsonResponse
+    public function getJwt(string $username): ?String
     {
-        $user = $this->userRepository->findOneBy(['id' => $userId]);
         $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
         $algorithm    = new Sha256();
 
@@ -66,10 +65,9 @@ class Authentication
         $token = $tokenBuilder
             //->issuedAt($now)
             //->expiresAt($now->modify('+1 hour'))
-            ->relatedTo($user ->getUsername())
+            ->relatedTo($username)
             ->getToken($algorithm, $signingKey);
-        return new JsonResponse([
-            'token' => $token -> toString()]);
+        return $token -> toString();
     }
 
     public function login(string $username, string $hashedPassword): ?array
@@ -85,7 +83,7 @@ class Authentication
 
         if ($user->isTokenExpired()) {
             $user
-                ->setApiToken($this->generateApiToken())
+                ->setApiToken($this->generateApiToken($username))
                 ->setApiTokenExpiresAt($this->getApiTokenExpirationDatetime())
             ;
             $this->entityManager->flush();
@@ -96,9 +94,9 @@ class Authentication
         ];
     }
 
-    private function generateApiToken(): string
+    private function generateApiToken(string $id): string
     {
-        return bin2hex(random_bytes(64));
+        return $this -> getJwt($id);
     }
 
     private function generatePassword(): string
