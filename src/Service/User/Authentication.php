@@ -63,8 +63,7 @@ class Authentication
 
         $now   = new DateTimeImmutable();
         $token = $tokenBuilder
-            //->issuedAt($now)
-            //->expiresAt($now->modify('+1 hour'))
+            ->issuedAt($now)
             ->relatedTo($username)
             ->getToken($algorithm, $signingKey);
         return $token -> toString();
