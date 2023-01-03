@@ -52,7 +52,7 @@ class Authentication
         return $user;
     }
 
-    public function getJwt(string $username): ?String
+    public function generateApiToken(string $username): ?String
     {
         $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
         $algorithm    = new Sha256();
@@ -91,11 +91,6 @@ class Authentication
         return [
             'apiToken' => $user->getApiToken()
         ];
-    }
-
-    private function generateApiToken(string $id): string
-    {
-        return $this -> getJwt($id);
     }
 
     private function generatePassword(): string
